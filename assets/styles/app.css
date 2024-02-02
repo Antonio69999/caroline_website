@@ -1,3 +1,14 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@font-face {
+  font-family: "Krylon";
+  src: url("../fonts/Krylon-Regular.otf") format("opentype"),
+    url("../fonts/Krylon-Regular.woff") format("woff"),
+    url("../fonts/Krylon-Regular.woff2") format("woff2");
+}
+
+h1 {
+  font-family: "Krylon";
+}
