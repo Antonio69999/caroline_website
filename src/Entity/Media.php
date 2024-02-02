@@ -6,8 +6,11 @@ use App\Repository\MediaRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Vich\UploaderBundle\Mapping\Annotation as Vich;
+use Symfony\Component\HttpFoundation\File\File;
 
 #[ORM\Entity(repositoryClass: MediaRepository::class)]
+#[Vich\Uploadable]
 class Media
 {
     #[ORM\Id]
@@ -15,14 +18,17 @@ class Media
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $lien = null;
+    #[ORM\Column(nullable: true)]
+    private ?string $imageName = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $type = null;
+    #[Vich\UploadableField(mapping: 'media', fileNameProperty: 'imageName', size: 'imageSize')]
+    private ?File $imageFile = null;
 
     #[ORM\Column]
-    private ?\DateTimeImmutable $créeLe = null;
+    private ?\DateTimeImmutable $creeLe = null;
+
+    #[ORM\Column]
+    private ?\DateTimeImmutable $modifieLe = null;
 
     #[ORM\ManyToMany(targetEntity: Article::class, mappedBy: 'media')]
     private Collection $articles;
@@ -37,38 +43,14 @@ class Media
         return $this->id;
     }
 
-    public function getLien(): ?string
+    public function getCreeLe(): ?\DateTimeImmutable
     {
-        return $this->lien;
+        return $this->creeLe;
     }
 
-    public function setLien(string $lien): static
+    public function setCreeLe(\DateTimeImmutable $créeLe): static
     {
-        $this->lien = $lien;
-
-        return $this;
-    }
-
-    public function getType(): ?string
-    {
-        return $this->type;
-    }
-
-    public function setType(?string $type): static
-    {
-        $this->type = $type;
-
-        return $this;
-    }
-
-    public function getCréeLe(): ?\DateTimeImmutable
-    {
-        return $this->créeLe;
-    }
-
-    public function setCréeLe(\DateTimeImmutable $créeLe): static
-    {
-        $this->créeLe = $créeLe;
+        $this->creeLe = $créeLe;
 
         return $this;
     }
@@ -96,6 +78,50 @@ class Media
         if ($this->articles->removeElement($article)) {
             $article->removeMedium($this);
         }
+
+        return $this;
+    }
+
+    public function setImageFile(?File $imageFile = null): void
+    {
+        $this->imageFile = $imageFile;
+
+        if (null !== $imageFile) {
+            $this->modifieLe = new \DateTimeImmutable();
+        }
+    }
+
+    public function getImageFile(): ?File
+    {
+        return $this->imageFile;
+    }
+
+    public function setImageName(?string $imageName): void
+    {
+        $this->imageName = $imageName;
+    }
+
+    public function getImageName(): ?string
+    {
+        return $this->imageName;
+    }
+
+    /**
+     * Get the value of modifieLe
+     */
+    public function getModifieLe()
+    {
+        return $this->modifieLe;
+    }
+
+    /**
+     * Set the value of modifieLe
+     *
+     * @return  self
+     */
+    public function setModifieLe($modifieLe)
+    {
+        $this->modifieLe = $modifieLe;
 
         return $this;
     }

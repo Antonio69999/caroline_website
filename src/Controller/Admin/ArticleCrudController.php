@@ -31,10 +31,12 @@ class ArticleCrudController extends AbstractCrudController
             TextEditorField::new('description'),
             DateTimeField::new('ModifieeLe')->hideOnForm(),
             DateTimeField::new('CreeLe')->hideOnForm(),
-            ImageField::new('Image')
-                ->setBasePath(self::ARTICLE_BASE_PATH)
-                ->setUploadDir(self::ARTICLE_UPLOAD_DIR),
+            AssociationField::new('categorie'),
             AssociationField::new('media')
+                ->setFormTypeOptions([
+                    'by_reference' => false,
+                    'multiple' => true,
+                ]),
         ];
     }
 

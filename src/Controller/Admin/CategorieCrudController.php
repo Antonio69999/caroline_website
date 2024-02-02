@@ -24,7 +24,6 @@ class CategorieCrudController extends AbstractCrudController
             IdField::new('id')->hideOnForm(),
             TextField::new('titre'),
             TextEditorField::new('description'),
-            AssociationField::new('article'),
             DateTimeField::new('ModifieeLe')->hideOnForm(),
             DateTimeField::new('CreeLe')->hideOnForm(),
         ];
