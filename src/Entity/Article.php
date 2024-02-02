@@ -26,10 +26,10 @@ class Article
     private ?string $image = null;
 
     #[ORM\Column(nullable: true)]
-    private ?\DateTimeImmutable $CréeLe = null;
+    private ?\DateTimeImmutable $creeLe = null;
 
     #[ORM\Column(nullable: true)]
-    private ?\DateTimeImmutable $ModifiéLe = null;
+    private ?\DateTimeImmutable $ModifieLe = null;
 
     #[ORM\ManyToMany(targetEntity: Media::class, inversedBy: 'articles')]
     private Collection $media;
@@ -83,26 +83,26 @@ class Article
         return $this;
     }
 
-    public function getCréeLe(): ?\DateTimeInterface
+    public function getcreeLe(): ?\DateTimeInterface
     {
-        return $this->CréeLe;
+        return $this->creeLe;
     }
 
-    public function setCréeLe(?\DateTimeInterface $créeLe): static
+    public function setcreeLe(?\DateTimeInterface $creeLe): static
     {
-        $this->CréeLe = $créeLe;
+        $this->creeLe = $creeLe;
 
         return $this;
     }
 
-    public function getModifierLe(): ?\DateTimeImmutable
+    public function getModifieLe(): ?\DateTimeImmutable
     {
-        return $this->ModifiéLe;
+        return $this->ModifieLe;
     }
 
-    public function setModifierLe(?\DateTimeImmutable $ModifierLe): static
+    public function setModifieLe(?\DateTimeImmutable $ModifieLe): static
     {
-        $this->ModifiéLe = $ModifierLe;
+        $this->ModifieLe = $ModifieLe;
 
         return $this;
     }

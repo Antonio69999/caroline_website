@@ -25,9 +25,16 @@ class Categorie
     #[ORM\OneToMany(mappedBy: 'categorie', targetEntity: Article::class)]
     private Collection $article;
 
+    #[ORM\Column]
+    private ?\DateTimeImmutable $creeLe = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?\DateTimeImmutable $modifieeLe = null;
+
     public function __construct()
     {
         $this->article = new ArrayCollection();
+        $this->creeLe = new \DateTimeImmutable();
     }
 
     public function getId(): ?int
@@ -85,6 +92,30 @@ class Categorie
                 $article->setCategorie(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getCreeLe(): ?\DateTimeImmutable
+    {
+        return $this->creeLe;
+    }
+
+    public function setCreeLe(\DateTimeImmutable $creeLe): static
+    {
+        $this->creeLe = new \DateTimeImmutable();
+
+        return $this;
+    }
+
+    public function getModifieeLe(): ?\DateTimeImmutable
+    {
+        return $this->modifieeLe;
+    }
+
+    public function setModifieeLe(?\DateTimeImmutable $modifierLe): static
+    {
+        $this->modifieeLe = $modifierLe;
 
         return $this;
     }
