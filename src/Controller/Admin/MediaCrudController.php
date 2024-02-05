@@ -23,7 +23,7 @@ class MediaCrudController extends AbstractCrudController
         return [
             IdField::new('id')->hideOnForm(),
             TextField::new('imageFile')->setFormType(VichImageType::class)->onlyWhenCreating(),
-            ImageField::new('imageName')->setBasePath('/uploads/images/')->onlyOnIndex(),
+            ImageField::new('imageName')->setBasePath('/uploads/attachments/')->onlyOnIndex(),
             DateTimeField::new('ModifieLe')->hideOnForm(),
             DateTimeField::new('CreeLe')->hideOnForm(),
         ];
