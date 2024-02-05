@@ -1,0 +1,50 @@
+{% block title %}Hello ArticlesController!
+{% endblock %}
+
+{% block body %}
+    <h1>Voici 3 articles</h1>
+    {% for article in articles %}
+        <h2>{{ article.categorie }}</h2>
+        <h3>{{ article.titre }}</h3>
+        <p>{{ article.description|raw }}</p>
+        {% for media in article.media %}
+            <img src="{{ asset('uploads/attachments/' ~ media.imageName) }}" alt="{{ media.imageName }}">
+        {% endfor %}
+    {% endfor %}
+
+    <script>
+        let offset = 3;
+
+        window.onscroll = function (ev) {
+            if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
+                console.log('Fetching more articles...');
+                fetch (`/load-more-articles/${offset}`).then(response => response.json()).then(articles => {
+                    console.log('Appending articles to the page');
+                    for (let article of articles) {
+                        let articleDiv = document.createElement('div');
+                        articleDiv.classList.add('article');
+
+                        let title = document.createElement('h2');
+                        title.textContent = article.titre;
+                        articleDiv.appendChild(title);
+
+                        let description = document.createElement('p');
+                        description.innerHTML = article.description;
+                        articleDiv.appendChild(description);
+
+                        for (let imageName of article.media) {
+                            let media = document.createElement('img');
+                            // Images are stored in the 'uploads/attachments/' directory
+                            media.src = `/uploads/attachments/${imageName}`;
+                            articleDiv.appendChild(media);
+                        }
+
+                        document.body.appendChild(articleDiv);
+                    }
+
+                    offset += 3;
+                });
+            }
+        }
+    </script>
+{% endblock %}
