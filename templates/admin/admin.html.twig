@@ -1,3 +1,12 @@
 {% extends '@!EasyAdmin/layout.html.twig' %}
 
-{% block main %}{% endblock %}
+{% block main %}
+    <h1>{{ welcomeMessage }}</h1>
+
+    <div class="flex-col">
+        <h2>Voici les dernières images que tu as ajouté</h2>
+        {% for image in lastThreeImages %}
+            <img src="{{ asset('uploads/attachments/' ~ image.imageName) }}" alt="{{ image.imageName }}" class="transition duration-300 ease-in-out hover:scale-110 mr-2" style="width: 150px;">
+        {% endfor %}
+    </div>
+{% endblock %}
