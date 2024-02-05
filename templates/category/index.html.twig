@@ -1,0 +1,9 @@
+{% block title %}Hello CategoryController!
+{% endblock %}
+
+{% block body %}
+    <h1>Categorie</h1>
+    {% for categorie in categories %}
+        <a href="{{ path('app_category_show', {'id': categorie.id}) }}">{{ categorie.titre }}</a>
+    {% endfor %}
+{% endblock %}

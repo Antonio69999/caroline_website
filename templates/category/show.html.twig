@@ -1,0 +1,12 @@
+{% block title %}
+    titre
+{% endblock %}
+
+{% block body %}
+    <h1>Voici 3 articles</h1>
+    {% for article in articles %}
+        {% for media in article.media %}
+            <img src="{{ asset('uploads/attachments/' ~ media.imageName) }}" alt="{{ media.imageName }}">
+        {% endfor %}
+    {% endfor %}
+{% endblock %}
