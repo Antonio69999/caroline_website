@@ -21,7 +21,7 @@ class Media
     #[ORM\Column(nullable: true)]
     private ?string $imageName = null;
 
-    #[Vich\UploadableField(mapping: 'media', fileNameProperty: 'imageName', size: 'imageSize')]
+    #[Vich\UploadableField(mapping: 'media', fileNameProperty: 'imageName')]
     private ?File $imageFile = null;
 
     #[ORM\Column]
@@ -124,5 +124,10 @@ class Media
         $this->modifieLe = $modifieLe;
 
         return $this;
+    }
+
+    public function __toString()
+    {
+        return $this->imageName;
     }
 }
