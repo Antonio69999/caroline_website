@@ -33,6 +33,9 @@ class Media
     #[ORM\ManyToMany(targetEntity: Article::class, mappedBy: 'media')]
     private Collection $articles;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $legende = null;
+
     public function __construct()
     {
         $this->articles = new ArrayCollection();
@@ -129,5 +132,17 @@ class Media
     public function __toString()
     {
         return $this->imageName;
+    }
+
+    public function getLegende(): ?string
+    {
+        return $this->legende;
+    }
+
+    public function setLegende(?string $legende): static
+    {
+        $this->legende = $legende;
+
+        return $this;
     }
 }
