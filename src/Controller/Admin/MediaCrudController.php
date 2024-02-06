@@ -9,10 +9,13 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ImageField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
-use Vich\UploaderBundle\Form\Type\VichImageType;
 
 class MediaCrudController extends AbstractCrudController
 {
+
+    public const MEDIA_BASE_PATH = 'uploads/attachments';
+    public const MEDIA_UPLOAD_DIR = 'public/asset/images';
+
     public static function getEntityFqcn(): string
     {
         return Media::class;
@@ -22,8 +25,11 @@ class MediaCrudController extends AbstractCrudController
     {
         return [
             IdField::new('id')->hideOnForm(),
-            TextField::new('imageFile')->setFormType(VichImageType::class)->onlyWhenCreating(),
-            ImageField::new('imageName')->setBasePath('/uploads/attachments/')->onlyOnIndex(),
+            ImageField::new('imageName')->hideOnForm()
+                ->setBasePath(self::MEDIA_BASE_PATH)
+                ->setUploadDir(self::MEDIA_UPLOAD_DIR)
+                ->setUploadedFileNamePattern('[randomhash].[extension]')
+                ->setRequired(false),
             TextField::new('legende'),
             DateTimeField::new('ModifieLe')->hideOnForm(),
             DateTimeField::new('CreeLe')->hideOnForm(),
@@ -32,12 +38,12 @@ class MediaCrudController extends AbstractCrudController
 
     public function updateEntity(EntityManagerInterface $em, $entityInstance): void
     {
-        // dd($entityInstance);
-        if (!$entityInstance instanceof Media) return;
+        if (!$entityInstance instanceof Media) {
+            throw new \Exception('Entity is not an instance of Media');
+        }
 
         $entityInstance->setModifieLe(new \DateTimeImmutable);
-        // dd($entityInstance);
-        parent::updateEntity($em, $entityInstance); //appel de la méthode parent AbstractController
+        parent::updateEntity($em, $entityInstance);
     }
 
     public function persistEntity(EntityManagerInterface $em, $entityInstance): void

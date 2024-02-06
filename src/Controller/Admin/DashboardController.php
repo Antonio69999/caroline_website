@@ -24,10 +24,10 @@ class DashboardController extends AbstractDashboardController
     #[Route('/mon_petit_site', name: 'admin')]
     public function index(): Response
     {
-        $mediaRepository = $this->entityManager->getRepository(Media::class);
+        $articleRepository = $this->entityManager->getRepository(Article::class);
 
         // Get the last three uploaded images
-        $lastThreeImages = $mediaRepository->findBy([], ['id' => 'DESC'], 3);
+        $lastThreeImages = $articleRepository->findBy([], ['id' => 'DESC'], 3);
 
         // Generate a random welcome message
         $welcomeMessages = ["Coucou Caro!", "YOOOOOOO!", "Salutation!"];
