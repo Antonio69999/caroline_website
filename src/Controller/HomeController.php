@@ -54,9 +54,8 @@ class HomeController extends AbstractController
     #[Route('/article/{id}', name: 'app_article_show')]
     public function showArticle(int $id, ArticleRepository $ar, CategorieRepository $cr): Response
     {
-        $articles = $ar->find($id);
+        $articles = $ar->findBy(['id' => $id]);
         $categories = $cr->findAll();
-
 
         return $this->render('articles/index.html.twig', [
             'articles' => $articles,
