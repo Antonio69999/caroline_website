@@ -10,17 +10,17 @@
 
 {% block body %}
     <div class="grid grid-cols-1  md:grid-cols-4 lg:grid-cols-10 flex flex-wrap justify-center content">
-          {% for article in articles %}
-          <a href="{{path('app_article_show',{"id": article.id})}}">
-            {% if article.media|length > 0 %}
-                {% set randomImage = random(article.media) %}
+        {% for article in articles %}
+            <a href="{{path('app_article_show',{"id": article.id})}}">
+                {% if article.media|length > 0 %}
+                    {% set randomImage = random(article.media) %}
                     <div class="link text-center">
                         <img class="h-48 object-cover" src="{{ asset('uploads/attachments/' ~ randomImage.imageName) }}" alt="{{ randomImage.imageName }}">
                         <p class="text-gray-500 text-sm">
-                            {{ article.description|raw }}
+                            {{ article.titre }}
                         </p>
                     </div>
-            {% endif %}
+                {% endif %}
             </a>
         {% endfor %}
     </div>

@@ -23,12 +23,12 @@ class CategoryController extends AbstractController
     #[Route('/category/{id}', name: 'app_category_show')]
     public function show(int $id, CategorieRepository $cr, ArticleRepository $ar): Response
     {
-        $category = $cr->findAll($id);
+        $categories = $cr->findAll($id);
         $articles = $ar->findBy(['categorie' => $id]);
 
 
         return $this->render('category/show.html.twig', [
-            'category' => $category,
+            'categories' => $categories,
             'articles' => $articles,
         ]);
     }
@@ -38,7 +38,7 @@ class CategoryController extends AbstractController
     {
         $article = $ar->find($id);
 
-        return $this->render('article/index.html.twig', [
+        return $this->render('articles/index.html.twig', [
             'article' => $article,
         ]);
     }
