@@ -7,45 +7,24 @@
 {% endblock %}
 
 {% block body %}
-    <div class="fotorama" data-width="100%"  data-width="100%" data-ratio="800/600" data-autoplay="true" data-allowfullscreen="true"  data-fit="cover" data-loop="true">
-        <img src="{{ asset('asset/images/imgtest.jpeg') }}" alt="Description de l'image">
-        <img src="{{ asset('asset/images/imgtest2.jpeg') }}" alt="Description de l'image">  
-    </div>
-    <a href="#subtitle">
-        <div class="animate-bounce bg-white dark:bg-slate-800 p-2 w-10 h-10 ring-1 ring-slate-900/5 dark:ring-slate-200/20 shadow-lg rounded-full flex items-center justify-center">
-            <svg class="w-6 h-6 text-violet-500" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" stroke="currentColor">
-            <path d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
-            </svg>
-        </div>
-    </a>
+    
 <div class="container mx-auto">
         <h2 class="mb-10" id="subtitle">hello world</h2>
+    
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {% for article in articles %}
             <div>
-                <p>
-         Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam imperdiet nunc in purus mollis cursus. Vivamus varius, erat cursus varius dignissim, nisi justo interdum erat, eget lobortis metus tellus nec sapien. Vivamus ullamcorper mauris sit amet nisl venenatis molestie. Pellentesque libero tortor, rutrum id purus sit amet, condimentum tincidunt urna. Nam egestas ante sit amet purus luctus vulputate. Donec vulputate turpis sit amet nulla tincidunt imperdiet. In sodales dolor nunc, at blandit magna tristique ac. Integer malesuada dolor ac augue imperdiet, eget semper lacus dapibus. Cras euismod consequat dui.
-        Sed ut suscipit augue, nec commodo lacus. Integer molestie ligula leo, id volutpat ex varius at. Aliquam erat volutpat. Suspendisse rutrum sollicitudin ligula. Duis consequat purus id orci fringilla, at ornare lorem venenatis. Morbi urna risus, bibendum in hendrerit non, convallis non tortor. Suspendisse non libero lacinia, tempor lectus a, luctus felis. Donec vitae arcu congue magna tincidunt aliquam in eu enim.
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam imperdiet nunc in purus mollis cursus. Vivamus varius, erat cursus varius dignissim, nisi justo interdum erat, eget lobortis metus tellus nec sapien. Vivamus ullamcorper mauris sit amet nisl venenatis molestie. Pellentesque libero tortor, rutrum id purus sit amet, condimentum tincidunt urna. Nam egestas ante sit amet purus luctus vulputate. Donec vulputate turpis sit amet nulla tincidunt imperdiet. In sodales dolor nunc, at blandit magna tristique ac. Integer malesuada dolor ac augue imperdiet, eget semper lacus dapibus. Cras euismod consequat dui.
-        Sed ut suscipit augue, nec commodo lacus. Integer molestie ligula leo, id volutpat ex varius at. Aliquam erat volutpat. Suspendisse rutrum sollicitudin ligula. Duis consequat purus id orci fringilla, at ornare lorem venenatis. Morbi urna risus, bibendum in hendrerit non, convallis non tortor. Suspendisse non libero lacinia, tempor lectus a, luctus felis. Donec vitae arcu congue magna tincidunt aliquam in eu enim.  
-                </p>   
+            <h3>{{ article.titre }}</h3>
+            <p>{{ article.description|raw }}</p>
             </div>
             <div>
-                <img src="{{ asset('asset/images/imgtest.jpeg') }}" alt="Description de l'image">
+                {% for media in article.media %}
+                    <img src="{{ asset('uploads/attachments/' ~ media.imageName) }}" alt="{{ media.imageName }}" />
+                {% endfor %}
             </div>
+            {% endfor %}
     </div>
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-10">
-            <div>
-                 <img src="{{ asset('asset/images/imgtest.jpeg') }}" alt="Description de l'image">   
-            </div>
-            <div>
-                <p>
-         Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam imperdiet nunc in purus mollis cursus. Vivamus varius, erat cursus varius dignissim, nisi justo interdum erat, eget lobortis metus tellus nec sapien. Vivamus ullamcorper mauris sit amet nisl venenatis molestie. Pellentesque libero tortor, rutrum id purus sit amet, condimentum tincidunt urna. Nam egestas ante sit amet purus luctus vulputate. Donec vulputate turpis sit amet nulla tincidunt imperdiet. In sodales dolor nunc, at blandit magna tristique ac. Integer malesuada dolor ac augue imperdiet, eget semper lacus dapibus. Cras euismod consequat dui.
-        Sed ut suscipit augue, nec commodo lacus. Integer molestie ligula leo, id volutpat ex varius at. Aliquam erat volutpat. Suspendisse rutrum sollicitudin ligula. Duis consequat purus id orci fringilla, at ornare lorem venenatis. Morbi urna risus, bibendum in hendrerit non, convallis non tortor. Suspendisse non libero lacinia, tempor lectus a, luctus felis. Donec vitae arcu congue magna tincidunt aliquam in eu enim.
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam imperdiet nunc in purus mollis cursus. Vivamus varius, erat cursus varius dignissim, nisi justo interdum erat, eget lobortis metus tellus nec sapien. Vivamus ullamcorper mauris sit amet nisl venenatis molestie. Pellentesque libero tortor, rutrum id purus sit amet, condimentum tincidunt urna. Nam egestas ante sit amet purus luctus vulputate. Donec vulputate turpis sit amet nulla tincidunt imperdiet. In sodales dolor nunc, at blandit magna tristique ac. Integer malesuada dolor ac augue imperdiet, eget semper lacus dapibus. Cras euismod consequat dui.
-        Sed ut suscipit augue, nec commodo lacus. Integer molestie ligula leo, id volutpat ex varius at. Aliquam erat volutpat. Suspendisse rutrum sollicitudin ligula. Duis consequat purus id orci fringilla, at ornare lorem venenatis. Morbi urna risus, bibendum in hendrerit non, convallis non tortor. Suspendisse non libero lacinia, tempor lectus a, luctus felis. Donec vitae arcu congue magna tincidunt aliquam in eu enim.  
-                </p>
-            </div>
-    </div>
+   
 </div>
      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.1/jquery.min.js
 "></script>
