@@ -4,11 +4,14 @@ namespace App\Entity;
 
 use App\Repository\ArticleRepository;
 use Doctrine\Common\Collections\ArrayCollection;
+use Vich\UploaderBundle\Mapping\Annotation as Vich;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
+use Symfony\Component\HttpFoundation\File\File;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ArticleRepository::class)]
+#[Vich\Uploadable]
 class Article
 {
     #[ORM\Id]
@@ -22,8 +25,11 @@ class Article
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $description = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $image = null;
+    #[ORM\Column(nullable: true)]
+    private ?string $imageName = null;
+
+    #[Vich\UploadableField(mapping: 'article', fileNameProperty: 'imageName')]
+    private ?File $imageFile = null;
 
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $creeLe = null;
@@ -31,7 +37,8 @@ class Article
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $ModifieLe = null;
 
-    #[ORM\ManyToMany(targetEntity: Media::class, inversedBy: 'articles')]
+    #[ORM\ManyToMany(targetEntity: Media::class, inversedBy: 'articles', cascade: ["persist"])]
+    #[ORM\JoinTable(name: "article_media")]
     private Collection $media;
 
     #[ORM\ManyToOne(inversedBy: 'article')]
@@ -71,16 +78,28 @@ class Article
         return $this;
     }
 
-    public function getImage(): ?string
+    public function setImageFile(?File $imageFile = null): void
     {
-        return $this->image;
+        $this->imageFile = $imageFile;
+
+        if (null !== $imageFile) {
+            $this->ModifieLe = new \DateTimeImmutable();
+        }
     }
 
-    public function setImage(?string $image): static
+    public function getImageFile(): ?File
     {
-        $this->image = $image;
+        return $this->imageFile;
+    }
 
-        return $this;
+    public function setImageName(?string $imageName): void
+    {
+        $this->imageName = $imageName;
+    }
+
+    public function getImageName(): ?string
+    {
+        return $this->imageName;
     }
 
     public function getcreeLe(): ?\DateTimeInterface
@@ -107,6 +126,13 @@ class Article
         return $this;
     }
 
+    public function setMedia(?Collection $media): self
+    {
+        $this->media = $media;
+
+        return $this;
+    }
+
     /**
      * @return Collection<int, Media>
      */
@@ -115,18 +141,21 @@ class Article
         return $this->media;
     }
 
-    public function addMedium(Media $medium): static
+    public function addMedia(Media $media): static
     {
-        if (!$this->media->contains($medium)) {
-            $this->media->add($medium);
+        if (!$this->media->contains($media)) {
+            $this->media->add($media);
+            $media->setArticle($this);
         }
 
         return $this;
     }
 
-    public function removeMedium(Media $medium): static
+    public function removeMedia(Media $media): static
     {
-        $this->media->removeElement($medium);
+        if ($this->media->removeElement($media)) {
+            $media->setArticle(null);
+        }
 
         return $this;
     }

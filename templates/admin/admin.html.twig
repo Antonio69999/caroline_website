@@ -1,12 +1,15 @@
 {% extends '@!EasyAdmin/layout.html.twig' %}
 
 {% block main %}
-    <h1>{{ welcomeMessage }}</h1>
-
+    <div class="max-w-3xl mx-auto text-center mt-16">
+        <h1 class="text-4xl font-bold text-gray-900 leading-tight mb-2 pb-4 relative">{{ welcomeMessage }}</h1>
+    </div>
     <div class="flex-col">
         <h2>Voici les dernières images que tu as ajouté</h2>
-        {% for image in lastThreeImages %}
-            <img src="{{ asset('uploads/attachments/' ~ image.imageName) }}" alt="{{ image.imageName }}" class="transition duration-300 ease-in-out hover:scale-110 mr-2" style="width: 150px;">
+        {% for image in lastThreeArticles %}
+            {% for media in image.media %}
+                <img src="{{ asset('uploads/attachments/' ~ media.imageName) }}" alt="{{ media.imageName }}" class="transition duration-300 ease-in-out hover:scale-110 mr-2" style="width: 150px;">
+            {% endfor %}
         {% endfor %}
     </div>
 {% endblock %}
