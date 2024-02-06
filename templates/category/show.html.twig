@@ -1,12 +1,28 @@
+{% extends 'base.html.twig' %}
+
 {% block title %}
     titre
 {% endblock %}
 
+{% block stylesheets %}
+    <link rel='stylesheet' src={{ asset ('styles/articles.css') }}>
+{% endblock %}
+
 {% block body %}
-    <h1>Voici 3 articles</h1>
-    {% for article in articles %}
-        {% for media in article.media %}
-            <img src="{{ asset('uploads/attachments/' ~ media.imageName) }}" alt="{{ media.imageName }}">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-10 md:px-20">
+        {% for article in articles %}
+            {% if article.media|length > 0 %}
+                {% set randomImage = random(article.media) %}
+                <div class="bg-white rounded-xl shadow-md overflow-hidden">
+                    <div class="relative">
+                        <img class="h-48 object-cover" src="{{ asset('uploads/attachments/' ~ randomImage.imageName) }}" alt="{{ randomImage.imageName }}">
+                    </div>
+                    <div class="p-4">
+                        <div class="text-lg font-medium text-gray-800 mb-2">{{ article.titre }}</div>
+                        <p class="text-gray-500 text-sm">{{ article.description|raw }}</p>
+                    </div>
+                </div>
+            {% endif %}
         {% endfor %}
-    {% endfor %}
+    </div>
 {% endblock %}

@@ -32,4 +32,14 @@ class CategoryController extends AbstractController
             'articles' => $articles,
         ]);
     }
+
+    #[Route('/article/{id}', name: 'app_article_show')]
+    public function showArticle(int $id, ArticleRepository $ar): Response
+    {
+        $article = $ar->find($id);
+
+        return $this->render('article/show.html.twig', [
+            'article' => $article,
+        ]);
+    }
 }
