@@ -3,8 +3,6 @@
 namespace App\Entity;
 
 use App\Repository\MediaRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
 use Symfony\Component\HttpFoundation\File\File;
@@ -18,27 +16,25 @@ class Media
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(nullable: true)]
-    private ?string $imageName = null;
-
     #[Vich\UploadableField(mapping: 'media', fileNameProperty: 'imageName')]
     private ?File $imageFile = null;
 
-    #[ORM\Column]
-    private ?\DateTimeImmutable $creeLe = null;
+    #[ORM\Column(type: "string", length: 255, nullable: true)]
+    private ?string $imageName = null;
+
+    #[ORM\ManyToOne(targetEntity: Article::class)]
+    #[ORM\JoinColumn(name: "article_id", referencedColumnName: "id")]
+    private ?Article $article = null;
+
+    #[ORM\Column(type: "datetime")]
+    private \DateTimeInterface $creeLe;
 
     #[ORM\Column]
     private ?\DateTimeImmutable $modifieLe = null;
 
-    #[ORM\ManyToMany(targetEntity: Article::class, mappedBy: 'media')]
-    private Collection $articles;
-
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $legende = null;
-
     public function __construct()
     {
-        $this->articles = new ArrayCollection();
+        $this->creeLe = new \DateTime();
     }
 
     public function getId(): ?int
@@ -46,67 +42,44 @@ class Media
         return $this->id;
     }
 
-    public function getCreeLe(): ?\DateTimeImmutable
+    public function getImageFile(): ?File
     {
-        return $this->creeLe;
+        return $this->imageFile;
     }
 
-    public function setCreeLe(\DateTimeImmutable $créeLe): static
-    {
-        $this->creeLe = $créeLe;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Article>
-     */
-    public function getArticles(): Collection
-    {
-        return $this->articles;
-    }
-
-    public function addArticle(Article $article): static
-    {
-        if (!$this->articles->contains($article)) {
-            $this->articles->add($article);
-            $article->addMedium($this);
-        }
-
-        return $this;
-    }
-
-    public function removeArticle(Article $article): static
-    {
-        if ($this->articles->removeElement($article)) {
-            $article->removeMedium($this);
-        }
-
-        return $this;
-    }
-
-    public function setImageFile(?File $imageFile = null): void
+    public function setImageFile(?File $imageFile = null): static
     {
         $this->imageFile = $imageFile;
 
         if (null !== $imageFile) {
             $this->modifieLe = new \DateTimeImmutable();
         }
-    }
 
-    public function getImageFile(): ?File
-    {
-        return $this->imageFile;
-    }
-
-    public function setImageName(?string $imageName): void
-    {
-        $this->imageName = $imageName;
+        return $this;
     }
 
     public function getImageName(): ?string
     {
         return $this->imageName;
+    }
+
+    public function setImageName(?string $imageName): self
+    {
+        $this->imageName = $imageName;
+
+        return $this;
+    }
+
+    public function getCreeLe(): ?\DateTimeInterface
+    {
+        return $this->creeLe;
+    }
+
+    public function setCreeLe(\DateTimeInterface $creeLe): self
+    {
+        $this->creeLe = $creeLe;
+
+        return $this;
     }
 
     /**
@@ -129,20 +102,20 @@ class Media
         return $this;
     }
 
-    public function __toString()
+    public function getArticle(): ?Article
     {
-        return $this->imageName;
+        return $this->article;
     }
 
-    public function getLegende(): ?string
+    public function setArticle(?Article $article): static
     {
-        return $this->legende;
-    }
-
-    public function setLegende(?string $legende): static
-    {
-        $this->legende = $legende;
+        $this->article = $article;
 
         return $this;
+    }
+
+    public function __toString(): string
+    {
+        return (string) ($this->id ?? 'no id');
     }
 }

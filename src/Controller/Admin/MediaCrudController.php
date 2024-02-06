@@ -9,7 +9,6 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ImageField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
-use Vich\UploaderBundle\Form\Type\VichImageType;
 
 class MediaCrudController extends AbstractCrudController
 {
@@ -22,9 +21,6 @@ class MediaCrudController extends AbstractCrudController
     {
         return [
             IdField::new('id')->hideOnForm(),
-            TextField::new('imageFile')->setFormType(VichImageType::class)->onlyWhenCreating(),
-            ImageField::new('imageName')->setBasePath('/uploads/attachments/')->onlyOnIndex(),
-            TextField::new('legende'),
             DateTimeField::new('ModifieLe')->hideOnForm(),
             DateTimeField::new('CreeLe')->hideOnForm(),
         ];
