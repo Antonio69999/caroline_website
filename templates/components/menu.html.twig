@@ -1,9 +1,13 @@
 <nav class="menu">
-        <ul>
+    <ul>
         <div class="logo"></div>
-        <li><h1>Caroline MARCELLIER</h1></li>
-        {% for category in categories %}
-            <li><a href="">{{ category.titre }}</a></li>
-         {% endfor %}
-        </ul>
+        <li>
+            <h1>Caroline MARCELLIER</h1>
+        </li>
+        {% for category in category %}
+            <li>
+                <a href={{ path('app_category_show', {'id': category.id} ) }}>{{ category.titre }}</a>
+            </li>
+        {% endfor %}
+    </ul>
 </nav>
