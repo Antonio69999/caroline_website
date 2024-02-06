@@ -1,15 +1,15 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello imageController!
+{% block title %}Gallerie
 {% endblock %}
 
 {% block body %}
-    {% for image in articles %}
-        <h2>{{ image.categorie }}</h2>
-        <h3>{{ image.titre }}</h3>
-        <p>{{ image.description|raw }}</p>
-        {% for media in image.media %}
-            <img src="{{ asset('uploads/attachments/' ~ media.imageName) }}" alt="{{ media.imageName }}" class="transition duration-300 ease-in-out hover:scale-110 mr-2" style="width: 150px;">
+    {% for article in articles %}
+        <h2>{{ article.categorie }}</h2>
+        <h3>{{ article.titre }}</h3>
+        <p>{{ article.description|raw }}</p>
+        {% for image in article.media %}
+            <img src="{{ asset('uploads/attachments/' ~ image.imageName) }}" alt="{{ image.imageName }}" class="transition duration-300 ease-in-out hover:scale-110 mr-2" style="width: 150px;">
         {% endfor %}
     {% endfor %}
 {% endblock %}
