@@ -3,7 +3,7 @@
         <div class="logo"></div>
         <li><h1>Caroline MARCELLIER</h1></li>
         {% for category in categories %}
-            <li><a href="">{{ category.titre }}</a></li>
+            <li><a href="{{ path('app_category_show', {'id': categorie.id}) }}">{{ category.titre }}</a></li>
          {% endfor %}
         </ul>
 </nav>
