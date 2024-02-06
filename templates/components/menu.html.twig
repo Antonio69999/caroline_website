@@ -4,9 +4,9 @@
         <li>
             <h1>Caroline MARCELLIER</h1>
         </li>
-        {% for category in category %}
+        {% for item in categories %}
             <li>
-                <a href={{ path('app_category_show', {'id': category.id} ) }}>{{ category.titre }}</a>
+                <a href={{ path('app_category_show', {'id': item.id} ) }}>{{ item.titre }}</a>
             </li>
         {% endfor %}
     </ul>
