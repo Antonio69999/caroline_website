@@ -32,6 +32,9 @@ class Media
     #[ORM\Column]
     private ?\DateTimeImmutable $modifieLe = null;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $legende = null;
+
     public function __construct()
     {
         $this->creeLe = new \DateTime();
@@ -50,10 +53,7 @@ class Media
     public function setImageFile(?File $imageFile = null): static
     {
         $this->imageFile = $imageFile;
-
-        if (null !== $imageFile) {
-            $this->modifieLe = new \DateTimeImmutable();
-        }
+        $this->modifieLe = new \DateTimeImmutable();
 
         return $this;
     }
@@ -90,12 +90,7 @@ class Media
         return $this->modifieLe;
     }
 
-    /**
-     * Set the value of modifieLe
-     *
-     * @return  self
-     */
-    public function setModifieLe($modifieLe)
+    public function setModifieLe(\DateTimeInterface $modifieLe): self
     {
         $this->modifieLe = $modifieLe;
 
@@ -116,6 +111,18 @@ class Media
 
     public function __toString(): string
     {
-        return (string) ($this->id ?? 'no id');
+        return (string) ($this->imageName ?? 'no name');
+    }
+
+    public function getLegende(): ?string
+    {
+        return $this->legende;
+    }
+
+    public function setLegende(?string $legende): static
+    {
+        $this->legende = $legende;
+
+        return $this;
     }
 }
