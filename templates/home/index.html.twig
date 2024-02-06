@@ -11,22 +11,10 @@
         <h2 class="mb-10" id="subtitle">hello world</h2>
     
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {% for article in articles %}
-            <div>
-            <h3>{{ article.titre }}</h3>
-            <p>{{ article.description|raw }}</p>
-            </div>
-            <div>
-                {% for media in article.media %}
-                    <img src="{{ asset('uploads/attachments/' ~ media.imageName) }}" alt="{{ media.imageName }}" />
-                {% endfor %}
-            </div>
-            {% endfor %}
+       
     </div>
    
 </div>
-     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.1/jquery.min.js
-"></script>
-    <script src="{{ asset('asset/js/fotorama.js') }}"></script>
+     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
     <script src="{{ asset('asset/js/scroll.js') }}"></script>
 {% endblock %}

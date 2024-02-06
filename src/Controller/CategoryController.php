@@ -38,7 +38,7 @@ class CategoryController extends AbstractController
     {
         $article = $ar->find($id);
 
-        return $this->render('article/show.html.twig', [
+        return $this->render('article/index.html.twig', [
             'article' => $article,
         ]);
     }

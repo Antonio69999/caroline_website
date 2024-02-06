@@ -9,20 +9,19 @@
 {% endblock %}
 
 {% block body %}
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-10 md:px-20">
-        {% for article in articles %}
+    <div class="grid grid-cols-1  md:grid-cols-4 lg:grid-cols-10 flex flex-wrap justify-center content">
+          {% for article in articles %}
+          <a href="{{path('app_article_show',{"id": article.id})}}">
             {% if article.media|length > 0 %}
                 {% set randomImage = random(article.media) %}
-                <div class="bg-white rounded-xl shadow-md overflow-hidden">
-                    <div class="relative">
+                    <div class="link text-center">
                         <img class="h-48 object-cover" src="{{ asset('uploads/attachments/' ~ randomImage.imageName) }}" alt="{{ randomImage.imageName }}">
+                        <p class="text-gray-500 text-sm">
+                            {{ article.description|raw }}
+                        </p>
                     </div>
-                    <div class="p-4">
-                        <div class="text-lg font-medium text-gray-800 mb-2">{{ article.titre }}</div>
-                        <p class="text-gray-500 text-sm">{{ article.description|raw }}</p>
-                    </div>
-                </div>
             {% endif %}
+            </a>
         {% endfor %}
     </div>
 {% endblock %}

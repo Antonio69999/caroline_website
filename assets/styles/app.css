@@ -48,10 +48,6 @@ h2 {
   font-size:30px;
   text-align:center;
 }
-#mobile-menu-2{
-  background:white;
-  z-index:200;
-}
 #indicators-carousel{
   position:absolute;
   top:300px;
@@ -60,11 +56,19 @@ h2 {
   position:relative;
   top:300px;
 }
-img{
-  width:500px;
-  height:500px;
-  object-fit:cover;
+.content{
+  position:relative;
+  top:50px;
+  width:calc(100vw - 250px);
+  left:225px;
 }
+.link{
+  width:200px;
+  height:250px;
+  margin:10px;
+}
+
+
 
 
 
