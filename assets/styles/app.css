@@ -18,13 +18,28 @@ header{
   background:white;
   border-bottom:1px solid lightgrey;
   z-index:100;
-}
-h1 {
+}.logo{
   position:relative;
-  top:50px;
+  width:200px;
+  height:200px;
+  background:url(/asset/images/logo.png)no-repeat;
+  background-size:contain;
+}
+.menu{
+  position:fixed;
+  height:100vh;
+  width:200px;
+  top:0;
+  left:0;
   font-family: "Krylon";
-  font-size:50px;
-  text-align:center;
+  background:white;
+  z-index:100;
+}
+ul li{
+  width:200px;
+  height:40px;
+  padding-left:10px;
+  box-sizing:border-box;
 }
 h2 {
   position:relative;
@@ -41,32 +56,14 @@ h2 {
   position:absolute;
   top:300px;
 }
-.fotorama{
-  position:relative;
-  width:100%;
-  height:350px;
-  top:200px;
-}
 .container{
   position:relative;
   top:300px;
 }
-.animate-bounce{
-  position:relative;
-  left:50%;
-  transform:translateX(-50%);
-  top:200px;
-  animation: bounce 1s infinite;
-}
-@keyframes bounce {
-  0%, 100% {
-    transform: translateY(-25%);
-    animation-timing-function: cubic-bezier(0.8, 0, 1, 1);
-  }
-  50% {
-    transform: translateY(0);
-    animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
-  }
+img{
+  width:500px;
+  height:500px;
+  object-fit:cover;
 }
 
 

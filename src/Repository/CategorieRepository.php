@@ -45,4 +45,13 @@ class CategorieRepository extends ServiceEntityRepository
 //            ->getOneOrNullResult()
 //        ;
 //    }
+public function findArticlesByCategorie(Categorie $categorie)
+{
+    return $this->createQueryBuilder('a')
+        ->join('a.categorieId', 'c')
+        ->where('c = :categorie')
+        ->setParameter('categorie', $categorie)
+        ->getQuery()
+        ->getResult();
+}
 }
