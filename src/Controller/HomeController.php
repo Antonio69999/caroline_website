@@ -28,25 +28,15 @@ class HomeController extends AbstractController
         ]);
     }
 
-    #[Route('/category', name: 'app_category')]
-    public function category(CategorieRepository $cr): Response
-    {
-        $categories = $cr->findAll();
-
-        return $this->render('category/index.html.twig', [
-            'categories' => $categories,
-        ]);
-    }
-
     #[Route('/category/{id}', name: 'app_category_show')]
     public function show(int $id, CategorieRepository $cr, ArticleRepository $ar): Response
     {
-        $category = $cr->findAll($id);
+        $categories = $cr->findAll($id);
         $articles = $ar->findBy(['categorie' => $id]);
 
 
         return $this->render('category/show.html.twig', [
-            'category' => $category,
+            'categories' => $categories,
             'articles' => $articles,
         ]);
     }
