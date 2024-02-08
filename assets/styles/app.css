@@ -8,70 +8,68 @@
     url("../fonts/Krylon-Regular.woff") format("woff"),
     url("../fonts/Krylon-Regular.woff2") format("woff2");
 }
-body{
-  overflow-x:hidden;
+body {
+  overflow-x: hidden;
 }
-header{
-  position:fixed;
-  width:100vw;
-  height:200px;
-  background:white;
-  border-bottom:1px solid lightgrey;
-  z-index:100;
-}.logo{
-  position:relative;
-  width:200px;
-  height:200px;
-  background:url(/asset/images/logo.png)no-repeat;
-  background-size:contain;
+header {
+  position: fixed;
+  width: 100vw;
+  height: 200px;
+  background: white;
+  border-bottom: 1px solid lightgrey;
+  z-index: 100;
 }
-.menu{
-  position:fixed;
-  height:100vh;
-  width:200px;
-  top:0;
-  left:0;
+.logo {
+  position: relative;
+  width: 200px;
+  height: 200px;
+  background: url(/asset/images/logo.png) no-repeat;
+  background-size: contain;
+}
+.menu {
+  position: fixed;
+  height: 100vh;
+  width: 200px;
+  top: 0;
+  left: 0;
   font-family: "Krylon";
-  background:white;
-  z-index:100;
+  background: white;
+  z-index: 100;
 }
-ul li{
-  width:200px;
-  height:40px;
-  padding-left:10px;
-  box-sizing:border-box;
+ul li {
+  width: 200px;
+  height: 40px;
+  padding-left: 10px;
+  box-sizing: border-box;
 }
 h2 {
-  position:relative;
-  top:0px;
+  position: relative;
+  top: 0px;
   font-family: "Krylon";
-  font-size:30px;
-  text-align:center;
+  font-size: 30px;
+  text-align: center;
 }
-#indicators-carousel{
-  position:absolute;
-  top:300px;
+#indicators-carousel {
+  position: absolute;
+  top: 300px;
 }
-.container{
-  position:relative;
-  top:300px;
+.container {
+  position: relative;
+  top: 300px;
 }
-.content{
-  position:relative;
-  top:50px;
-  width:calc(100vw - 250px);
-  left:225px;
+.content {
+  position: relative;
+  top: 50px;
+  width: calc(100vw - 250px);
+  left: 225px;
 }
-.link{
-  width:200px;
-  height:250px;
-  margin:10px;
+.link {
+  width: 200px;
+  height: 250px;
+  margin: 10px;
 }
 
-
-
-
-
-
-
-
+/* contact form */
+.form-container {
+  padding-left: 200px;
+}
