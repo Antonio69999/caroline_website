@@ -1,0 +1,30 @@
+.content{
+    position:relative;
+    width:calc(100% - 300px);
+    left:250px;
+    margin-top:50px;
+    display:flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+.subtitle{
+    font-size:30px;
+  }
+.description{
+    margin-top:50px;
+}
+.description div{
+    position:relative;
+    width:calc(100% - 300px);
+    left:250px;
+}
+@media(max-width:800px) {
+    .content{
+        left:50%;
+        transform:translateX(-50%);
+    }
+    .description div{
+        width:80%;
+        left:10%;
+    }
+}
