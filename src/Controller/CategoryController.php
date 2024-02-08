@@ -38,6 +38,10 @@ class CategoryController extends AbstractController
     {
         $article = $ar->findBy(['id' => $id]);
 
+        if (!$article) {
+            throw $this->createNotFoundException('Article not found');
+        }
+
         return $this->render('articles/index.html.twig', [
             'article' => $article,
         ]);
