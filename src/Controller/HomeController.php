@@ -41,13 +41,19 @@ class HomeController extends AbstractController
     #[Route('/category/{id}', name: 'app_category_show')]
     public function show(int $id, CategorieRepository $cr, ArticleRepository $ar): Response
     {
-        $categories = $cr->find($id);
+        $category = $cr->find($id);
+    
+        if (!$category) {
+            throw $this->createNotFoundException('The category does not exist');
+        }
+    
         $articles = $ar->findBy(['categorie' => $id]);
-
-
+        $categories = $cr->findAll();
+    
         return $this->render('category/show.html.twig', [
-            'categories' => $categories,
+            'category' => $category,
             'articles' => $articles,
+            'categories' => $categories,
         ]);
     }
 

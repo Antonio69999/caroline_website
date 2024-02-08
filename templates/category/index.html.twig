@@ -1,15 +1,15 @@
 {% extends 'base.html.twig' %}
 
 {% block title %}
-     {% for category in categories %}
-          <title>{{ category.titre }}</title>
-        {% endfor %}
+    {% for category in categories %}
+        <title>{{ category.titre }}</title>
+    {% endfor %}
 {% endblock %}
 
 {% block meta %}
     {% for article in articles %}
-    <meta name="description" content="{{ article.titre }}" />
-     {% endfor %}
+        <meta name="description" content="{{ article.titre }}"/>
+    {% endfor %}
 {% endblock %}
 
 {% block stylesheets %}
@@ -20,29 +20,27 @@
     <div class="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-1 p-1 md:px-20">
         {% for article in articles %}
             <div class="bg-white rounded-xl shadow-md overflow-hidden">
-                      
-                        <div class="gallery">
-                        {% for media in article.media %}
-                            <a href="{{ asset('uploads/attachments/' ~ media.imageName) }}" title="Caption for gallery item 1"> 
+
+                <div class="gallery">
+                    {% for media in article.media %}
+                        <a href="{{ asset('uploads/attachments/' ~ media.imageName) }}" title="Caption for gallery item 1">
                             <img class="h-48 object-cover" src="{{ asset('uploads/attachments/' ~ media.imageName) }}" alt="{{ media.imageName }}">
-                            </a>
-                             {% endfor %}
-                        </div>
-                        
-                    <div class="p-4">
-                        <div class="text-lg font-medium text-gray-800 mb-2">{{ article.titre }}</div>
-                        <p class="text-gray-500 text-sm">{{ article.description|raw }}</p>
-                    </div>
-        {% endfor %}
-    </div>
-     <script src="https://code.jquery.com/jquery-3.7.1.min.js"
-			  integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
-			  crossorigin="anonymous"></script>
-    <script src="{{ asset('asset/js/simple-lightbox.min.js') }}"></script>
-    <script>
-    (function() {
-        var $gallery = new SimpleLightbox('.gallery a', {});
-    })();
-    </script>
-      
-{% endblock %}
+                        </a>
+                    {% endfor %}
+                </div>
+
+                <div class="p-4">
+                    <div class="text-lg font-medium text-gray-800 mb-2">{{ article.titre }}</div>
+                    <p class="text-gray-500 text-sm">{{ article.description|raw }}</p>
+                </div>
+            {% endfor %}
+        </div>
+        <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+        <script src="{{ asset('asset/js/simple-lightbox.min.js') }}"></script>
+        <script>
+            (function () {
+                var $gallery = new SimpleLightbox('.gallery a', {});
+            })();
+        </script>
+
+    {% endblock %}
