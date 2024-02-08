@@ -1,7 +1,15 @@
 {% extends 'base.html.twig' %}
 
 {% block title %}
- {# page de sauvegarde de la galerie #}
+     {% for category in categories %}
+          <title>{{ category.titre }}</title>
+        {% endfor %}
+{% endblock %}
+
+{% block meta %}
+    {% for article in articles %}
+    <meta name="description" content="{{ article.titre }}" />
+     {% endfor %}
 {% endblock %}
 
 {% block stylesheets %}

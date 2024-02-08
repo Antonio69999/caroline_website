@@ -36,7 +36,11 @@ class CategoryController extends AbstractController
     #[Route('/article/{id}', name: 'app_article_show')]
     public function showArticle(int $id, ArticleRepository $ar): Response
     {
-        $article = $ar->find($id);
+        $article = $ar->findBy(['id' => $id]);
+
+        if (!$article) {
+            throw $this->createNotFoundException('Article not found');
+        }
 
         return $this->render('articles/index.html.twig', [
             'article' => $article,

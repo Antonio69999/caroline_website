@@ -33,14 +33,25 @@ header {
   top: 0;
   left: 0;
   font-family: "Krylon";
-  background: white;
-  z-index: 100;
+  background:white;
+  border-right:1px solid lightgray;
+  z-index:100;
 }
-ul li {
-  width: 200px;
-  height: 40px;
-  padding-left: 10px;
-  box-sizing: border-box;
+ul li{
+  width:200px;
+  height:40px;
+  padding-left:10px;
+  box-sizing:border-box;
+}
+ul li a{
+  display:block;
+  height:40px;
+  width:180px;
+  line-height:40px;
+  transition:all 0.3s linear;
+}
+ul li a:hover{
+  border-bottom:1px solid lightgray;
 }
 h2 {
   position: relative;
@@ -49,24 +60,47 @@ h2 {
   font-size: 30px;
   text-align: center;
 }
-#indicators-carousel {
-  position: absolute;
-  top: 300px;
+.subtitle{
+  font-size:30px;
 }
-.container {
-  position: relative;
-  top: 300px;
+p{
+  font-family:Verdana, sans-serif;
 }
-.content {
-  position: relative;
-  top: 50px;
-  width: calc(100vw - 250px);
-  left: 225px;
+#indicators-carousel{
+  position:absolute;
+  top:300px;
 }
-.link {
-  width: 200px;
-  height: 250px;
-  margin: 10px;
+.container{
+  position:relative;
+  top:300px;
+}
+.content{
+  position:relative;
+  top:50px;
+  width:calc(100vw - 250px);
+  left:225px;
+}
+.link{
+  width:200px;
+  height:250px;
+  margin:10px;
+}
+.gallery{
+  position:relative;
+  width:80%;
+  left:200px;
+  top:100px;
+  display:flex;
+  flex-wrap: wrap;
+  justify-content:center;
+}
+.gallery a img {
+ margin:5px;
+}
+.p-4{
+  width:calc(100% - 300px);
+  margin-left:250px;
+  margin-top:150px;
 }
 
 /* contact form */
