@@ -1,18 +1,16 @@
 <!DOCTYPE html>
 <html>
     <head>
-    {% block head %}
-     {% endblock %}
+        {% block head %}{% endblock %}
         <meta charset="UTF-8">
         <title>
-            {% block title %}Welcome!{% endblock %}
+            {% block title %}Welcome!
+            {% endblock %}
         </title>
-        {% block meta %}
-        {% endblock %}
-        <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.1/flowbite.min.css"  rel="stylesheet" />
-         {% block stylesheets %}
-         {% endblock %}
-            {{ encore_entry_link_tags('app') }}
+        {% block meta %}{% endblock %}
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.1/flowbite.min.css" rel="stylesheet"/> {% block stylesheets %}{% endblock %}
+        {{ encore_entry_link_tags('app') }}
+
         {% block javascripts %}
             {{ encore_entry_script_tags('app') }}
             {% block importmap %}
@@ -21,8 +19,10 @@
         {% endblock %}
     </head>
     <body>
+
         {% include '/components/menu.html.twig' %}
         {% block body %}{% endblock %}
         <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.1/flowbite.min.js"></script>
+
     </body>
 </html>
