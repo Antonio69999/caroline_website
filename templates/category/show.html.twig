@@ -1,7 +1,7 @@
 {% extends 'base.html.twig' %}
 
 {% block title %}
-   <title>Galeries</title>
+   Galeries
 {% endblock %}
 {% block meta %}
 <meta name="description" content=" Caroline MARCELLIER, galeries, mes différents travaux" />
@@ -22,8 +22,12 @@
                             {{ article.titre }}
                         </p>
                     </div>
+                    
                 {% endif %}
             </a>
         {% endfor %}
+       
+        <p>{{ categories.description }}</p>
+  
     </div>
 {% endblock %}

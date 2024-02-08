@@ -41,7 +41,7 @@ class HomeController extends AbstractController
     #[Route('/category/{id}', name: 'app_category_show')]
     public function show(int $id, CategorieRepository $cr, ArticleRepository $ar): Response
     {
-        $categories = $cr->findAll($id);
+        $categories = $cr->find($id);
         $articles = $ar->findBy(['categorie' => $id]);
 
 
