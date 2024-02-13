@@ -4,6 +4,7 @@
     Galeries
 {% endblock %}
 {% block meta %}
+<meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
     <meta name="description" content=" Caroline MARCELLIER, galeries, mes différents travaux"/>
 {% endblock %}
 {% block stylesheets %}
@@ -11,14 +12,13 @@
 {% endblock %}
 
 {% block body %}
-<div class="container mx-auto">
     <div class="grid grid-cols-1  md:grid-cols-4 lg:grid-cols-10 flex flex-wrap justify-center content">
         {% for article in articles %}
             <a href="{{path('app_article_show',{"id": article.id})}}">
                 {% if article.media|length > 0 %}
                     {% set randomImage = random(article.media) %}
                     <div class="link text-center">
-                        <img class="h-48 object-cover" src="{{ asset('uploads/attachments/' ~ randomImage.imageName) }}" alt="{{ randomImage.imageName }}">
+                        <img class="h-48" src="{{ asset('uploads/attachments/' ~ randomImage.imageName) }}" alt="{{ randomImage.imageName }}">
                         <p class="text-gray-500 text-sm">
                             {{ article.titre }}
                         </p>
@@ -27,6 +27,9 @@
             </a>
         {% endfor %}
     </div>
-    <div class="description">{{ category.description|raw }}</div>
+    <div class="description">
+        <h2 class="subtitle">{{ category.titre }}</h2>
+            {{ category.description|raw }}
+    </div>
 </div>
 {% endblock %}

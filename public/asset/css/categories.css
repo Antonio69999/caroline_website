@@ -7,12 +7,17 @@
     flex-wrap: wrap;
     justify-content: center;
 }
-.subtitle{
-    font-size:30px;
-  }
 .description{
-    margin-top:50px;
+    margin-top:20px;
 }
+.subtitle{
+    position:relative;
+    width:calc(100% - 300px);
+    left:250px;
+    font-size:30px;
+    text-align:center;
+    margin-bottom:20px;
+  }
 .description div{
     position:relative;
     width:calc(100% - 300px);
@@ -23,6 +28,14 @@
         left:50%;
         transform:translateX(-50%);
     }
+    .subtitle{
+        position:relative;
+        width:80%;
+        left:10%;
+        font-size:30px;
+        text-align:center;
+        margin-bottom:20px;
+      }
     .description div{
         width:80%;
         left:10%;

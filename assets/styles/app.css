@@ -58,11 +58,11 @@ ul li a:hover{
   border-bottom:1px solid lightgray;
 }
 h2{
-  position: relative;
+  position:relative;
   top: 0px;
-  font-family: "Krylon";
+  font-family:"Krylon";
   font-size: 30px;
-  text-align: center;
+  text-align:center;
 }
 .subtitle{
   font-size:30px;
@@ -74,6 +74,10 @@ p{
   width:200px;
   height:250px;
   margin:10px;
+}
+.link img{
+  width:200px;
+  height:200px;
 }
 .gallery{
   position:relative;
