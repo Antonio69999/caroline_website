@@ -123,5 +123,6 @@ class Categorie
     public function __toString(): string
     {
         return $this->titre;
+        
     }
 }

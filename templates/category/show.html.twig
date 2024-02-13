@@ -1,13 +1,14 @@
 {% extends 'base.html.twig' %}
 
 {% block title %}
-    <title>Galeries</title>
+    Galeries
 {% endblock %}
 {% block meta %}
+<meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
     <meta name="description" content=" Caroline MARCELLIER, galeries, mes différents travaux"/>
 {% endblock %}
 {% block stylesheets %}
-    <link rel='stylesheet' src={{ asset ('styles/articles.css') }}>
+    <link rel="stylesheet" href="{{ asset('asset/css/categories.css') }}">
 {% endblock %}
 
 {% block body %}
@@ -17,14 +18,18 @@
                 {% if article.media|length > 0 %}
                     {% set randomImage = random(article.media) %}
                     <div class="link text-center">
-                        <img class="h-48 object-cover" src="{{ asset('uploads/attachments/' ~ randomImage.imageName) }}" alt="{{ randomImage.imageName }}">
+                        <img class="h-48" src="{{ asset('uploads/attachments/' ~ randomImage.imageName) }}" alt="{{ randomImage.imageName }}">
                         <p class="text-gray-500 text-sm">
                             {{ article.titre }}
                         </p>
-                    </div>
+                    </div>  
                 {% endif %}
             </a>
         {% endfor %}
-        {{ category.description|raw }}
     </div>
+    <div class="description">
+        <h2 class="subtitle">{{ category.titre }}</h2>
+            {{ category.description|raw }}
+    </div>
+</div>
 {% endblock %}
