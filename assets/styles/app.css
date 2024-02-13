@@ -21,15 +21,15 @@ header {
 }
 .logo {
   position: relative;
-  width: 200px;
-  height: 200px;
+  width: 250px;
+  height: 250px;
   background: url(/asset/images/logo.png) no-repeat;
   background-size: contain;
 }
 .menu {
   position: fixed;
   height: 100vh;
-  width: 200px;
+  width: 250px;
   top: 0;
   left: 0;
   font-family: "Krylon";
@@ -42,7 +42,7 @@ header {
   display:none;
 }
 ul li{
-  width:200px;
+  width:250px;
   height:40px;
   padding-left:10px;
   box-sizing:border-box;
@@ -50,7 +50,8 @@ ul li{
 ul li a{
   display:block;
   height:40px;
-  width:180px;
+  width:220px;
+  font-size:18px;
   line-height:40px;
   transition:all 0.3s linear;
 }
@@ -81,8 +82,8 @@ p{
 }
 .gallery{
   position:relative;
-  width:80%;
-  left:200px;
+  width:calc(100% - 250px);
+  left:250px;
   top:100px;
   display:flex;
   flex-wrap: wrap;
@@ -104,9 +105,9 @@ p{
   .menu {
     position: fixed;
     height: 100vh;
-    width: 200px;
+    width: 250px;
     top: 0;
-    left:-200px;
+    left:-250px;
     font-family: "Krylon";
     background:white;
     border-right:1px solid lightgray;
@@ -115,7 +116,7 @@ p{
   .active {
     position: fixed;
     height: 100vh;
-    width: 200px;
+    width: 250px;
     top: 0;
     left:5px;
     font-family: "Krylon";
@@ -128,7 +129,7 @@ p{
     position:absolute;
     height:50px;
     width:50px;
-    left:205px;
+    left:255px;
     background: url(/asset/images/open2.png) no-repeat;
     cursor:pointer;
   }
