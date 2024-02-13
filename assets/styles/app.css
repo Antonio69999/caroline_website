@@ -21,15 +21,15 @@ header {
 }
 .logo {
   position: relative;
-  width: 200px;
-  height: 200px;
+  width: 300px;
+  height: 300px;
   background: url(/asset/images/logo.png) no-repeat;
   background-size: contain;
 }
 .menu {
   position: fixed;
   height: 100vh;
-  width: 200px;
+  width: 250px;
   top: 0;
   left: 0;
   font-family: "Krylon";
@@ -49,6 +49,7 @@ ul li a{
   width:180px;
   line-height:40px;
   transition:all 0.3s linear;
+  font-size: 17px;
 }
 ul li a:hover{
   border-bottom:1px solid lightgray;
