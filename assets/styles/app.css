@@ -38,6 +38,14 @@ header {
   transition:all 0.3s ease-in;
   z-index:100;
 }
+.menu h1{
+  font-weight:bold;
+  letter-spacing:1px;
+}
+#name{
+  width:200px;
+  border-bottom:2px solid black;
+}
 .open{
   display:none;
 }
