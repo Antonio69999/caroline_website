@@ -19,6 +19,14 @@ header {
   border-bottom: 1px solid lightgrey;
   z-index: 100;
 }
+#myVideo {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  min-width: 100; 
+  min-height: 100%;
+  object-fit:cover;
+}
 .logo {
   position: relative;
   width: 250px;
