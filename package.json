@@ -22,7 +22,6 @@
         "build": "encore production --progress"
     },
     "dependencies": {
-        "simplelightbox": "^2.14.2",
-        "stimulus": "^3.2.2"
+        "simplelightbox": "^2.14.2"
     }
 }
