@@ -1,10 +1,11 @@
 {% extends 'base.html.twig' %}
 {% block meta %}
-<meta name="description" content="Caroline MARCELLIER, contact" />
-<meta name="author" content="Caroline MARCELLIER" />
+    <meta name="description" content="Caroline MARCELLIER, contact"/>
+    <meta name="author" content="Caroline MARCELLIER"/>
 {% endblock %}
 
-{% block title %}Caroline MARCELLIER contact{% endblock %}
+{% block title %}Caroline MARCELLIER contact
+{% endblock %}
 
 {% block body %}
     <section class="text-gray-600 body-font relative form-container">
@@ -13,7 +14,7 @@
                 {{ message }}
             </div>
         {% endfor %}
-        <div class="container px-5 py-10 mx-auto">
+        <div class="container px-5 py-10 mx-auto flex flex-col items-center justify-center" style="height: 100vh;">
             <div class="flex flex-col text-center w-full mb-12">
                 <h1 class="sm:text-3xl text-2xl font-medium title-font mb-4 text-gray-900">Contactez Moi</h1>
             </div>
@@ -60,4 +61,6 @@
             {{ form_end(form) }}
         </div>
     </section>
+    {% include 'components/footer.html.twig' %}
+
 {% endblock %}

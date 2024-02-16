@@ -204,6 +204,11 @@ p {
   padding: 10px;
 }
 
+.text {
+  font-family: Verdana, sans-serif;
+  font-weight: bold;
+}
+
 .scroll-text {
   animation: scroll-up 20s linear infinite;
   animation-delay: 2s; /* Delay before the text starts scrolling */

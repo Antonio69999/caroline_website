@@ -414,3 +414,21 @@ a:hover {
 .purple {
   background-color: purple;
 }
+
+.form-container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+
+}
+
+.form-container form input {
+  display: block;
+}
+
+
+.form-container form input {
+  display: block;
+  margin-bottom: 10px; /* Adjust this value as needed */
+}

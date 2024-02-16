@@ -1,11 +1,13 @@
 <nav class="menu">
     <ul>
-     <div class="open"></div>
-    <a href="{{ path('app_home')}}">
-        <div class="logo"></div>
-    </a>
+        <div class="open"></div>
+        <a href="{{ path('app_home')}}">
+            <div class="logo"></div>
+        </a>
         <li id="name">
-            <h1>Caroline MARCELLIER</h1>
+            <button>
+                <h1 id="openModal">Caroline MARCELLIER</h1>
+            </button>
         </li>
         <li>
             <a href="/">Accueil</a>
@@ -16,7 +18,23 @@
             </li>
         {% endfor %}
         <li>
-            <a href={{ path('contact') }} >Contact</a>
+            <a href={{ path('contact') }}>Contact</a>
         </li>
     </ul>
 </nav>
+<dialog id="myModal" class="modal">
+    <div class="modal-box">
+        <h3 class="font-bold text-lg">Hello!</h3>
+        <p class="py-4">Press ESC key or click the button below to close</p>
+        <div class="modal-action">
+            <form method="dialog">
+                <button class="btn">Close</button>
+            </form>
+        </div>
+    </div>
+</dialog>
+<script>
+    document.getElementById('openModal').addEventListener('click', function() {
+        document.getElementById('myModal').showModal();
+    });
+</script>
