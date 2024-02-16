@@ -11,10 +11,34 @@
 {% block body %}
     <div class="container mx-auto">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <video controls loop id="myVideo">
-                <source src="{{asset('asset/videos/video.mp4')}}" type="video/mp4">
-            </video>
+            <div class="video-container relative h-full">
+                <video controls loop id="myVideo" class="h-full">
+                    <source src="{{asset('asset/videos/video.mp4')}}" type="video/mp4">
+                </video>
+                <div class="text-over-video">Your text hereYour text hereYour text hereYour text hereYour text hereYour text hereYour text hereYour text hereYour text hereYour text hereYour text hereYour text hereYour text hereYour text hereYour text hereYour text hereYour text hereYour text hereYour text hereYour text hereYour text hereYour text hereYour text hereYour text hereYour text hereYour text hereYour text hereYour text hereYour text hereYour text hereYour text hereYour text hereYour text hereYour text hereYour text hereYour text hereYour text hereYour text hereYour text hereYour text hereYour text hereYour text hereYour text hereYour text hereYour text hereYour text hereYour text hereYour text hereYour text hereYour text hereYour text hereYour text hereYour text hereYour text hereYour text hereYour text hereYour text hereYour text hereYour text hereYour text hereYour text hereYour text hereYour text hereYour text hereYour text hereYour text hereYour text hereYour text hereYour text hereYour text hereYour text hereYour text hereYour text hereYour text hereYour text hereYour text hereYour text hereYour text hereYour text hereYour text hereYour text here</div>
+            </div>
         </div>
     </div>
 
+    <script>
+        var textElement = document.querySelector('.text-over-video');
+        var textContent = textElement.textContent;
+        var textIndex = 0;
+
+        textElement.textContent = '';
+
+        window.addEventListener('wheel', function (e) {
+            if (e.deltaY > 0) { // If the user is scrolling down, reveal the next character
+                if (textIndex < textContent.length) {
+                    textElement.textContent += textContent[textIndex];
+                    textIndex++;
+                }
+            } else { // If the user is scrolling up, hide the last character
+                if (textIndex > 0) {
+                    textElement.textContent = textElement.textContent.slice(0, -1);
+                    textIndex--;
+                }
+            }
+        });
+    </script>
 {% endblock %}

@@ -10,6 +10,7 @@
 }
 body {
   overflow-x: hidden;
+  overflow: hidden;
 }
 header {
   position: fixed;
@@ -166,4 +167,50 @@ p {
     margin-left: 10%;
     margin-top: 150px;
   }
+}
+
+.fixed-footer {
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+}
+
+#myVideo {
+  height: 100%; /* Set the height of the video */
+}
+
+.video-container {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.text-over-video {
+  position: absolute;
+  bottom: 15px;
+  left: 200px;
+  width: 100%;
+  text-align: center;
+  color: white; /* Change this to the color you want */
+  font-size: 24px; /* Change this to the size you want */
+  background-color: rgba(
+    0,
+    0,
+    0,
+    0
+  ); /* Optional: add a semi-transparent background to the text for better readability */
+  padding: 10px;
+}
+
+.scroll-text {
+  animation: scroll-up 20s linear infinite;
+  animation-delay: 2s; /* Delay before the text starts scrolling */
+  animation-fill-mode: forwards;
+}
+
+.pres-text {
+  color: white;
+  font-weight: bold;
 }
