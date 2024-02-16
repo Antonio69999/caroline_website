@@ -1,0 +1,169 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+  font-family: "Krylon";
+  src: url("../fonts/Krylon-Regular.otf") format("opentype"),
+    url("../fonts/Krylon-Regular.woff") format("woff"),
+    url("../fonts/Krylon-Regular.woff2") format("woff2");
+}
+body {
+  overflow-x: hidden;
+}
+header {
+  position: fixed;
+  width: 100vw;
+  height: 200px;
+  background: white;
+  border-bottom: 1px solid lightgrey;
+  z-index: 100;
+}
+#myVideo {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  min-width: 100; 
+  min-height: 100%;
+  object-fit:cover;
+}
+.logo {
+  position: relative;
+  width: 250px;
+  height: 250px;
+  background: url(/asset/images/logo.png) no-repeat;
+  background-size: contain;
+}
+.menu {
+  position: fixed;
+  height: 100vh;
+  width: 250px;
+  top: 0;
+  left: 0;
+  font-family: "Krylon";
+  background:white;
+  border-right:1px solid lightgray;
+  transition:all 0.3s ease-in;
+  z-index:100;
+}
+.menu h1{
+  font-weight:bold;
+  letter-spacing:1px;
+}
+#name{
+  width:200px;
+  border-bottom:2px solid black;
+}
+.open{
+  display:none;
+}
+ul li{
+  width:250px;
+  height:40px;
+  padding-left:10px;
+  box-sizing:border-box;
+}
+ul li a{
+  display:block;
+  height:40px;
+  width:220px;
+  font-size:18px;
+  line-height:40px;
+  transition:all 0.3s linear;
+}
+ul li a:hover{
+  border-bottom:1px solid lightgray;
+}
+h2{
+  position:relative;
+  top: 0px;
+  font-family:"Krylon";
+  font-size: 30px;
+  text-align:center;
+}
+.subtitle{
+  font-size:30px;
+}
+p{
+  font-family:Verdana, sans-serif;
+}
+.link{
+  width:200px;
+  height:250px;
+  margin:10px;
+}
+.link img{
+  width:200px;
+  height:200px;
+}
+.gallery{
+  position:relative;
+  width:calc(100% - 250px);
+  left:250px;
+  top:100px;
+  display:flex;
+  flex-wrap: wrap;
+  justify-content:center;
+}
+.gallery a img {
+ margin:5px;
+}
+.p-4{
+  width:calc(100% - 300px);
+  margin-left:250px;
+  margin-top:150px;
+}
+/* contact form */
+.form-container {
+  padding-left: 200px;
+}
+@media(max-width:800px) {
+  .menu {
+    position: fixed;
+    height: 100vh;
+    width: 250px;
+    top: 0;
+    left:-250px;
+    font-family: "Krylon";
+    background:white;
+    border-right:1px solid lightgray;
+    z-index:100;
+  }
+  .active {
+    position: fixed;
+    height: 100vh;
+    width: 250px;
+    top: 0;
+    left:5px;
+    font-family: "Krylon";
+    background:white;
+    border-right:1px solid lightgray;
+    z-index:100;
+  }
+  .open{
+    display:block !important;
+    position:absolute;
+    height:50px;
+    width:50px;
+    left:255px;
+    background: url(/asset/images/open2.png) no-repeat;
+    cursor:pointer;
+  }
+  .close{
+    background: url(/asset/images/close2.png) no-repeat;
+  }
+  .gallery{
+    position:relative;
+    width:80%;
+    left:10%;
+    top:100px;
+    display:flex;
+    flex-wrap: wrap;
+    justify-content:center;
+  }
+  .p-4{
+    width:80%;
+    margin-left:10%;
+    margin-top:150px;
+  }
+}
