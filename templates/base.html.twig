@@ -14,6 +14,9 @@
         <body>
             {% include '/components/menu.html.twig' %}
             {% block body %}{% endblock %}
+            {% block footer %}
+                {% include 'components/footer.html.twig' %}
+            {% endblock %}
             <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.1/flowbite.min.js"></script>
             <script src="{{ asset('asset/js/menu.js') }}"></script>
         </body>

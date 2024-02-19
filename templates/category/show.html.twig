@@ -4,16 +4,16 @@
     Galeries
 {% endblock %}
 {% block meta %}
-<meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
     <meta name="description" content="Caroline MARCELLIER, galeries, mes différents travaux"/>
-    <meta name="author" content="Caroline MARCELLIER" />
+    <meta name="author" content="Caroline MARCELLIER"/>
 {% endblock %}
 {% block stylesheets %}
     <link rel="stylesheet" href="{{ asset('asset/css/categories.css') }}">
 {% endblock %}
 
 {% block body %}
-<h2 class="subtitle">{{ category.titre }}</h2>
+    <h2 class="subtitle">{{ category.titre }}</h2>
     <div class="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-10 flex flex-wrap justify-center content">
         {% for article in articles %}
             <a href="{{path('app_article_show',{"id": article.id})}}">
@@ -22,17 +22,16 @@
                     <div class="link text-center">
                         <img class="h-48" src="{{ asset('uploads/attachments/' ~ randomImage.imageName) }}" alt="{{ randomImage.imageName }}">
                         <div class="imagetitle">
-                          <p>
-                            {{ article.titre }}
-                          </p>
+                            <p>
+                                {{ article.titre }}
+                            </p>
                         </div>
-                    </div>  
+                    </div>
                 {% endif %}
             </a>
         {% endfor %}
     </div>
     <div class="description">
-            {{ category.description|raw }}
+        {{ category.description|raw }}
     </div>
-</div>
-{% endblock %}
+</div>{% endblock %}{% block footer %}{% endblock %}

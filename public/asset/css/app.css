@@ -133,7 +133,7 @@ p {
   background-size: cover;
 }
 
-.fixed-footer {
+.footer {
   position: fixed;
   left: 0;
   bottom: 0;
@@ -218,6 +218,14 @@ p {
   z-index: 9999;
   align-items: center;
   justify-content: center;
+}
+
+.contact-image {
+  margin-bottom: 30px;
+}
+
+.credits {
+  font-size: small;
 }
 
 @media (max-width: 800px) {
