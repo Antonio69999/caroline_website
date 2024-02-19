@@ -10,7 +10,7 @@
             </button>
         </li>
         <li>
-            <a id="preambuleBtn">Préambule</a>
+            <a href="{{ path('preambule') }}" target="_blank">Préambule</a>
         </li>
         {% for category in categories %}
             <li>
@@ -33,9 +33,8 @@
 
 
 <!-- The Modal -->
-<div
-    id="myModal" class="modal">
-    <!-- Modal content -->
+    <div
+    id="myModal" class="modal"> <!-- Modal content -->
     <div class="modal-content">
         <span class="close">&times;</span>
         <p class="carrot-title">Carotte Cake<br></p>
@@ -67,10 +66,7 @@
         Laisser complètement refroidir sur une grille.<br>
         Préparer le glaçage en fouettant le fromage frais avec le sucre, l’huile d’olive et le zeste, jusqu’à obtenir un mélange lisse et homogène. Étaler sur le dessus du gâteau.</p>
     {# <img src={{ asset("asset/krot.gif") }}> #}
-</div></div>
-
-
-<script>
+</div></div><script>
 // Caroline MARCELLIER Modal
 var modal = document.getElementById("myModal");
 var btn = document.getElementById("myBtn");
