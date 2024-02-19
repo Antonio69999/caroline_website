@@ -5,12 +5,12 @@
             <div class="logo"></div>
         </a>
         <li id="name">
-            <button>
+            <button id="myBtn">
                 <h1 id="openModal">Caroline MARCELLIER</h1>
             </button>
         </li>
         <li>
-            <a href="/">Accueil</a>
+            <a id="preambuleBtn">Préambule</a>
         </li>
         {% for category in categories %}
             <li>
@@ -22,19 +22,89 @@
         </li>
     </ul>
 </nav>
-<dialog id="myModal" class="modal">
-    <div class="modal-box">
-        <h3 class="font-bold text-lg">Hello!</h3>
-        <p class="py-4">Press ESC key or click the button below to close</p>
-        <div class="modal-action">
-            <form method="dialog">
-                <button class="btn">Close</button>
-            </form>
-        </div>
-    </div>
-</dialog>
+
+<!-- The Video Modal -->
+<div id="videoModal" class="videoModal">
+    <video id="video" width="320" height="240" controls>
+        <source src={{ asset("asset/videos/video.mp4") }} type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+</div>
+
+
+<!-- The Modal -->
+<div
+    id="myModal" class="modal">
+    <!-- Modal content -->
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <p class="carrot-title">Carotte Cake<br></p>
+        <p class="carrot-ingredient">Ingrédients :</p>
+        <p>
+            150g de sucre roux<br>
+            3 œufs de poules élevées à ma borie<br>
+            150ml d’huile d’olive goût à l’ancienne<br>
+            200g de farine<br>
+            2 cuillères à café de levure<br>
+            1 cuillère à café de cannelle<br>
+            1/2 cuillère à café de muscade<br>
+            1 pincée de sel<br>
+            350g de carottes râpées<br>
+            80g de noix coupées en morceaux<br><br></p>
+        <p class="carrot-ingredient">Pour le glaçage :</p>
+        200g de cream cheese<br>
+        80g de sucre glace<br>
+        2 c. à soupe d’huile d’olive goût à l’ancienne<br>
+        1/2 zeste de citron<br><br>
+        Préchauffer le four à 170°C<br>
+        Fouetter au fouet électrique le sucre et les œufs jusqu’à obtenir un mélange bien blanc et volumineux.<br>
+        Ajouter alors l’huile d’olive en filet tout en fouettant.<br>
+        Fouetter encore 20 secondes pour bien mélanger.<br>
+        Mélanger la farine avec la levure, les épices, le sel.<br>
+        Ajouter les carottes râpées et les noix, mélanger puis incorporer le mélange aux œufs.<br>
+        Mélanger délicatement à la spatule.<br>
+        Verser dans un moule huilé et faire cuire 40 à 45 minutes.<br>
+        Laisser complètement refroidir sur une grille.<br>
+        Préparer le glaçage en fouettant le fromage frais avec le sucre, l’huile d’olive et le zeste, jusqu’à obtenir un mélange lisse et homogène. Étaler sur le dessus du gâteau.</p>
+    {# <img src={{ asset("asset/krot.gif") }}> #}
+</div></div>
+
+
 <script>
-    document.getElementById('openModal').addEventListener('click', function() {
-        document.getElementById('myModal').showModal();
-    });
-</script>
+// Caroline MARCELLIER Modal
+var modal = document.getElementById("myModal");
+var btn = document.getElementById("myBtn");
+var span = document.getElementsByClassName("close")[0];
+
+btn.onclick = function () {
+    modal.style.display = "block";
+}
+
+span.onclick = function () {
+    modal.style.display = "none";
+}
+
+window.onclick = function (event) {
+    if (event.target == modal) {
+        modal.style.display = "none";
+    }
+}
+
+// Préambule Video Modal
+var videoModal = document.getElementById("videoModal");
+var preambuleBtn = document.getElementById("preambuleBtn");
+var video = document.getElementById("video");
+
+preambuleBtn.onclick = function (event) {
+    event.stopPropagation();
+    videoModal.style.display = "flex";
+    video.play();
+}
+
+window.onclick = function (event) {
+    if (event.target == videoModal) {
+        event.stopPropagation();
+        videoModal.style.display = "none";
+        video.pause();
+    }
+}</script>

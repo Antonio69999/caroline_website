@@ -9,36 +9,8 @@
 {% block stylesheets %}{% endblock %}
 
 {% block body %}
-<div class="main-content"></div>
+    <div class="parent-div">
+        <div class="main-content"></div>
+    </div>
 
-    <script>
-        var textElements = document.querySelectorAll('.text-over-video > p');
-        var textIndex = 0;
-        var scrollCounter = 0;
-        var scrollThreshold = 5; // Change this to increase or decrease the speed
-
-        textElements.forEach(function (element) {
-            element.style.display = 'none';
-        });
-
-        window.addEventListener('wheel', function (e) {
-            scrollCounter++;
-
-            if (scrollCounter >= scrollThreshold) {
-                scrollCounter = 0;
-
-                if (e.deltaY > 0) { // If the user is scrolling down, reveal the next line or block
-                    if (textIndex < textElements.length) {
-                        textElements[textIndex].style.display = 'block';
-                        textIndex++;
-                    }
-                } else { // If the user is scrolling up, hide the last line or block
-                    if (textIndex > 0) {
-                        textIndex--;
-                        textElements[textIndex].style.display = 'none';
-                    }
-                }
-            }
-        });
-    </script>
 {% endblock %}

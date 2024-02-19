@@ -83,6 +83,11 @@ h2 {
   font-size: 30px;
   text-align: center;
 }
+
+.parent-div {
+  position: relative;
+}
+
 .subtitle {
   font-size: 30px;
 }
@@ -126,6 +131,93 @@ p {
   background-image: url("../images/auberge.jpeg");
   background-repeat: no-repeat;
   background-size: cover;
+}
+
+.fixed-footer {
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+}
+
+.scroll-text {
+  animation: scroll-up 20s linear infinite;
+  animation-delay: 2s; /* Delay before the text starts scrolling */
+  animation-fill-mode: forwards;
+}
+
+.pres-text {
+  color: white;
+  font-weight: bold;
+}
+
+/* The Modal (background) */
+.modal {
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Sit on top */
+  padding-top: 100px; /* Location of the box */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgb(0, 0, 0); /* Fallback color */
+  background-color: rgba(0, 0, 0, 0.4); /* Black w/ opacity */
+}
+
+/* Modal Content */
+.modal-content {
+  background-color: #fefefe;
+  margin: auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 50%;
+  border-radius: 50px;
+}
+
+.carrot-title {
+  font-size: 40px;
+  font-weight: bolder;
+  text-align: center;
+}
+
+.carrot-ingredient {
+  line-height: 2.5;
+  font-size: large;
+  font-weight: 600;
+  text-align: left;
+}
+
+/* The Close Button */
+.close {
+  background: url(/asset/krot.gif) no-repeat;
+  background-size: contain; /* Ensure the image fits in the button */
+  width: 50px; /* Adjust as needed */
+  height: 50px; /* Adjust as needed */
+  display: inline-block; /* To allow width and height to take effect */
+  text-indent: -9999px; /* Hide the existing 'X' text */
+  float: right;
+}
+
+.close:hover,
+.close:focus {
+  background: url(/asset/krot.gif) no-repeat;
+  background-size: contain;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.videoModal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 9999;
+  align-items: center;
+  justify-content: center;
 }
 
 @media (max-width: 800px) {
@@ -183,55 +275,4 @@ p {
     background-size: cover; /* Cover the available space */
     background-position: center; /* Center the image */
   }
-}
-
-.fixed-footer {
-  position: fixed;
-  left: 0;
-  bottom: 0;
-  width: 100%;
-}
-
-#myVideo {
-  height: 100%;
-}
-
-.video-container {
-  position: relative;
-  width: 100%;
-  height: 100vh;
-  overflow: hidden;
-}
-
-.text-over-video {
-  position: absolute;
-  bottom: 15px;
-  left: 200px;
-  width: 100%;
-  text-align: center;
-  color: white; /* Change this to the color you want */
-  font-size: 24px; /* Change this to the size you want */
-  background-color: rgba(
-    0,
-    0,
-    0,
-    0
-  ); /* Optional: add a semi-transparent background to the text for better readability */
-  padding: 10px;
-}
-
-.text {
-  font-family: Verdana, sans-serif;
-  font-weight: bold;
-}
-
-.scroll-text {
-  animation: scroll-up 20s linear infinite;
-  animation-delay: 2s; /* Delay before the text starts scrolling */
-  animation-fill-mode: forwards;
-}
-
-.pres-text {
-  color: white;
-  font-weight: bold;
 }
