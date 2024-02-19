@@ -12,6 +12,7 @@ body {
   overflow-x: hidden;
   overflow: hidden;
 }
+
 header {
   position: fixed;
   width: 100vw;
@@ -118,6 +119,15 @@ p {
 .form-container {
   padding-left: 200px;
 }
+
+.main-content {
+  margin-left: 250px;
+  height: 100vh;
+  background-image: url("../images/auberge.jpeg");
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
 @media (max-width: 800px) {
   .menu {
     position: fixed;
@@ -166,6 +176,12 @@ p {
     width: 80%;
     margin-left: 10%;
     margin-top: 150px;
+  }
+
+  .main-content {
+    margin-left: 0;
+    background-size: cover; /* Cover the available space */
+    background-position: center; /* Center the image */
   }
 }
 
