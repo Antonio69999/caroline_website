@@ -42,14 +42,14 @@ class HomeController extends AbstractController
     public function show(int $id, CategorieRepository $cr, ArticleRepository $ar): Response
     {
         $category = $cr->find($id);
-    
+
         if (!$category) {
             throw $this->createNotFoundException('The category does not exist');
         }
-    
-        $articles = $ar->findBy(['categorie' => $id]);
+
+        $articles = $ar->findBy(['categorie' => $id], ['creeLe' => 'DESC']);
         $categories = $cr->findAll();
-    
+
         return $this->render('category/show.html.twig', [
             'category' => $category,
             'articles' => $articles,
