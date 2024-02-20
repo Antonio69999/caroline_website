@@ -1,0 +1,75 @@
+{% block stylesheets %}
+    <link rel="stylesheet" href={{ asset("asset/css/duck.css") }}>
+{% endblock %}
+
+{% block body %}
+    <div class="form-container">
+        <form method="post">
+            {% if error %}
+                <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+            {% endif %}
+
+            {% if app.user %}
+                <div class="mb-3">
+                    You are logged in as
+                    {{ app.user.userIdentifier }},
+                    <a href="{{ path('app_logout') }}">Logout</a>
+                </div>
+            {% endif %}
+
+            <h1 class="h3 mb-3 font-weight-normal">Ton potit Admin</h1>
+            <label for="inputUsername">Ton potit pseudo</label>
+            <input type="text" value="{{ last_username }}" name="username" id="inputUsername" class="form-control" autocomplete="username" required autofocus>
+            <label for="inputPassword">Ton potit mot de passe</label>
+            <input type="password" name="password" id="inputPassword" class="form-control" autocomplete="current-password" required>
+
+            <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+
+            <button class="btn btn-lg btn-primary" type="submit">
+                C'est parti !
+            </button>
+        </form>
+    </div>
+
+    <div
+        class="wrapper">
+
+        <!-- remove display: none from marker class to see these -->
+        <div class="marker red"></div>
+        <div class="marker blue"></div>
+        <div class="marker yellow"></div>
+        <div class="marker pink"></div>
+        <div class="marker green"></div>
+        <div class="marker purple"></div>
+
+        <div class="duck down">
+            <div class="neck-base">
+                <div class="neck">
+                    <div class="head"></div>
+                </div>
+            </div>
+            <div class="tail"></div>
+            <div class="body"></div>
+            <div class="legs">
+                <div class="leg"></div>
+                <div class="leg"></div>
+            </div>
+        </div>
+
+    </div>
+
+    <button class="create-duckling"></button>
+
+    <div class="indicator"></div>
+    <div class="sign">
+        by masahito /
+        <a href="http://www.ma5a.com/">ma5a.com</a>
+    </div>
+
+    <script src={{ asset("asset/js/duck.js") }}></script>
+
+{% endblock %}
+
+{% block footer %}
+    
+{% endblock %}

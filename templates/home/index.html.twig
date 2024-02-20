@@ -1,19 +1,18 @@
 {% extends 'base.html.twig' %}
 {% block meta %}
-<meta name="description" content="Caroline MARCELLIER, peinture, gravure et calligraphie, ateliers participatifs, peinture sur vitrine, gravure sur verre, prestations pédagogiques." />
-<meta name="author" content="Caroline MARCELLIER" />
+    <meta name="description" content="Caroline MARCELLIER, peinture, gravure et calligraphie, ateliers participatifs, peinture sur vitrine, gravure sur verre, prestations pédagogiques."/>
+    <meta name="author" content="Caroline MARCELLIER"/>
 {% endblock %}
-{% block title %}Caroline MARCELLIER, peinture, gravure{% endblock %}
-        
+{% block title %}Caroline MARCELLIER, peinture, gravure
+{% endblock %}
+
 {% block stylesheets %}{% endblock %}
 
 {% block body %}
-<div class="container mx-auto">
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-       <video autoplay muted="false" loop id="myVideo">
-            <source src="{{asset('asset/videos/video.mp4')}}" type="video/mp4">
-        </video>
+    <div class="parent-div">
+        <div class="main-content"></div>
     </div>
-   
-</div>
+
 {% endblock %}
+
+{% block footer %}{% endblock %}

@@ -1,32 +1,23 @@
 <!DOCTYPE html>
 <html>
     <head>
-    {% block head %}
-     {% endblock %}
+        <link rel="icon" type="image/x-icon" href="{{ asset('asset/krot.gif') }}"/> {% block head %}{% endblock %}
         <meta charset="UTF-8">
         <title>
-            {% block title %}Welcome!{% endblock %}
-        </title>
-        <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
-        {% block meta %}
-        {% endblock %}
-        <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.1/flowbite.min.css"  rel="stylesheet" />
-         {% block stylesheets %}
-             {{ encore_entry_link_tags('app') }}
-         {% endblock %}
-        {% block javascripts %}
-            {{ encore_entry_script_tags('app') }}
-            {% block importmap %}
-                {{ importmap('app') }}
+            {% block title %}Welcome!
             {% endblock %}
-        {% endblock %}
-    </head>
-    <body>
-        {% include '/components/menu.html.twig' %}
-        {% block body %}
-        {% endblock %}
-        {% include 'components/footer.html.twig' %}
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.1/flowbite.min.js"></script>
-         <script src="{{ asset('asset/js/menu.js') }}"></script>
-    </body>
-</html>
+        </title>
+        <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport"> {% block meta %}{% endblock %}
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.1/flowbite.min.css" rel="stylesheet"/>
+        <link rel="stylesheet" href={{ asset("asset/css/app.css") }}> {% block stylesheets %}{% endblock %}
+        </head>
+        <body>
+            {% include '/components/menu.html.twig' %}
+            {% block body %}{% endblock %}
+            {% block footer %}
+                {% include 'components/footer.html.twig' %}
+            {% endblock %}
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.1/flowbite.min.js"></script>
+            <script src="{{ asset('asset/js/menu.js') }}"></script>
+        </body>
+    </html>
