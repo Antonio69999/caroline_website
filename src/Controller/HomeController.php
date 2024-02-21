@@ -47,7 +47,7 @@ class HomeController extends AbstractController
             throw $this->createNotFoundException('The category does not exist');
         }
 
-        $articles = $ar->findBy(['categorie' => $id], ['position' => 'ASC']);
+        $articles = $ar->findWithPosition($id);
         $categories = $cr->findAll();
 
         return $this->render('category/show.html.twig', [

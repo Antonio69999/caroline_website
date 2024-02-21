@@ -9,6 +9,8 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Symfony\Component\HttpFoundation\File\File;
 use Doctrine\ORM\Mapping as ORM;
+use Gedmo\Mapping\Annotation as Gedmo;
+
 
 #[ORM\Entity(repositoryClass: ArticleRepository::class)]
 #[Vich\Uploadable]
@@ -44,7 +46,8 @@ class Article
     #[ORM\ManyToOne(inversedBy: 'article')]
     private ?Categorie $categorie = null;
 
-    #[ORM\Column(type: "integer", options: ["default" => 0])]
+    #[Gedmo\SortablePosition]
+    #[ORM\Column(type: "integer")]
     private int $position = 0;
 
     public function __construct()
