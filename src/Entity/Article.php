@@ -44,6 +44,9 @@ class Article
     #[ORM\ManyToOne(inversedBy: 'article')]
     private ?Categorie $categorie = null;
 
+    #[ORM\Column(type: "integer", options: ["default" => 0])]
+    private int $position = 0;
+
     public function __construct()
     {
         $this->media = new ArrayCollection();
@@ -168,6 +171,18 @@ class Article
     public function setCategorie(?Categorie $categorie): static
     {
         $this->categorie = $categorie;
+
+        return $this;
+    }
+
+    public function getPosition(): int
+    {
+        return $this->position;
+    }
+
+    public function setPosition(int $position): static
+    {
+        $this->position = $position;
 
         return $this;
     }
