@@ -14,7 +14,7 @@
                 {{ message }}
             </div>
         {% endfor %}
-        <div class="container px-5 py-10 mx-auto flex flex-col items-center justify-center" style="height: 100vh;">
+        <div class="container px-5 py-10 mx-auto flex flex-col items-center justify-center sm:px-2 md:px-0 md:pl-0" style="height: 100vh;">
             <div class="contact-image">
                 <img src={{ asset("asset/images/lapairedechaussure.jpeg") }} width="650px">
                 <p class="credits">La paire de chaussure, 2023</p>
@@ -24,9 +24,9 @@
             </div>
 
             {{ form_start(form) }}
-            <div class="lg:w-1/2 md:w-2/3 mx-auto">
-                <div class="flex flex-wrap -m-2 w-1/2 mx-auto">
-                    <div class="p-2 w-1/2">
+            <div class="lg:w-1/2 md:w-2/3 mx-auto sm:w-full md:mx-0 md:ml-auto">
+                <div class="flex flex-wrap -m-2 w-1/2 mx-auto sm:w-full md:w-full md:mx-0">
+                    <div class="p-2 w-1/2 sm:w-full md:w-1/2">
                         <div class="relative">
                             {{ form_row(form.sujet, {
                                 'label': 'Nom',
@@ -36,7 +36,7 @@
                             }) }}
                         </div>
                     </div>
-                    <div class="p-2 w-1/2">
+                    <div class="p-2 w-1/2 sm:w-full md:w-1/2">
                         <div class="relative">
                             {{ form_row(form.email, {
                                 'label': 'Email',
