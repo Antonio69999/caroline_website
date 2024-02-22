@@ -19,9 +19,9 @@
 
             <h1 class="h3 mb-3 font-weight-normal">Ton potit Admin</h1>
             <label for="inputUsername">Ton potit pseudo</label>
-            <input type="text" value="{{ last_username }}" name="username" id="inputUsername" class="form-control" autocomplete="username" required autofocus>
+            <input type="text" value="{{ last_username }}" name="username" id="inputUsername" class="form-control" autocomplete="username" placeholder="Ton potit pseudo" required autofocus>
             <label for="inputPassword">Ton potit mot de passe</label>
-            <input type="password" name="password" id="inputPassword" class="form-control" autocomplete="current-password" required>
+            <input type="password" name="password" id="inputPassword" class="form-control" autocomplete="current-password" placeholder="Ton potit mot de passe" required>
 
             <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
 
@@ -31,45 +31,37 @@
         </form>
     </div>
 
-    <div
-        class="wrapper">
+    <div class="wrapper">
+    <!-- remove display: none from marker class to see these -->
+    <div class="marker red"></div>
+    <div class="marker blue"></div>
+    <div class="marker yellow"></div>
+    <div class="marker pink"></div>
+    <div class="marker green"></div>
+    <div class="marker purple"></div>
 
-        <!-- remove display: none from marker class to see these -->
-        <div class="marker red"></div>
-        <div class="marker blue"></div>
-        <div class="marker yellow"></div>
-        <div class="marker pink"></div>
-        <div class="marker green"></div>
-        <div class="marker purple"></div>
-
-        <div class="duck down">
-            <div class="neck-base">
-                <div class="neck">
-                    <div class="head"></div>
-                </div>
-            </div>
-            <div class="tail"></div>
-            <div class="body"></div>
-            <div class="legs">
-                <div class="leg"></div>
-                <div class="leg"></div>
+    <div class="duck down">
+        <div class="neck-base">
+            <div class="neck">
+                <div class="head"></div>
             </div>
         </div>
-
+        <div class="tail"></div>
+        <div class="body"></div>
+        <div class="legs">
+            <div class="leg"></div>
+            <div class="leg"></div>
+        </div>
     </div>
 
-    <button class="create-duckling"></button>
+</div>
 
-    <div class="indicator"></div>
-    <div class="sign">
-        by masahito /
-        <a href="http://www.ma5a.com/">ma5a.com</a>
-    </div>
+<button class="create-duckling"></button>
 
-    <script src={{ asset("asset/js/duck.js") }}></script>
+<div class="indicator"></div>
+<div class="sign">
+    by masahito /
+    <a href="http://www.ma5a.com/">ma5a.com</a>
+</div>
 
-{% endblock %}
-
-{% block footer %}
-    
-{% endblock %}
+<script src={{ asset("asset/js/duck.js") }}></script>{% endblock %}{% block footer %}{% endblock %}
