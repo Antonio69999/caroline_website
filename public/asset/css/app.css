@@ -8,10 +8,6 @@
     url("../fonts/Krylon-Regular.woff") format("woff"),
     url("../fonts/Krylon-Regular.woff2") format("woff2");
 }
-body {
-  overflow-x: hidden;
-  overflow: hidden;
-}
 
 header {
   position: fixed;
