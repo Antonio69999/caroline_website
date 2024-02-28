@@ -87,12 +87,17 @@ h2 {
 .subtitle {
   font-size: 30px;
 }
+
+.article_subtitle {
+  font-size: 30px;
+}
+
 p {
   font-family: Verdana, sans-serif;
 }
 .link {
   width: 200px;
-  height: 250px;
+  height: 200px;
   margin: 10px;
 }
 .link img {
@@ -224,6 +229,16 @@ p {
   font-size: small;
 }
 
+.description {
+  margin-bottom: 100px;
+}
+
+.article_pictures {
+  height: 200px;
+  width: 200px;
+  object-fit: cover;
+}
+
 @media (max-width: 800px) {
   .menu {
     position: fixed;
@@ -282,5 +297,19 @@ p {
 
   .form-container {
     padding-left: 5px;
+  }
+
+  .modal-content {
+    width: 300px;
+    font-size: 0.8em;
+  }
+
+  .carrot-title {
+    font-size: 20px; /* Reduce the font size of the title on smaller screens */
+    margin-bottom: 10px;
+  }
+
+  .carrot-ingredient {
+    font-size: 15px; /* Reduce the font size of the ingredient on smaller screens */
   }
 }

@@ -14,13 +14,13 @@
 
 {% block body %}
     <h2 class="subtitle">{{ category.titre }}</h2>
-    <div class="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-10 flex flex-wrap justify-center content">
+    <div class="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-10 flex-wrap justify-center content">
         {% for article in articles %}
             <a href="{{path('app_article_show',{"id": article.id})}}">
                 {% if article.media|length > 0 %}
                     {% set randomImage = random(article.media) %}
                     <div class="link text-center">
-                        <img class="h-48" src="{{ asset('uploads/attachments/' ~ randomImage.imageName) }}" alt="{{ randomImage.imageName }}">
+                        <img class="article_pictures h-48" src="{{ asset('uploads/attachments/' ~ randomImage.imageName) }}" alt="{{ randomImage.imageName }}">
                         <div class="imagetitle">
                             <p>
                                 {{ article.titre }}
