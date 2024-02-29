@@ -134,13 +134,6 @@ p {
   background-size: cover;
 }
 
-/* .footer {
-  position: fixed;
-  left: 0;
-  bottom: 0;
-  width: 100%;
-} */
-
 .scroll-text {
   animation: scroll-up 20s linear infinite;
   animation-delay: 2s; /* Delay before the text starts scrolling */
@@ -156,7 +149,7 @@ p {
 .modal {
   display: none; /* Hidden by default */
   position: fixed; /* Stay in place */
-  z-index: 1; /* Sit on top */
+  z-index: 101; /* Sit on top */
   padding-top: 100px; /* Location of the box */
   left: 0;
   top: 0;
