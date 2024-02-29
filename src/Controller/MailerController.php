@@ -25,8 +25,9 @@ class MailerController extends AbstractController
             $contactFormData = $form->getData();
 
             $email = (new Email())
-                ->from($contactFormData['email'])
-                ->to('krot@gmail.com')
+                ->from('contact@carottecake.com') // your authenticated email address
+                ->replyTo($contactFormData['email']) // user's email address
+                ->to('contact@carottecake.com')
                 ->subject($contactFormData['sujet'])
                 ->text($contactFormData['message']);
             $mailer->send($email);
