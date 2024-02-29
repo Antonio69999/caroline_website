@@ -232,6 +232,10 @@ p {
   object-fit: cover;
 }
 
+#message {
+  margin-left: 50px;
+}
+
 @media (max-width: 800px) {
   .menu {
     position: fixed;
