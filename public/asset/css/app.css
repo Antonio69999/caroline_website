@@ -134,13 +134,12 @@ p {
   background-size: cover;
 }
 
-.footer {
+/* .footer {
   position: fixed;
   left: 0;
   bottom: 0;
   width: 100%;
-  margin-top: 100px;
-}
+} */
 
 .scroll-text {
   animation: scroll-up 20s linear infinite;
