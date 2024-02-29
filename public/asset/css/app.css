@@ -174,13 +174,16 @@ p {
   font-size: 40px;
   font-weight: bolder;
   text-align: center;
+  font-family: Krylon;
+  font-weight: bold;
 }
 
 .carrot-ingredient {
   line-height: 2.5;
-  font-size: large;
-  font-weight: 600;
+  font-size: 25px;
   text-align: left;
+  font-family: Krylon;
+  font-weight: bold;
 }
 
 /* The Close Button */
@@ -236,6 +239,14 @@ p {
   margin-left: 50px;
 }
 
+#openModal.caroline {
+  font-style: normal;
+}
+
+#openModal.caroline:hover {
+  font-style: italic;
+}
+
 @media (max-width: 800px) {
   .menu {
     position: fixed;
@@ -268,6 +279,7 @@ p {
     background: url(/asset/images/open2.png) no-repeat;
     cursor: pointer;
   }
+
   .close {
     background: url(/asset/images/close2.png) no-repeat;
   }
