@@ -1,7 +1,10 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <link rel="icon" type="image/x-icon" href="{{ asset('asset/krot.gif') }}"/> {% block head %}{% endblock %}
+        <link rel="icon" type="image/x-icon" href="{{ asset('asset/krot.gif') }}"/> 
+        <link rel="shortcut icon" type="image/png" href={{ asset("asset/images/logo.png") }}>
+        <link rel="apple-touch-icon" href={{ asset("asset/images/logo.png") }}>
+        {% block head %}{% endblock %}
         <meta charset="UTF-8">
         <title>
             {% block title %}Welcome!
