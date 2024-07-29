@@ -19,14 +19,16 @@ header {
   border-bottom: 1px solid lightgrey;
   z-index: 100;
 }
+
 #myVideo {
   position: fixed;
   right: 0;
   bottom: 0;
-  min-width: 100;
+  min-width: 100%;
   min-height: 100%;
   object-fit: cover;
 }
+
 .logo {
   position: relative;
   width: 250px;
@@ -34,6 +36,7 @@ header {
   background: url(/asset/images/logo.png) no-repeat;
   background-size: contain;
 }
+
 .menu {
   position: fixed;
   height: 100vh;
@@ -46,23 +49,33 @@ header {
   transition: all 0.3s ease-in;
   z-index: 100;
 }
+
 .menu h1 {
   font-weight: bold;
   letter-spacing: 1px;
 }
+
 #name {
-  width: 200px;
+  width: 210px;
   border-bottom: 2px solid black;
+  padding-bottom: 5px; /* Adjust if necessary */
+  margin-bottom: 10px; /* Adjust if necessary */
+  white-space: nowrap; /* Prevent text wrapping */
+  overflow: hidden; /* Hide any overflowing text */
+  text-overflow: ellipsis; /* Add ellipsis if text overflows */
 }
+
 .open {
   display: none;
 }
+
 ul li {
   width: 250px;
   height: 40px;
   padding-left: 10px;
   box-sizing: border-box;
 }
+
 ul li a {
   display: block;
   height: 40px;
@@ -71,9 +84,11 @@ ul li a {
   line-height: 40px;
   transition: all 0.3s linear;
 }
+
 ul li a:hover {
   border-bottom: 1px solid lightgray;
 }
+
 h2 {
   position: relative;
   top: 0px;
@@ -86,10 +101,7 @@ h2 {
   position: relative;
 }
 
-.subtitle {
-  font-size: 30px;
-}
-
+.subtitle,
 .article_subtitle {
   font-size: 30px;
 }
@@ -97,15 +109,18 @@ h2 {
 p {
   font-family: Verdana, sans-serif;
 }
+
 .link {
   width: 200px;
   height: 200px;
   margin: 10px;
 }
+
 .link img {
   width: 200px;
   height: 200px;
 }
+
 .gallery {
   position: relative;
   width: calc(100% - 250px);
@@ -115,14 +130,17 @@ p {
   flex-wrap: wrap;
   justify-content: center;
 }
+
 .gallery a img {
   margin: 5px;
 }
+
 .p-4 {
   width: calc(100% - 300px);
   margin-left: 250px;
   margin-top: 150px;
 }
+
 /* contact form */
 .form-container {
   padding-left: 200px;
@@ -261,6 +279,7 @@ p {
     border-right: 1px solid lightgray;
     z-index: 100;
   }
+
   .active {
     position: fixed;
     height: 100vh;
@@ -272,6 +291,7 @@ p {
     border-right: 1px solid lightgray;
     z-index: 100;
   }
+
   .open {
     display: block !important;
     position: absolute;
@@ -285,6 +305,7 @@ p {
   .close {
     background: url(/asset/images/close2.png) no-repeat;
   }
+
   .gallery {
     position: relative;
     width: 80%;
@@ -294,6 +315,7 @@ p {
     flex-wrap: wrap;
     justify-content: center;
   }
+
   .p-4 {
     width: 80%;
     margin-left: 10%;
