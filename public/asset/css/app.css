@@ -59,7 +59,7 @@ header {
   width: 210px;
   border-bottom: 2px solid black;
   padding-bottom: 5px; /* Adjust if necessary */
-  margin-bottom: 10px; /* Adjust if necessary */
+  margin-bottom: 5px; /* Adjust if necessary */
   white-space: nowrap; /* Prevent text wrapping */
   overflow: hidden; /* Hide any overflowing text */
   text-overflow: ellipsis; /* Add ellipsis if text overflows */
