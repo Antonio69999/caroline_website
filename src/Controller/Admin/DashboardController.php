@@ -30,7 +30,7 @@ class DashboardController extends AbstractDashboardController
         $lastThreeArticles = $articleRepository->findBy([], ['id' => 'DESC'], 3);
 
         // Generate a random welcome message
-        $welcomeMessages = ["Coucou Caro!", "YOOOOOOO!", "Salutation!", "Bienvenue sur ton potit site à toi"];
+        $welcomeMessages = ["Coucou Caro!", "YOOOOOOO!", "Salutation!", "Bienvenue sur ton potit site à toi", "LOVE❤️", "Pleins de bisous", "Plein de love❤️"];
         $randomWelcomeMessage = $welcomeMessages[array_rand($welcomeMessages)];
 
         return $this->render('admin/admin.html.twig', [
