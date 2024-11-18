@@ -26,10 +26,10 @@ class Media
     #[ORM\JoinColumn(name: "article_id", referencedColumnName: "id")]
     private ?Article $article = null;
 
-    #[ORM\Column(type: "datetime")]
-    private \DateTimeInterface $creeLe;
+    #[ORM\Column(type: "datetime", nullable: true)]
+    private ?\DateTimeInterface $creeLe = null;
 
-    #[ORM\Column]
+    #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $modifieLe = null;
 
     #[ORM\Column(length: 255, nullable: true)]
