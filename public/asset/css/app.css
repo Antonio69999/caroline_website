@@ -246,7 +246,11 @@ p {
 }
 
 .description {
-  margin-bottom: 100px;
+  max-width: 800px; /* Limite la largeur du bloc (à ajuster selon tes goûts) */
+  margin: 40px auto; /* Centre le bloc horizontalement et ajoute de l'espace en haut/bas */
+  padding: 20px; /* Ajoute un espace à l'intérieur du bloc pour aérer le texte */
+  text-align: center; /* Ajoute ceci uniquement si tu veux que le texte soit centré, sinon retire-le */
+  line-height: 1.6; /* Améliore la lisibilité du texte */
 }
 
 .article_pictures {
