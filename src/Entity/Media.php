@@ -4,7 +4,7 @@ namespace App\Entity;
 
 use App\Repository\MediaRepository;
 use Doctrine\ORM\Mapping as ORM;
-use Vich\UploaderBundle\Mapping\Annotation as Vich;
+use Vich\UploaderBundle\Mapping\Attribute as Vich;
 use Symfony\Component\HttpFoundation\File\File;
 
 #[ORM\Entity(repositoryClass: MediaRepository::class)]
@@ -23,7 +23,7 @@ class Media
   private ?string $imageName = null;
 
   #[ORM\ManyToOne(targetEntity: Article::class, inversedBy: 'media')]
-  #[ORM\JoinColumn(name: "article_id", referencedColumnName: "id")]
+  #[ORM\JoinColumn(name: "article_id", referencedColumnName: "id", onDelete: "CASCADE")]
   private ?Article $article = null;
 
   #[ORM\Column(type: "datetime", nullable: true)]
@@ -45,29 +45,29 @@ class Media
     return $this->id;
   }
 
+
+  public function setImageFile(?File $imageFile = null): void
+  {
+    $this->imageFile = $imageFile;
+
+    if (null !== $imageFile) {
+      $this->modifieLe = new \DateTimeImmutable();
+    }
+  }
+
   public function getImageFile(): ?File
   {
     return $this->imageFile;
   }
 
-  public function setImageFile(?File $imageFile = null): static
+  public function setImageName(?string $imageName): void
   {
-    $this->imageFile = $imageFile;
-    $this->modifieLe = new \DateTimeImmutable();
-
-    return $this;
+    $this->imageName = $imageName;
   }
 
   public function getImageName(): ?string
   {
     return $this->imageName;
-  }
-
-  public function setImageName(?string $imageName): self
-  {
-    $this->imageName = $imageName;
-
-    return $this;
   }
 
   public function getCreeLe(): ?\DateTimeInterface

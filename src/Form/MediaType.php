@@ -7,6 +7,7 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Vich\UploaderBundle\Form\Type\VichImageType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 
 class MediaType extends AbstractType
 {
@@ -16,7 +17,13 @@ class MediaType extends AbstractType
       ->add('imageFile', VichImageType::class, [
         'required' => false,
         'allow_delete' => true,
-        'download_uri' => true,
+        'download_uri' => false,
+        'label' => 'Image',
+        'attr' => ['accept' => 'image/*']
+      ])
+      ->add('legende', TextType::class, [
+        'required' => false,
+        'label' => 'Légende / Texte alternatif'
       ]);
   }
 

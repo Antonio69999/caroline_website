@@ -15,7 +15,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
 class MediaCrudController extends AbstractCrudController
 {
 
-  public const MEDIA_BASE_PATH = 'uploads/attachments';
+  public const MEDIA_BASE_PATH = 'asset/images';
   public const MEDIA_UPLOAD_DIR = 'public/asset/images';
 
   public static function getEntityFqcn(): string
@@ -26,8 +26,12 @@ class MediaCrudController extends AbstractCrudController
   public function configureCrud(Crud $crud): Crud
   {
     return $crud
-      ->setPageTitle('index', 'Médiathèque')
-      ->setSearchFields(['legende', 'imageName']); // Permet de chercher une image par sa légende
+      ->setPageTitle('index', '🖼️ Médiathèque')
+      ->setPageTitle('detail', 'Détail du média')
+      ->setSearchFields(['legende', 'imageName'])
+      ->setDefaultSort(['id' => 'DESC']) // Les dernières images ajoutées en haut
+      ->showEntityActionsInlined()
+      ->setPaginatorPageSize(30); // On affiche plus d'images par page
   }
 
   public function configureFilters(Filters $filters): Filters
@@ -38,19 +42,18 @@ class MediaCrudController extends AbstractCrudController
   public function configureFields(string $pageName): iterable
   {
     return [
-      IdField::new('id')->onlyOnIndex(),
-      // L'ImageField génère automatiquement une miniature dans la liste (index)
+      IdField::new('id')->hideOnIndex()->hideOnForm(),
+
+      // L'image au centre de l'attention
       ImageField::new('imageName', 'Aperçu')
-        ->setBasePath(self::MEDIA_BASE_PATH)
-        ->setUploadDir(self::MEDIA_UPLOAD_DIR)
-        ->setUploadedFileNamePattern('[randomhash].[extension]')
-        ->setRequired($pageName === Crud::PAGE_NEW), // Requis à la création, mais pas à l'édition
+        ->setBasePath('/uploads/attachments')
+        ->hideOnForm(),
 
       TextField::new('legende', 'Légende / Texte alternatif'),
+
       DateTimeField::new('CreeLe', 'Ajouté le')->setFormat('dd/MM/yyyy')->hideOnForm(),
     ];
   }
-
 
   public function updateEntity(EntityManagerInterface $em, $entityInstance): void
   {
@@ -66,9 +69,9 @@ class MediaCrudController extends AbstractCrudController
   {
     if ($entityInstance instanceof Media) {
       $entityInstance->setCreeLe(new \DateTimeImmutable);
-      parent::persistEntity($em, $entityInstance); //appel de la méthode parent AbstractController
+      parent::persistEntity($em, $entityInstance);
     } else {
-      throw new \Exception('Entity is not an instance of Categorie');
+      throw new \Exception('Entity is not an instance of Media');
     }
   }
 }

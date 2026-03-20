@@ -38,7 +38,7 @@ class Article
   #[ORM\Column(nullable: true)]
   private ?\DateTimeImmutable $ModifieLe = null;
 
-  #[ORM\OneToMany(mappedBy: 'article', targetEntity: Media::class, cascade: ['persist', 'remove'])]
+  #[ORM\OneToMany(targetEntity: Media::class, mappedBy: 'article', cascade: ['persist', 'remove'], orphanRemoval: true)]
   private Collection $media;
 
   #[ORM\ManyToOne(inversedBy: 'article')]

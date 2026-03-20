@@ -16,24 +16,23 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IntegerField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextEditorField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
-use EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext;
-use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use \Symfony\Component\Routing\Attribute\Route;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
 use EasyCorp\Bundle\EasyAdminBundle\Filter\EntityFilter;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Assets;
+use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
+use EasyCorp\Bundle\EasyAdminBundle\Field\Field;
 
-enum Direction
-{
-  case Top;
-  case Up;
-  case Down;
-  case Bottom;
-}
 
 class ArticleCrudController extends AbstractCrudController
 {
 
   public function __construct(
     private readonly EntityManagerInterface $em,
+    private readonly RequestStack $requestStack
   ) {}
 
   public const ARTICLE_BASE_PATH = '/uploads/images/article/';
@@ -44,56 +43,42 @@ class ArticleCrudController extends AbstractCrudController
     return Article::class;
   }
 
-  public function moveUp(AdminContext $context): Response
+  #[Route('/admin/article/reorder', name: 'admin_article_reorder', methods: ['POST'])]
+  public function reorder(Request $request): JsonResponse
   {
-    return $this->move($context, Direction::Up);
-  }
+    $data = json_decode($request->getContent(), true);
+    $orderedIds = $data['orderedIds'] ?? [];
 
-  private function move(AdminContext $context, Direction $direction): Response
-  {
-    $repository = $this->em->getRepository(Article::class);
-
-    $entityInstance = $context->getEntity()->getInstance();
-    $currentPosition = $entityInstance->getPosition();
-
-    // Get the total number of articles to prevent moving beyond the last position
-    $totalArticles = $repository->createQueryBuilder('a')
-      ->select('count(a.id)')
-      ->getQuery()
-      ->getSingleScalarResult();
-
-    $newPosition = match ($direction) {
-      Direction::Up => max(0, $currentPosition - 1),
-      Direction::Down => min($totalArticles - 1, $currentPosition + 1),
-    };
-
-    // Find the entity that currently occupies the new position
-    $otherEntity = $repository->findOneBy(['position' => $newPosition]);
-
-    if ($otherEntity) {
-      // Move the other entity to the current position
-      $otherEntity->setPosition($currentPosition);
+    if (empty($orderedIds)) {
+      return new JsonResponse(['status' => 'error', 'message' => 'Aucune donnée reçue'], 400);
     }
 
-    // Move the current entity to the new position
-    $entityInstance->setPosition($newPosition);
+    $repository = $this->em->getRepository(Article::class);
+
+    $articles = [];
+    $currentPositions = [];
+
+    // 1. On récupère les articles qu'on vient de bouger et on note leurs positions actuelles
+    foreach ($orderedIds as $id) {
+      $article = $repository->find($id);
+      if ($article) {
+        $articles[] = $article;
+        $currentPositions[] = $article->getPosition();
+      }
+    }
+
+    // 2. On trie les positions du plus petit au plus grand (ex: 10, 15, 42)
+    sort($currentPositions);
+
+    // 3. On redistribue ces positions dans le nouvel ordre choisi par la souris
+    foreach ($articles as $index => $article) {
+      $article->setPosition($currentPositions[$index]);
+    }
 
     $this->em->flush();
 
-    $this->addFlash('success', 'The element has been successfully moved.');
-
-    return $this->redirectToRoute('admin', [
-      'crudAction' => 'index',
-      'crudControllerFqcn' => ArticleCrudController::class,
-      'entityId' => $entityInstance->getId(),
-    ]);
+    return new JsonResponse(['status' => 'success']);
   }
-
-  public function moveDown(AdminContext $context): Response
-  {
-    return $this->move($context, Direction::Down);
-  }
-
 
   public function configureCrud(Crud $crud): Crud
   {
@@ -134,8 +119,19 @@ class ArticleCrudController extends AbstractCrudController
       DateTimeField::new('creeLe', 'Créé le')->setFormat('dd/MM/yyyy HH:mm')->hideOnForm(),
       DateTimeField::new('ModifieLe', 'Modifié le')->setFormat('dd/MM/yyyy HH:mm')->onlyOnDetail(),
 
-      CollectionField::new('media', 'Images associées')
-        ->onlyOnForms() // On le garde que dans le formulaire pour pas surcharger la liste
+      Field::new('multipleFiles', 'Ajouter plusieurs images d\'un coup')
+        ->setFormType(FileType::class)
+        ->setFormTypeOptions([
+          'multiple' => true, // Permet de sélectionner plusieurs fichiers
+          'mapped' => false,  // Ne cherche pas à l'écrire dans la table Article
+          'required' => false,
+          'attr' => [
+            'accept' => 'image/*', // Ouvre directement la fenêtre sur les images
+          ]
+        ])
+        ->onlyOnForms(),
+
+      CollectionField::new('media', 'Images déjà associées')->onlyOnForms() // On le garde que dans le formulaire pour pas surcharger la liste
         ->setFormTypeOptions([
           'entry_type' => MediaType::class,
           'allow_add' => true,
@@ -146,40 +142,105 @@ class ArticleCrudController extends AbstractCrudController
     ];
   }
 
+  public function configureAssets(Assets $assets): Assets
+  {
+    return $assets
+      // 1. On charge la librairie magique depuis un CDN
+      ->addHtmlContentToHead('<script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>')
+      // 2. On charge notre petit script maison (qu'on va créer à l'étape 4)
+      ->addJsFile('asset/js/admin_upload_loader.js');
+  }
+
   public function configureActions(Actions $actions): Actions
   {
-    $moveUp = Action::new('moveUp', false, 'fa fa-sort-up')
-      ->setHtmlAttributes(['title' => 'Move up'])
-      ->linkToCrudAction('moveUp');
-
-    $moveDown = Action::new('moveDown', false, 'fa fa-sort-down')
-      ->setHtmlAttributes(['title' => 'Move down'])
-      ->linkToCrudAction('moveDown');
-
-    return $actions
-      ->add(Crud::PAGE_INDEX, $moveUp)
-      ->add(Crud::PAGE_INDEX, $moveDown);
+    return $actions;
   }
 
-
-
-  public function updateEntity(EntityManagerInterface $em, $entityInstance): void
+  private function handleImageUploads(Article $article): void
   {
-    // dd($entityInstance);
-    if (!$entityInstance instanceof Article) return;
+    $request = $this->requestStack->getCurrentRequest();
+    $files = $request->files->all();
 
-    $entityInstance->setModifieLe(new \DateTimeImmutable);
-    // dd($entityInstance);
-    parent::updateEntity($em, $entityInstance); //appel de la méthode parent AbstractController
+    // EasyAdmin range les champs non mappés sous le nom de l'entité ('Article')
+    $uploadedFiles = $files['Article']['multipleFiles'] ?? [];
+
+    // Si c'est un seul fichier, on le met dans un tableau pour uniformiser
+    if (!is_array($uploadedFiles)) {
+      $uploadedFiles = [$uploadedFiles];
+    }
+
+    foreach ($uploadedFiles as $file) {
+      if ($file) {
+        // 1. On génère un nom unique
+        $newFilename = uniqid() . '.' . $file->guessExtension();
+
+        // 2. On déplace physiquement le fichier dans le bon dossier
+        // ⚠️ VERIFIE LE CHEMIN : j'ai repris celui de ton MediaCrudController
+        $uploadDir = $this->getParameter('kernel.project_dir') . '/public/uploads/attachments';
+        $file->move($uploadDir, $newFilename);
+
+        // 3. On crée l'entité Media et on la lie à l'article
+        $media = new \App\Entity\Media();
+        $media->setImageName($newFilename);
+        // Optionnel : on met le nom d'origine comme légende par défaut
+        $media->setLegende(pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME));
+        $media->setArticle($article);
+        $media->setCreeLe(new \DateTimeImmutable());
+
+        $this->em->persist($media);
+      }
+    }
   }
+
 
   public function persistEntity(EntityManagerInterface $em, $entityInstance): void
   {
-    if ($entityInstance instanceof Article) {
-      $entityInstance->setCreeLe(new \DateTimeImmutable);
-      parent::persistEntity($em, $entityInstance); //appel de la méthode parent AbstractController
-    } else {
-      throw new \Exception('Entity is not an instance of Categorie');
+    if (!$entityInstance instanceof Article) {
+      throw new \Exception('Entity is not an instance of Article');
     }
+
+    $entityInstance->setCreeLe(new \DateTimeImmutable);
+
+    // 🆕 Définir automatiquement la position pour un nouvel article
+    if ($entityInstance->getPosition() === null || $entityInstance->getPosition() === 0) {
+      $maxPosition = $em->getRepository(Article::class)
+        ->createQueryBuilder('a')
+        ->select('MAX(a.position)')
+        ->getQuery()
+        ->getSingleScalarResult();
+
+      $entityInstance->setPosition(($maxPosition ?? -1) + 1);
+    }
+
+    // Persister les médias associés
+    foreach ($entityInstance->getMedia() as $media) {
+      $media->setArticle($entityInstance);
+      $media->setCreeLe(new \DateTimeImmutable);
+      $em->persist($media);
+    }
+
+    $this->handleImageUploads($entityInstance);
+    parent::persistEntity($em, $entityInstance);
+  }
+
+  public function updateEntity(EntityManagerInterface $em, $entityInstance): void
+  {
+    if (!$entityInstance instanceof Article) return;
+
+    $entityInstance->setModifieLe(new \DateTimeImmutable);
+
+    // Persister les nouveaux médias ajoutés
+    foreach ($entityInstance->getMedia() as $media) {
+      if (!$media->getId()) { // Nouveau média
+        $media->setArticle($entityInstance);
+        $media->setCreeLe(new \DateTimeImmutable);
+        $em->persist($media);
+      } else { // Média existant
+        $media->setModifieLe(new \DateTimeImmutable);
+      }
+    }
+
+    $this->handleImageUploads($entityInstance);
+    parent::updateEntity($em, $entityInstance);
   }
 }
