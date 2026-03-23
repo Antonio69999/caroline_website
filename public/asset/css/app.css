@@ -147,11 +147,16 @@ p {
 }
 
 .main-content {
-  margin-left: 250px;
+  margin-left: 250px; /* On laisse la place exacte du menu (250px) */
+  width: calc(100% - 250px); /* On prend 100% de l'écran MOINS le menu */
   height: 100vh;
-  background-image: url("../images/auberge.jpeg");
+
+  background-image: url("../images/40.jpeg");
   background-repeat: no-repeat;
-  background-size: cover;
+
+  /* C'est ici que la magie opère pour ne pas rogner l'image : */
+  background-size: contain;
+  background-position: center;
 }
 
 .scroll-text {
@@ -328,8 +333,14 @@ p {
 
   .main-content {
     margin-left: 0;
-    background-size: cover; /* Cover the available space */
-    background-position: center; /* Center the image */
+    width: 100%;
+
+    /* On remplace par l'image optimisée pour mobile */
+    background-image: url("../images/40.JPEGResponsive.jpeg");
+
+    /* Tu peux ajuster selon l'image mobile : 'cover' pour remplir l'écran,
+       ou 'contain' si tu veux aussi qu'elle s'affiche en entier sans rogner */
+    background-size: cover;
   }
 
   .form-container {
