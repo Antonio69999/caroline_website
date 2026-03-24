@@ -14,6 +14,9 @@ Encore
   // only needed for CDN's or subdirectory deploy
   //.setManifestKeyPrefix('build/')
   .enablePostCssLoader()
+  .configureCssLoader((options) => {
+    options.url = false;
+  })
 
   /*
    * ENTRY CONFIG

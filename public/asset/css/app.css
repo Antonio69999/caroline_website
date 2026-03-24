@@ -3,12 +3,8 @@
 @tailwind utilities; */
 
 @font-face {
-  /* font-family: "Krylon";
-  src: url("../fonts/Krylon-Regular.otf") format("opentype"),
-    url("../fonts/Krylon-Regular.woff") format("woff"),
-    url("../fonts/Krylon-Regular.woff2") format("woff2"); */
   font-family: "Alice";
-  src: url("../fonts/Alice-Regular.ttf") format("truetype");
+  src: url("/asset/fonts/Alice-Regular.ttf") format("truetype");
 }
 
 header {
