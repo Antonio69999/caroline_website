@@ -84,7 +84,7 @@ class ArticleCrudController extends AbstractCrudController
   {
     return $crud
       ->setDefaultSort(['position' => 'ASC'])
-      ->setPageTitle('index', 'Liste des Articles')
+      ->setPageTitle('index', '🎨 Liste des Articles')
       // Définir sur quels champs la barre de recherche globale fonctionne
       ->setSearchFields(['titre', 'description'])
       // Option sympa : afficher le nombre de résultats
@@ -135,6 +135,7 @@ class ArticleCrudController extends AbstractCrudController
         ->setFormTypeOptions([
           'entry_type' => MediaType::class,
           'allow_add' => true,
+          'allow_delete' => true,
           'by_reference' => false,
         ]),
 
@@ -145,10 +146,9 @@ class ArticleCrudController extends AbstractCrudController
   public function configureAssets(Assets $assets): Assets
   {
     return $assets
-      // 1. On charge la librairie magique depuis un CDN
       ->addHtmlContentToHead('<script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>')
-      // 2. On charge notre petit script maison (qu'on va créer à l'étape 4)
-      ->addJsFile('asset/js/admin_upload_loader.js');
+      ->addJsFile('asset/js/admin_upload_loader.js')
+      ->addJsFile('asset/js/admin_drag_drop.js');
   }
 
   public function configureActions(Actions $actions): Actions
@@ -161,29 +161,34 @@ class ArticleCrudController extends AbstractCrudController
     $request = $this->requestStack->getCurrentRequest();
     $files = $request->files->all();
 
-    // EasyAdmin range les champs non mappés sous le nom de l'entité ('Article')
     $uploadedFiles = $files['Article']['multipleFiles'] ?? [];
 
-    // Si c'est un seul fichier, on le met dans un tableau pour uniformiser
     if (!is_array($uploadedFiles)) {
       $uploadedFiles = [$uploadedFiles];
     }
 
     foreach ($uploadedFiles as $file) {
       if ($file) {
-        // 1. On génère un nom unique
-        $newFilename = uniqid() . '.' . $file->guessExtension();
-
-        // 2. On déplace physiquement le fichier dans le bon dossier
-        // ⚠️ VERIFIE LE CHEMIN : j'ai repris celui de ton MediaCrudController
         $uploadDir = $this->getParameter('kernel.project_dir') . '/public/uploads/attachments';
+
+        $originalFilename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+        $safeFilename = strtolower(trim(preg_replace('/[^A-Za-z0-9-_]+/', '-', $originalFilename), '-'));
+        $safeFilename = $safeFilename !== '' ? $safeFilename : 'image';
+
+        $extension = $file->guessExtension() ?: $file->getClientOriginalExtension() ?: 'bin';
+        $newFilename = $safeFilename . '.' . $extension;
+
+        $counter = 1;
+        while (file_exists($uploadDir . '/' . $newFilename)) {
+          $newFilename = $safeFilename . '-' . $counter . '.' . $extension;
+          $counter++;
+        }
+
         $file->move($uploadDir, $newFilename);
 
-        // 3. On crée l'entité Media et on la lie à l'article
         $media = new \App\Entity\Media();
         $media->setImageName($newFilename);
-        // Optionnel : on met le nom d'origine comme légende par défaut
-        $media->setLegende(pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME));
+        $media->setLegende($originalFilename);
         $media->setArticle($article);
         $media->setCreeLe(new \DateTimeImmutable());
 
@@ -191,7 +196,6 @@ class ArticleCrudController extends AbstractCrudController
       }
     }
   }
-
 
   public function persistEntity(EntityManagerInterface $em, $entityInstance): void
   {

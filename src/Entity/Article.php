@@ -187,4 +187,14 @@ class Article
 
     return $this;
   }
+
+  public function addMedium(Media $media): static
+  {
+    return $this->addMedia($media);
+  }
+
+  public function removeMedium(Media $media): static
+  {
+    return $this->removeMedia($media);
+  }
 }
