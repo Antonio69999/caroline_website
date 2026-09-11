@@ -3,14 +3,15 @@
 namespace App\Controller\Admin;
 
 use App\Entity\Article;
-use App\Form\MediaType;
+use App\Entity\Media;
+use App\Service\MediaUploadHandler;
 use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\CollectionField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IntegerField;
@@ -32,7 +33,8 @@ class ArticleCrudController extends AbstractCrudController
 
   public function __construct(
     private readonly EntityManagerInterface $em,
-    private readonly RequestStack $requestStack
+    private readonly RequestStack $requestStack,
+    private readonly MediaUploadHandler $mediaUploadHandler,
   ) {}
 
   public const ARTICLE_BASE_PATH = '/uploads/images/article/';
@@ -89,7 +91,11 @@ class ArticleCrudController extends AbstractCrudController
       ->setSearchFields(['titre', 'description'])
       // Option sympa : afficher le nombre de résultats
       ->setPaginatorPageSize(20)
-      ->showEntityActionsInlined();
+      ->showEntityActionsInlined()
+      // Ajoute la galerie de photos triable sous le formulaire d'édition
+      ->overrideTemplate('crud/edit', 'admin/article/edit.html.twig')
+      // Ajoute un petit mode d'emploi en haut de la liste
+      ->overrideTemplate('crud/index', 'admin/article/index.html.twig');
   }
 
 
@@ -106,6 +112,7 @@ class ArticleCrudController extends AbstractCrudController
   {
     return [
       IdField::new('id')->onlyOnIndex(), // Afficher l'ID seulement dans la liste
+
       TextField::new('titre', 'Titre de l\'article'),
 
       // On affiche la catégorie directement dans la liste
@@ -131,15 +138,14 @@ class ArticleCrudController extends AbstractCrudController
         ])
         ->onlyOnForms(),
 
-      CollectionField::new('media', 'Images déjà associées')->onlyOnForms() // On le garde que dans le formulaire pour pas surcharger la liste
-        ->setFormTypeOptions([
-          'entry_type' => MediaType::class,
-          'allow_add' => true,
-          'allow_delete' => true,
-          'by_reference' => false,
-        ]),
+      // On ne montre plus ce numéro brut dans le formulaire : le glisser-déposer
+      // (et les flèches ▲▼) de la liste s'occupent déjà de l'ordre, l'exposer ici
+      // en plus n'apporterait qu'une occasion de se tromper.
+      IntegerField::new('position', 'Ordre')->onlyOnIndex(),
 
-      IntegerField::new('position', 'Ordre')
+      BooleanField::new('publie', 'Publié sur le site')
+        ->renderAsSwitch(true)
+        ->setHelp('Décoche pour préparer un article sans qu\'il soit visible par les visiteurs.'),
     ];
   }
 
@@ -147,8 +153,12 @@ class ArticleCrudController extends AbstractCrudController
   {
     return $assets
       ->addHtmlContentToHead('<script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>')
+      ->addCssFile('asset/css/admin_media.css')
       ->addJsFile('asset/js/admin_upload_loader.js')
-      ->addJsFile('asset/js/admin_drag_drop.js');
+      ->addJsFile('asset/js/admin_drag_drop.js')
+      ->addJsFile('asset/js/admin_media_reorder.js')
+      ->addJsFile('asset/js/admin_image_resize.js')
+      ->addJsFile('asset/js/admin_unsaved_warning.js');
   }
 
   public function configureActions(Actions $actions): Actions
@@ -167,33 +177,24 @@ class ArticleCrudController extends AbstractCrudController
       $uploadedFiles = [$uploadedFiles];
     }
 
+    $position = $this->mediaUploadHandler->nextPositionForArticle($article);
+
     foreach ($uploadedFiles as $file) {
-      if ($file) {
-        $uploadDir = $this->getParameter('kernel.project_dir') . '/public/uploads/attachments';
-
-        $originalFilename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
-        $safeFilename = strtolower(trim(preg_replace('/[^A-Za-z0-9-_]+/', '-', $originalFilename), '-'));
-        $safeFilename = $safeFilename !== '' ? $safeFilename : 'image';
-
-        $extension = $file->guessExtension() ?: $file->getClientOriginalExtension() ?: 'bin';
-        $newFilename = $safeFilename . '.' . $extension;
-
-        $counter = 1;
-        while (file_exists($uploadDir . '/' . $newFilename)) {
-          $newFilename = $safeFilename . '-' . $counter . '.' . $extension;
-          $counter++;
-        }
-
-        $file->move($uploadDir, $newFilename);
-
-        $media = new \App\Entity\Media();
-        $media->setImageName($newFilename);
-        $media->setLegende($originalFilename);
-        $media->setArticle($article);
-        $media->setCreeLe(new \DateTimeImmutable());
-
-        $this->em->persist($media);
+      if (!$file) {
+        continue;
       }
+
+      $newFilename = $this->mediaUploadHandler->upload($file);
+      $originalFilename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+
+      $media = new Media();
+      $media->setImageName($newFilename);
+      $media->setLegende($originalFilename);
+      $media->setArticle($article);
+      $media->setPosition($position++);
+      $media->setCreeLe(new \DateTimeImmutable());
+
+      $this->em->persist($media);
     }
   }
 
@@ -206,7 +207,7 @@ class ArticleCrudController extends AbstractCrudController
     $entityInstance->setCreeLe(new \DateTimeImmutable);
 
     // 🆕 Définir automatiquement la position pour un nouvel article
-    if ($entityInstance->getPosition() === null || $entityInstance->getPosition() === 0) {
+    if ($entityInstance->getPosition() === 0) {
       $maxPosition = $em->getRepository(Article::class)
         ->createQueryBuilder('a')
         ->select('MAX(a.position)')
@@ -214,13 +215,6 @@ class ArticleCrudController extends AbstractCrudController
         ->getSingleScalarResult();
 
       $entityInstance->setPosition(($maxPosition ?? -1) + 1);
-    }
-
-    // Persister les médias associés
-    foreach ($entityInstance->getMedia() as $media) {
-      $media->setArticle($entityInstance);
-      $media->setCreeLe(new \DateTimeImmutable);
-      $em->persist($media);
     }
 
     $this->handleImageUploads($entityInstance);
@@ -232,17 +226,6 @@ class ArticleCrudController extends AbstractCrudController
     if (!$entityInstance instanceof Article) return;
 
     $entityInstance->setModifieLe(new \DateTimeImmutable);
-
-    // Persister les nouveaux médias ajoutés
-    foreach ($entityInstance->getMedia() as $media) {
-      if (!$media->getId()) { // Nouveau média
-        $media->setArticle($entityInstance);
-        $media->setCreeLe(new \DateTimeImmutable);
-        $em->persist($media);
-      } else { // Média existant
-        $media->setModifieLe(new \DateTimeImmutable);
-      }
-    }
 
     $this->handleImageUploads($entityInstance);
     parent::updateEntity($em, $entityInstance);

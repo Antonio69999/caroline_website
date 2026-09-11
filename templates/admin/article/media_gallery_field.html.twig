@@ -1,0 +1,32 @@
+<div class="media-gallery-panel">
+    <h3 class="media-gallery-title">
+        Photos de l'article <span class="media-gallery-hint">(glisser pour réordonner)</span>
+    </h3>
+
+    {% if article.media|length > 0 %}
+        <div class="media-gallery-sortable" data-article-id="{{ article.id }}">
+            {% for media in article.media %}
+                <div class="media-gallery-item" data-id="{{ media.id }}">
+                    <img src="{{ asset('uploads/attachments/' ~ media.imageName) }}" alt="{{ media.legende }}">
+                    <div class="media-gallery-caption">{{ media.legende|default('(sans légende)') }}</div>
+                    <a
+                        class="media-gallery-edit-link"
+                        href="{{ ea_url().setController('App\\Controller\\Admin\\MediaCrudController').setAction('edit').setEntityId(media.id) }}"
+                        title="Modifier / déplacer cette photo dans la Médiathèque"
+                        aria-label="Modifier {{ media.legende|default('cette photo') }}"
+                    >✏️</a>
+                </div>
+            {% endfor %}
+        </div>
+        <p class="media-gallery-help">
+            Glisse-dépose les photos pour changer leur ordre d'affichage sur le site.
+            Pour renommer la légende, supprimer ou déplacer une photo vers un autre article,
+            clique sur ✏️ (ouvre la Médiathèque).
+        </p>
+    {% else %}
+        <p class="media-gallery-empty">
+            Aucune photo pour le moment. Ajoute-en avec le champ "Ajouter plusieurs images d'un coup"
+            ci-dessus, puis enregistre pour pouvoir les réordonner ici.
+        </p>
+    {% endif %}
+</div>

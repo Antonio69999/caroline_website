@@ -10,6 +10,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextEditorField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Assets;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 
 class CategorieCrudController extends AbstractCrudController
@@ -31,6 +32,11 @@ class CategorieCrudController extends AbstractCrudController
       ->setDefaultSort(['id' => 'DESC'])
       // On met les boutons d'action sur la même ligne pour que ce soit plus joli
       ->showEntityActionsInlined();
+  }
+
+  public function configureAssets(Assets $assets): Assets
+  {
+    return $assets->addJsFile('asset/js/admin_unsaved_warning.js');
   }
 
   public function configureFields(string $pageName): iterable

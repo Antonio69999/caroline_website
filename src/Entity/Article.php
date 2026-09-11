@@ -9,6 +9,7 @@ use Doctrine\DBAL\Types\Types;
 use Symfony\Component\HttpFoundation\File\File;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
+use Symfony\Component\Validator\Constraints as Assert;
 use Vich\UploaderBundle\Mapping\Attribute as Vich;
 
 #[ORM\Entity(repositoryClass: ArticleRepository::class)]
@@ -20,6 +21,7 @@ class Article
   #[ORM\Column]
   private ?int $id = null;
 
+  #[Assert\NotBlank(message: "N'oublie pas de donner un titre à l'article.")]
   #[ORM\Column(length: 255, nullable: true)]
   private ?string $titre = null;
 
@@ -39,14 +41,22 @@ class Article
   private ?\DateTimeImmutable $ModifieLe = null;
 
   #[ORM\OneToMany(targetEntity: Media::class, mappedBy: 'article', cascade: ['persist', 'remove'], orphanRemoval: true)]
+  #[ORM\OrderBy(['position' => 'ASC'])]
   private Collection $media;
 
+  #[Assert\NotNull(message: "Choisis une catégorie pour cet article.")]
   #[ORM\ManyToOne(inversedBy: 'article')]
   private ?Categorie $categorie = null;
 
   #[Gedmo\SortablePosition]
   #[ORM\Column(type: "integer")]
   private int $position = 0;
+
+  // Permet de préparer un article (brouillon) sans qu'il soit visible sur le site.
+  // Par défaut à true : un article existant ou nouvellement créé reste publié
+  // tant que Caroline ne décoche pas volontairement la case.
+  #[ORM\Column]
+  private bool $publie = true;
 
   public function __construct()
   {
@@ -188,6 +198,18 @@ class Article
     return $this;
   }
 
+  public function isPublie(): bool
+  {
+    return $this->publie;
+  }
+
+  public function setPublie(bool $publie): static
+  {
+    $this->publie = $publie;
+
+    return $this;
+  }
+
   public function addMedium(Media $media): static
   {
     return $this->addMedia($media);
@@ -196,5 +218,10 @@ class Article
   public function removeMedium(Media $media): static
   {
     return $this->removeMedia($media);
+  }
+
+  public function __toString(): string
+  {
+    return $this->titre ?? '';
   }
 }

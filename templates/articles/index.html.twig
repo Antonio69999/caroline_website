@@ -17,33 +17,34 @@
 
 {% block body %}
 
-    <div class="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-1 p-1 md:px-20">
+    <div class="narrow-content">
         {% for article in articles %}
-            <div class="bg-white">
-                <h2 class="article_subtitle p-4">{{ article.titre }}</h2>
+            <div class="article-detail">
+                <h2 class="article_subtitle">{{ article.titre }}</h2>
                 <div class="gallery">
                     {% for media in article.media %}
                         <a href="{{ asset('uploads/attachments/' ~ media.imageName) }}" title="{{ media.legende }}">
-                            <img class="h-48 object-cover" src="{{ asset('uploads/attachments/' ~ media.imageName) }}" alt="{{ media.legende }}" title="{{ media.legende }}">
+                            <img src="{{ asset('uploads/attachments/' ~ media.imageName) }}" alt="{{ media.legende }}" title="{{ media.legende }}">
                         </a>
                     {% endfor %}
                 </div>
-                <div class="p-4 description">
-                    <p class="text-gray-500 text-sm mt-10">{{ article.description|raw }}</p>
+                <div class="description">
+                    <p>{{ article.description|raw }}</p>
                 </div>
-            {% endfor %}
-        </div>
-        <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
-        <script src="{{ asset('asset/js/simple-lightbox.min.js') }}"></script>
-        <script>
-            (function () {
-                var $gallery = new SimpleLightbox('.gallery a', {
-                    showCounter: false,
-                });
-            })();
-        </script>
+            </div>
+        {% endfor %}
+    </div>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <script src="{{ asset('asset/js/simple-lightbox.min.js') }}"></script>
+    <script>
+        (function () {
+            var $gallery = new SimpleLightbox('.gallery a', {
+                showCounter: false,
+            });
+        })();
+    </script>
 
-    {% endblock %}
+{% endblock %}
 
 
     {% block footer %}{% endblock %}

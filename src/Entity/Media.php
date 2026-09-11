@@ -4,8 +4,10 @@ namespace App\Entity;
 
 use App\Repository\MediaRepository;
 use Doctrine\ORM\Mapping as ORM;
-use Vich\UploaderBundle\Mapping\Attribute as Vich;
+use Gedmo\Mapping\Annotation as Gedmo;
 use Symfony\Component\HttpFoundation\File\File;
+use Symfony\Component\Validator\Constraints as Assert;
+use Vich\UploaderBundle\Mapping\Attribute as Vich;
 
 #[ORM\Entity(repositoryClass: MediaRepository::class)]
 #[Vich\Uploadable]
@@ -16,6 +18,10 @@ class Media
   #[ORM\Column]
   private ?int $id = null;
 
+  // Ce champ n'est jamais rempli par un formulaire (les photos sont uploadées via
+  // MediaUploadHandler, pas via Vich) : il ne sert qu'à donner à Vich l'attribut
+  // #[Vich\UploadableField] dont il a besoin pour savoir supprimer le bon fichier
+  // sur le disque quand ce Media est supprimé.
   #[Vich\UploadableField(mapping: 'media', fileNameProperty: 'imageName')]
   private ?File $imageFile = null;
 
@@ -32,8 +38,13 @@ class Media
   #[ORM\Column(nullable: true)]
   private ?\DateTimeImmutable $modifieLe = null;
 
+  #[Assert\NotBlank(message: "Ajoute une légende : c'est ce que liront les personnes qui ne peuvent pas voir la photo.")]
   #[ORM\Column(length: 255, nullable: true)]
   private ?string $legende = null;
+
+  #[Gedmo\SortablePosition]
+  #[ORM\Column(type: "integer")]
+  private int $position = 0;
 
   public function __construct()
   {
@@ -45,14 +56,21 @@ class Media
     return $this->id;
   }
 
+  public function getPosition(): int
+  {
+    return $this->position;
+  }
+
+  public function setPosition(int $position): static
+  {
+    $this->position = $position;
+
+    return $this;
+  }
 
   public function setImageFile(?File $imageFile = null): void
   {
     $this->imageFile = $imageFile;
-
-    if (null !== $imageFile) {
-      $this->modifieLe = new \DateTimeImmutable();
-    }
   }
 
   public function getImageFile(): ?File

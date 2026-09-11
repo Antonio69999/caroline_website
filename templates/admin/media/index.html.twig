@@ -1,0 +1,73 @@
+{% extends '@EasyAdmin/crud/index.html.twig' %}
+
+{% block main %}
+    <details class="admin-help-banner">
+        <summary>❓ Comment ça marche ?</summary>
+        <ul>
+            <li>Pour ajouter des photos : clique sur "Ajouter" en haut à droite.</li>
+            <li>Pour changer l'ordre des photos <strong>d'un article</strong> : ouvre cet article et glisse-dépose les photos dans sa galerie (ou utilise les flèches ▲▼).</li>
+            <li>Pour renommer une légende ou déplacer une photo vers un autre article : modifie directement les champs sur sa carte ci-dessous, puis clique sur "Enregistrer".</li>
+        </ul>
+    </details>
+
+    {% set num_results = entities|length %}
+
+    {% if num_results > 0 %}
+        <div class="media-library-grid">
+            {% for entity in entities %}
+                {% if entity.isAccessible %}
+                    <div class="media-library-card" data-id="{{ entity.primaryKeyValueAsString }}">
+                        {% if entity.instance.imageName %}
+                            <img src="{{ asset('uploads/attachments/' ~ entity.instance.imageName) }}" alt="{{ entity.instance.legende }}">
+                        {% else %}
+                            <img src="" alt="" style="visibility:hidden;">
+                        {% endif %}
+
+                        <div class="media-library-card-body">
+                            <form method="post" action="{{ path('admin_media_quick_update', {id: entity.instance.id}) }}">
+                                <input type="text" name="legende" value="{{ entity.instance.legende }}" placeholder="Légende...">
+
+                                <select name="article">
+                                    <option value="">— Choisir un article —</option>
+                                    {% for a in all_articles %}
+                                        <option value="{{ a.id }}" {{ entity.instance.article and entity.instance.article.id == a.id ? 'selected' }}>{{ a.titre }}</option>
+                                    {% endfor %}
+                                </select>
+
+                                <div class="media-library-card-actions">
+                                    <button type="submit" class="btn btn-sm btn-primary">Enregistrer</button>
+
+                                    {% for action in entity.actions %}
+                                        {% if action.isActionGroup %}
+                                            {{ include(action.templatePath, {group: action, entity: entity}, with_context: false) }}
+                                        {% else %}
+                                            {{ include(action.templatePath, {action: action, entity: entity}, with_context: false) }}
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+
+        {% if entities|length > 0 %}
+            <div class="content-panel-footer without-padding without-border">
+                {% block paginator %}
+                    {{ include(ea.templatePath('crud/paginator')) }}
+                {% endblock paginator %}
+            </div>
+        {% endif %}
+    {% else %}
+        <p class="media-library-empty">Aucune photo pour le moment. Utilise le bouton "Ajouter" en haut à droite.</p>
+    {% endif %}
+
+    {% block delete_form %}
+        {{ include('@EasyAdmin/crud/includes/_action_confirmation_modal.html.twig', with_context: false) }}
+    {% endblock delete_form %}
+
+    {% if filters|length > 0 %}
+        {{ include('@EasyAdmin/crud/includes/_filters_modal.html.twig') }}
+    {% endif %}
+{% endblock main %}

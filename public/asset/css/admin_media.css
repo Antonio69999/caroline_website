@@ -1,0 +1,197 @@
+/* Galerie triable dans le formulaire d'un article */
+.media-gallery-panel {
+  margin: 1.5rem 0;
+  padding: 1rem 1.25rem;
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+}
+
+.media-gallery-title {
+  margin: 0 0 1rem;
+  font-size: 1.1rem;
+}
+
+.media-gallery-hint {
+  font-weight: normal;
+  color: #777;
+  font-size: 0.85rem;
+}
+
+.media-gallery-sortable {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.media-gallery-item {
+  position: relative;
+  width: 140px;
+  cursor: grab;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  overflow: hidden;
+  background: #fafafa;
+}
+
+.media-gallery-item:active {
+  cursor: grabbing;
+}
+
+.media-gallery-item img {
+  width: 100%;
+  height: 100px;
+  object-fit: cover;
+  display: block;
+}
+
+.media-gallery-caption {
+  font-size: 0.75rem;
+  padding: 0.25rem 0.4rem;
+  color: #555;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.media-gallery-edit-link {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 4px;
+  padding: 2px 5px;
+  text-decoration: none;
+  font-size: 0.85rem;
+}
+
+.media-gallery-help,
+.media-gallery-empty {
+  margin: 0.75rem 0 0;
+  font-size: 0.85rem;
+  color: #777;
+}
+
+/* Médiathèque : grille de cartes */
+.media-library-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 1rem;
+}
+
+.media-library-card {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+}
+
+.media-library-card img {
+  width: 100%;
+  height: 140px;
+  object-fit: cover;
+  display: block;
+  background: #f0f0f0;
+}
+
+.media-library-card-body {
+  padding: 0.6rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.media-library-card-body input[type="text"],
+.media-library-card-body select {
+  width: 100%;
+  font-size: 0.85rem;
+  padding: 0.25rem 0.4rem;
+}
+
+.media-library-card-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 0.25rem;
+  gap: 0.4rem;
+}
+
+.media-library-empty {
+  padding: 2rem;
+  text-align: center;
+  color: #777;
+}
+
+/* Flèches ▲▼ : alternative clavier au glisser-déposer (liste des articles) */
+.position-move-buttons {
+  display: inline-flex;
+  gap: 0.25rem;
+  margin-left: 0.5rem;
+  vertical-align: middle;
+}
+
+.position-move-btn,
+.media-gallery-move-btn {
+  min-width: 28px;
+  min-height: 28px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background: #fff;
+  cursor: pointer;
+  font-size: 0.8rem;
+  line-height: 1;
+}
+
+.position-move-btn:disabled,
+.media-gallery-move-btn:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+/* Flèches ▲▼ : alternative clavier au glisser-déposer (galerie d'un article) */
+.media-gallery-move-buttons {
+  display: flex;
+  gap: 0.35rem;
+  justify-content: center;
+  padding: 0.3rem 0.4rem 0.4rem;
+}
+
+/* Focus bien visible sur tous les contrôles interactifs ajoutés */
+.position-move-btn:focus-visible,
+.media-gallery-move-btn:focus-visible,
+.admin-help-banner summary:focus-visible {
+  outline: 3px solid #2684ff;
+  outline-offset: 2px;
+}
+
+/* Ce lien est dans un conteneur à coins arrondis (overflow: hidden) : un anneau
+   de focus classique serait rogné, on le fait donc apparaître vers l'intérieur. */
+.media-gallery-edit-link:focus-visible {
+  outline: 3px solid #2684ff;
+  outline-offset: -3px;
+}
+
+/* Mode d'emploi dépliable, en haut des pages Articles / Médiathèque */
+.admin-help-banner {
+  margin: 0 0 1rem;
+  padding: 0.75rem 1rem;
+  background: #eef6ff;
+  border: 1px solid #cfe4ff;
+  border-radius: 8px;
+}
+
+.admin-help-banner summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.admin-help-banner ul {
+  margin: 0.6rem 0 0;
+  padding-left: 1.2rem;
+}
+
+.admin-help-banner li {
+  margin-bottom: 0.35rem;
+}

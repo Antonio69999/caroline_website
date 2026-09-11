@@ -13,25 +13,27 @@
 {% endblock %}
 
 {% block body %}
-    <h2 class="subtitle">{{ category.titre }}</h2>
-    <div class="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-10 flex-wrap justify-center content">
-        {% for article in articles %}
-            <a href="{{path('app_article_show',{"id": article.id})}}">
-                {% if article.media|length > 0 %}
-                    {% set randomImage = random(article.media) %}
-                    <div class="link text-center">
-                        <img class="article_pictures h-48" src="{{ asset('uploads/attachments/' ~ randomImage.imageName) }}" alt="{{ randomImage.imageName }}">
-                        <div class="imagetitle">
-                            <p>
-                                {{ article.titre }}
-                            </p>
+    <div class="page-content">
+        <h2 class="subtitle">{{ category.titre }}</h2>
+        <div class="content">
+            {% for article in articles %}
+                <a href="{{path('app_article_show',{"id": article.id})}}">
+                    {% if article.media|length > 0 %}
+                        {% set randomImage = random(article.media) %}
+                        <div class="link text-center">
+                            <img class="article_pictures" src="{{ asset('uploads/attachments/' ~ randomImage.imageName) }}" alt="{{ randomImage.imageName }}">
+                            <div class="imagetitle">
+                                <p>
+                                    {{ article.titre }}
+                                </p>
+                            </div>
                         </div>
-                    </div>
-                {% endif %}
-            </a>
-        {% endfor %}
+                    {% endif %}
+                </a>
+            {% endfor %}
+        </div>
     </div>
     <div class="description">
         {{ category.description|raw }}
     </div>
-</div>{% endblock %}{% block footer %}{% endblock %}
+{% endblock %}{% block footer %}{% endblock %}

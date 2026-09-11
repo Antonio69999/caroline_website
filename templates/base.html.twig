@@ -3,16 +3,17 @@
     <head>
         <link rel="icon" type="image/x-icon" href="{{ asset('asset/krot.gif') }}"/>
         <link rel="shortcut icon" type="image/png" href="{{ asset('asset/images/logo.png') }}"/>
-        <link rel="apple-touch-icon" href={{ asset('asset/images/logo.png') }} "/>
-                    {% block head %}{% endblock %}
-                    <meta charset=" utf-8">
+        <link rel="apple-touch-icon" href="{{ asset('asset/images/logo.png') }}"/>
+        {% block head %}{% endblock %}
+        <meta charset="utf-8">
         <title>
             {% block title %}Welcome!
             {% endblock %}
         </title>
         <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport"> {% block meta %}{% endblock %}
         <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.1/flowbite.min.css" rel="stylesheet"/>
-        <link rel="stylesheet" href={{ asset("asset/css/app.css") }}> {% block stylesheets %}{% endblock %}
+        <link rel="stylesheet" href="{{ asset('asset/css/app.css') }}">
+        {% block stylesheets %}{% endblock %}
         {% block og_meta %}
             <meta property="og:title" content="Bienvenue dans mon jardin">
             <meta property="og:type" content="website"/>

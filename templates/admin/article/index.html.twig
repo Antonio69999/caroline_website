@@ -1,0 +1,15 @@
+{% extends '@EasyAdmin/crud/index.html.twig' %}
+
+{% block main %}
+    <details class="admin-help-banner">
+        <summary>❓ Comment ça marche ?</summary>
+        <ul>
+            <li>Pour ajouter un nouvel article : clique sur "Ajouter" en haut à droite.</li>
+            <li>Pour changer l'ordre d'affichage des articles sur le site : glisse-dépose une ligne du tableau (ou utilise les flèches ▲▼ à côté du numéro).</li>
+            <li>Pour ajouter des photos à un article : ouvre l'article, utilise "Ajouter plusieurs images d'un coup", puis enregistre.</li>
+            <li>Pour préparer un article sans qu'il soit encore visible sur le site : décoche "Publié sur le site" dans sa fiche.</li>
+        </ul>
+    </details>
+
+    {{ parent() }}
+{% endblock %}

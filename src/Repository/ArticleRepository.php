@@ -27,8 +27,10 @@ class ArticleRepository extends ServiceEntityRepository
             ->leftJoin('a.media', 'm')
             ->addSelect('m')
             ->where('a.categorie = :categoryId')
+            ->andWhere('a.publie = true')
             ->setParameter('categoryId', $categoryId)
             ->orderBy('a.position', 'ASC')
+            ->addOrderBy('m.position', 'ASC')
             ->getQuery()
             ->getResult();
     }

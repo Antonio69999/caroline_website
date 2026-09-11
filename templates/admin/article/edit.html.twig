@@ -1,0 +1,17 @@
+{% extends '@EasyAdmin/crud/edit.html.twig' %}
+
+{% block main %}
+    {% if entity.instance.id %}
+        <p style="margin-bottom: 1rem;">
+            <a href="{{ path('app_article_show', {id: entity.instance.id}) }}" target="_blank" rel="noopener" class="btn btn-secondary">
+                👀 Voir cet article sur le site
+            </a>
+        </p>
+    {% endif %}
+
+    {{ parent() }}
+
+    {% if entity.instance.id %}
+        {% include 'admin/article/media_gallery_field.html.twig' with { article: entity.instance } only %}
+    {% endif %}
+{% endblock %}

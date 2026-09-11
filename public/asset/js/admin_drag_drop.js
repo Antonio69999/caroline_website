@@ -2,7 +2,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const tableBody = document.querySelector("table.datagrid tbody");
 
   if (tableBody) {
-    // --- NOUVEAUTÉ : La fonction qui "maquille" les numéros ---
+    // --- La fonction qui "maquille" les numéros et pose les flèches ▲▼ ---
     function updateVisualPositions() {
       // On regarde sur quelle page on est (utile si tu as plus de 20 articles)
       const urlParams = new URLSearchParams(window.location.search);
@@ -13,13 +13,78 @@ document.addEventListener("DOMContentLoaded", function () {
       const rows = tableBody.querySelectorAll("tr");
       rows.forEach((row, index) => {
         const positionCell = row.querySelector('td[data-column="position"]');
-        if (positionCell) {
-          // On calcule le vrai numéro visuel (1, 2, 3...)
-          const visualNumber = startIndex + index + 1;
-          // On remplace le texte moche par un beau badge bleu typé EasyAdmin
-          positionCell.innerHTML = `<span class="badge badge-primary" style="font-size: 14px; padding: 4px 8px; border-radius: 4px;">${visualNumber}</span>`;
+        if (!positionCell) {
+          return;
+        }
+
+        // On calcule le vrai numéro visuel (1, 2, 3...)
+        const visualNumber = startIndex + index + 1;
+        const titre =
+          row.querySelector('td[data-column="titre"]')?.textContent.trim() ||
+          "cet article";
+        const isFirst = index === 0;
+        const isLast = index === rows.length - 1;
+
+        // On remplace le texte moche par un beau badge bleu typé EasyAdmin
+        positionCell.innerHTML = `<span class="badge badge-primary" style="font-size: 14px; padding: 4px 8px; border-radius: 4px;">${visualNumber}</span>`;
+
+        // Flèches clavier : une alternative accessible au glisser-déposer,
+        // pour qui ne peut pas utiliser la souris (voir WCAG 2.5.7).
+        const controls = document.createElement("span");
+        controls.className = "position-move-buttons";
+
+        const upBtn = document.createElement("button");
+        upBtn.type = "button";
+        upBtn.className = "position-move-btn";
+        upBtn.dataset.direction = "up";
+        upBtn.textContent = "▲";
+        upBtn.setAttribute("aria-label", `Monter « ${titre} »`);
+        upBtn.disabled = isFirst;
+
+        const downBtn = document.createElement("button");
+        downBtn.type = "button";
+        downBtn.className = "position-move-btn";
+        downBtn.dataset.direction = "down";
+        downBtn.textContent = "▼";
+        downBtn.setAttribute("aria-label", `Descendre « ${titre} »`);
+        downBtn.disabled = isLast;
+
+        controls.append(upBtn, downBtn);
+        positionCell.appendChild(controls);
+      });
+    }
+
+    function persistOrder() {
+      updateVisualPositions();
+
+      const rows = tableBody.querySelectorAll("tr");
+      const orderedIds = [];
+
+      rows.forEach((row) => {
+        const entityId = row.getAttribute("data-id");
+        if (entityId) {
+          orderedIds.push(entityId);
         }
       });
+
+      // On sauvegarde en silence
+      fetch("/admin/article/reorder", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ orderedIds: orderedIds }),
+      })
+        .then((response) => {
+          if (response.ok) {
+            showToast("✅ Ordre sauvegardé !", "success");
+          } else {
+            showToast("❌ Oups, une erreur est survenue.", "danger");
+          }
+        })
+        .catch((error) => {
+          showToast("❌ Impossible de joindre le serveur.", "danger");
+        });
     }
 
     // 1. On applique le nouveau design dès le chargement de la page
@@ -29,40 +94,41 @@ document.addEventListener("DOMContentLoaded", function () {
     new Sortable(tableBody, {
       animation: 150,
       ghostClass: "bg-light",
+      onEnd: persistOrder,
+    });
 
-      onEnd: function (evt) {
-        // Dès qu'on lâche la ligne, on recalcule les numéros visuels 1, 2, 3 immédiatement
-        updateVisualPositions();
+    // 3. Les flèches ▲▼ : même résultat que le glisser-déposer, au clavier
+    tableBody.addEventListener("click", function (event) {
+      const button = event.target.closest(".position-move-btn");
+      if (!button || button.disabled) {
+        return;
+      }
 
-        const rows = tableBody.querySelectorAll("tr");
-        const orderedIds = [];
+      const row = button.closest("tr");
+      const direction = button.getAttribute("data-direction");
+      const sibling =
+        direction === "up"
+          ? row.previousElementSibling
+          : row.nextElementSibling;
+      if (!sibling) {
+        return;
+      }
 
-        rows.forEach((row) => {
-          const entityId = row.getAttribute("data-id");
-          if (entityId) {
-            orderedIds.push(entityId);
-          }
-        });
+      if (direction === "up") {
+        tableBody.insertBefore(row, sibling);
+      } else {
+        tableBody.insertBefore(sibling, row);
+      }
 
-        // On sauvegarde en silence
-        fetch("/admin/article/reorder", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ orderedIds: orderedIds }),
-        })
-          .then((response) => {
-            if (response.ok) {
-              showToast("✅ Ordre sauvegardé !", "success");
-            } else {
-              showToast("❌ Oups, une erreur est survenue.", "danger");
-            }
-          })
-          .catch((error) => {
-            showToast("❌ Impossible de joindre le serveur.", "danger");
-          });
-      },
+      persistOrder();
+
+      // On garde le focus sur la ligne qu'on vient de déplacer plutôt que
+      // de le perdre dans la nature après la reconstruction des boutons.
+      const sameButton = row.querySelector(
+        `.position-move-btn[data-direction="${direction}"]`
+      );
+      const fallbackButton = row.querySelector(".position-move-btn");
+      (sameButton && !sameButton.disabled ? sameButton : fallbackButton)?.focus();
     });
   }
 

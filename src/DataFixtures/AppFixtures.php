@@ -82,6 +82,7 @@ class AppFixtures extends Fixture
         $media = new Media();
         $media->setImageName('media_' . $i . '_' . $j . '.jpg');
         $media->setLegende($faker->sentence(4));
+        $media->setPosition($j);
         $media->setCreeLe($faker->dateTimeBetween($dateCreationArticle->format('Y-m-d H:i:s'), 'now'));
 
         // LIAISON AVEC L'ARTICLE

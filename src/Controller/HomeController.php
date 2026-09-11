@@ -17,8 +17,8 @@ class HomeController extends AbstractController
     $categorie = $categorieRepository->findOneBy([], ['id' => 'ASC']);
     $categories = $categorieRepository->findAll();
 
-    // Récupérer les articles liés à la catégorie
-    $articles = $articleRepository->findBy(['categorie' => $categorie]);
+    // Récupérer les articles liés à la catégorie (publiés uniquement)
+    $articles = $articleRepository->findBy(['categorie' => $categorie, 'publie' => true]);
 
 
     return $this->render('home/index.html.twig', [
@@ -60,7 +60,7 @@ class HomeController extends AbstractController
   #[Route('/article/{id}', name: 'app_article_show')]
   public function showArticle(int $id, ArticleRepository $ar, CategorieRepository $cr): Response
   {
-    $articles = $ar->findBy(['id' => $id]);
+    $articles = $ar->findBy(['id' => $id, 'publie' => true]);
     $categories = $cr->findAll();
 
     return $this->render('articles/index.html.twig', [

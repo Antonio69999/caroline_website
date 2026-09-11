@@ -7,6 +7,52 @@
   src: url("/asset/fonts/Alice-Regular.ttf") format("truetype");
 }
 
+:root {
+  --sidebar-width: 250px;
+}
+
+/*
+  Single source of truth for "push this page's content past the fixed
+  sidebar". Use this for content that should fill the available width
+  (image grids, galleries) - it centers within the space to the right
+  of the sidebar.
+*/
+.page-content {
+  margin-left: var(--sidebar-width);
+  width: calc(100% - var(--sidebar-width));
+  box-sizing: border-box;
+  padding: 2.5rem;
+}
+
+@media (max-width: 800px) {
+  .page-content {
+    margin-left: 0;
+    width: 100%;
+    padding: 1.5rem 1rem;
+  }
+}
+
+/*
+  For narrow, single-column content (an article's text, the contact
+  form, legal copy): center on the full page width, the same way this
+  content always has, rather than the space next to the sidebar. Since
+  it's capped well under the sidebar's width away from full bleed, it
+  naturally clears the sidebar on normal screens.
+*/
+.narrow-content {
+  max-width: 900px;
+  margin: 2.5rem auto;
+  padding: 0 2.5rem;
+  box-sizing: border-box;
+}
+
+@media (max-width: 800px) {
+  .narrow-content {
+    margin: 1.5rem auto;
+    padding: 0 1rem;
+  }
+}
+
 header {
   position: fixed;
   width: 100vw;
@@ -100,6 +146,7 @@ h2 {
 .subtitle,
 .article_subtitle {
   font-size: 30px;
+  margin: 0 0 1.5rem;
 }
 
 p {
@@ -118,23 +165,168 @@ p {
 }
 
 .gallery {
-  position: relative;
-  width: calc(100% - 250px);
-  left: 250px;
-  top: 100px;
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
+  gap: 10px;
+  margin-top: 1.5rem;
 }
 
-.gallery a img {
-  margin: 5px;
+.gallery img {
+  height: 220px;
+  width: auto;
+  max-width: 100%;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+.article-detail + .article-detail {
+  margin-top: 3rem;
+  padding-top: 2rem;
+  border-top: 1px solid lightgray;
+}
+
+.legal-content {
+  max-width: 800px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+.legal-content > div {
+  margin-bottom: 1.5rem;
+}
+
+.preambule-content {
+  text-align: center;
+}
+
+.preambule-content video {
+  max-width: 900px;
+  margin-top: 1.5rem;
+}
+
+/* Contact page */
+.contact-page {
+  max-width: 700px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.contact-page__inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.contact-page__title {
+  font-size: 1.75rem;
+  font-weight: 500;
+  color: #1f2937;
+  margin: 0 0 2rem;
+}
+
+.alert-success {
+  width: 100%;
+  box-sizing: border-box;
+  margin-bottom: 1.5rem;
+  padding: 1rem 1.5rem;
+  border-radius: 0.5rem;
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.contact-form {
+  width: 100%;
+  text-align: left;
+}
+
+.contact-form__row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.contact-form__field {
+  flex: 1 1 200px;
+  margin-bottom: 1rem;
+}
+
+.contact-form__field--full {
+  flex-basis: 100%;
+}
+
+.contact-form label {
+  display: block;
+  margin-bottom: 0.25rem;
+  font-size: 0.9rem;
+  color: #374151;
+}
+
+.contact-form__input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.5rem 0.75rem;
+  font-size: 1rem;
+  font-family: inherit;
+  color: #374151;
+  background: #f3f4f6;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  transition: border-color 0.2s ease-in-out, background 0.2s ease-in-out;
+}
+
+.contact-form__input:focus {
+  outline: none;
+  background: white;
+  border-color: #6366f1;
+}
+
+.contact-form__input--textarea {
+  min-height: 8rem;
+  resize: vertical;
+}
+
+.contact-form__actions {
+  text-align: center;
+  margin-top: 0.5rem;
+}
+
+.btn-primary {
+  padding: 0.6rem 2rem;
+  font-size: 1.1rem;
+  background: white;
+  border: 1px solid rgba(0, 0, 0, 0.25);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.2s ease-in-out;
+}
+
+.btn-primary:hover {
+  background: #fbcfe8;
+}
+
+/* Footer (rendered standalone, outside .page-content) */
+.footer {
+  margin-left: var(--sidebar-width);
+  width: calc(100% - var(--sidebar-width));
+  box-sizing: border-box;
+  background: #e5e5e5;
+  text-align: center;
+}
+
+.footer__content {
+  padding: 1rem;
+}
+
+@media (max-width: 800px) {
+  .footer {
+    margin-left: 0;
+    width: 100%;
+  }
 }
 
 .p-4 {
-  width: calc(100% - 300px);
-  margin-left: 250px;
-  margin-top: 150px;
+  padding: 1rem;
 }
 
 /* contact form */
@@ -242,6 +434,11 @@ p {
   margin-bottom: 30px;
 }
 
+.contact-image img {
+  max-width: 100%;
+  height: auto;
+}
+
 .credits {
   font-size: small;
 }
@@ -309,22 +506,6 @@ p {
 
   .close {
     background: url(/asset/images/close2.png) no-repeat;
-  }
-
-  .gallery {
-    position: relative;
-    width: 80%;
-    left: 10%;
-    top: 100px;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-  }
-
-  .p-4 {
-    width: 80%;
-    margin-left: 10%;
-    margin-top: 150px;
   }
 
   .main-content {

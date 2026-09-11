@@ -1,7 +1,15 @@
 vich_uploader:
   db_driver: orm
   mappings:
+    # Les photos elles-mêmes sont déposées par MediaUploadHandler (pas par Vich),
+    # mais ce mapping doit rester déclaré : c'est lui que Vich utilise pour savoir
+    # où trouver et supprimer le fichier sur le disque quand un Media est supprimé.
     media:
       uri_prefix: /uploads/attachments
       upload_destination: "%kernel.project_dir%/public/uploads/attachments"
+      namer: Vich\UploaderBundle\Naming\SmartUniqueNamer
+
+    article:
+      uri_prefix: /uploads/images/article
+      upload_destination: "%kernel.project_dir%/public/uploads/images/article"
       namer: Vich\UploaderBundle\Naming\SmartUniqueNamer
