@@ -147,7 +147,7 @@ p {
   width: calc(100% - 250px); /* On prend 100% de l'écran MOINS le menu */
   height: 100vh;
 
-  background-image: url("../images/40.jpeg");
+  background-image: url("../images/40.JPEG");
   background-repeat: no-repeat;
 
   /* C'est ici que la magie opère pour ne pas rogner l'image : */
@@ -332,7 +332,7 @@ p {
     width: 100%;
 
     /* On remplace par l'image optimisée pour mobile */
-    background-image: url("../images/40.JPEGResponsive.jpeg");
+    background-image: url("../images/40.JPEGResponsive.JPEG");
 
     /* Tu peux ajuster selon l'image mobile : 'cover' pour remplir l'écran,
        ou 'contain' si tu veux aussi qu'elle s'affiche en entier sans rogner */
