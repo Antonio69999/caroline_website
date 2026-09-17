@@ -50,7 +50,7 @@
                         'attr': { 'class': 'contact-form__input contact-form__input--textarea' }
                     }) }}
                 </div>
-                <div class="hp-field" aria-hidden="true">
+                <div class="hp-field" aria-hidden="true" tabindex="-1" autocomplete="off">
                     {{ form_widget(form.website) }}
                 </div>
                 <div class="contact-form__field contact-form__field--full cf-turnstile" data-sitekey="{{ turnstileSiteKey }}" data-appearance="interaction-only"></div>

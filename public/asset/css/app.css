@@ -245,16 +245,25 @@ p {
   color: #b91c1c;
 }
 
-/* Honeypot field: kept out of the visible layout and out of the tab order,
-   but never display:none/visibility:hidden so unsophisticated bots that
-   only check computed visibility still find and fill it in. */
+/* Honeypot field wrapper: kept in the DOM and submitted with the form (so it
+   keeps trapping bots), but never display:none/visibility:hidden so
+   unsophisticated bots that only check computed visibility still find and
+   fill it in. !important guards this rule against any later/more specific
+   selector (e.g. a form-theme or utility class) accidentally pulling it
+   back into the visible layout. */
 .hp-field {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
-  left: -9999px;
-  top: -9999px;
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  margin: -1px !important;
+  padding: 0 !important;
+  border: 0 !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  clip-path: inset(50%) !important;
+  white-space: nowrap !important;
+  left: -9999px !important;
+  top: -9999px !important;
 }
 
 .contact-form {
