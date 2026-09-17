@@ -1,0 +1,10 @@
+framework:
+    rate_limiter:
+        # Throttles contact form submission attempts per visitor IP.
+        # Storage defaults to the "cache.rate_limiter" pool, backed by the
+        # filesystem cache adapter (framework.cache.app) — no Redis/APCu
+        # required, which keeps this compatible with Hostinger shared hosting.
+        contact_form:
+            policy: 'sliding_window'
+            limit: 5
+            interval: '10 minutes'

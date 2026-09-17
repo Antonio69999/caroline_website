@@ -15,6 +15,11 @@
                 {{ message }}
             </div>
         {% endfor %}
+        {% for message in app.flashes('error') %}
+            <div class="alert-error" role="alert">
+                {{ message }}
+            </div>
+        {% endfor %}
         <div class="contact-page__inner">
             <div class="contact-image">
                 <img src="{{ asset('asset/images/lapairedechaussure.jpeg') }}" width="650" alt="La paire de chaussures, 2023">
@@ -23,6 +28,7 @@
             <h1 class="contact-page__title">Contactez-moi :</h1>
 
             {{ form_start(form) }}
+            {{ form_errors(form) }}
             <div class="contact-form">
                 <div class="contact-form__row">
                     <div class="contact-form__field">
@@ -44,6 +50,10 @@
                         'attr': { 'class': 'contact-form__input contact-form__input--textarea' }
                     }) }}
                 </div>
+                <div class="hp-field" aria-hidden="true">
+                    {{ form_widget(form.website) }}
+                </div>
+                <div class="contact-form__field contact-form__field--full cf-turnstile" data-sitekey="{{ turnstileSiteKey }}" data-appearance="interaction-only"></div>
                 <div class="contact-form__actions">
                     <button class="btn-primary" type="submit">Envoyer</button>
                 </div>
@@ -51,6 +61,7 @@
             {{ form_end(form) }}
         </div>
     </section>
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
     <footer class="footer">
         <div class="footer__content">
             <p class="credits">@ 2026 : Les cerveaux derrières les pixels sont

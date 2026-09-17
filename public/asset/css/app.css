@@ -235,6 +235,28 @@ p {
   color: #15803d;
 }
 
+.alert-error {
+  width: 100%;
+  box-sizing: border-box;
+  margin-bottom: 1.5rem;
+  padding: 1rem 1.5rem;
+  border-radius: 0.5rem;
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+/* Honeypot field: kept out of the visible layout and out of the tab order,
+   but never display:none/visibility:hidden so unsophisticated bots that
+   only check computed visibility still find and fill it in. */
+.hp-field {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  left: -9999px;
+  top: -9999px;
+}
+
 .contact-form {
   width: 100%;
   text-align: left;
