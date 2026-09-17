@@ -28,6 +28,22 @@ class HomeController extends AbstractController
     ]);
   }
 
+  #[Route('/preamble', name: 'preambule')]
+  public function preambule(CategorieRepository $cr): Response
+  {
+    return $this->render('components/video.html.twig', [
+      'categories' => $cr->findAll(),
+    ]);
+  }
+
+  #[Route('/legal', name: 'legal')]
+  public function legal(CategorieRepository $cr): Response
+  {
+    return $this->render('components/legal.html.twig', [
+      'categories' => $cr->findAll(),
+    ]);
+  }
+
   #[Route('/category', name: 'app_category')]
   public function category(CategorieRepository $cr): Response
   {
