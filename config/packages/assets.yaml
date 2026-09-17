@@ -1,0 +1,9 @@
+# Cache-busting for the static files served from public/asset/ (app.css,
+# menu.js, favicons, images...) and referenced via {{ asset('asset/...', 'static_assets') }}.
+# The URL gets an automatic ?v=<hash of the file content> so browsers fetch a
+# fresh copy whenever the file changes on deploy. See src/Asset/FileHashVersionStrategy.php.
+framework:
+    assets:
+        packages:
+            static_assets:
+                version_strategy: App\Asset\FileHashVersionStrategy

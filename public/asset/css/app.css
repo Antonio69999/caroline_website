@@ -2,9 +2,16 @@
 @tailwind components;
 @tailwind utilities; */
 
+/* Cache-busting: this file's own URL is auto-versioned by Symfony (see
+   config/packages/assets.yaml), but the url(...) references below point to
+   files this CSS loads directly, so the browser caches them separately.
+   When you replace one of these files with new content, bump its "?v=N"
+   query string here so browsers fetch the new version instead of an old
+   cached one. */
+
 @font-face {
   font-family: "Alice";
-  src: url("/asset/fonts/Alice-Regular.ttf") format("truetype");
+  src: url("/asset/fonts/Alice-Regular.ttf?v=1") format("truetype");
 }
 
 :root {
@@ -75,7 +82,7 @@ header {
   position: relative;
   width: 250px;
   height: 250px;
-  background: url(/asset/images/logo.png) no-repeat;
+  background: url(/asset/images/logo.png?v=1) no-repeat;
   background-size: contain;
 }
 
@@ -370,7 +377,7 @@ p {
   width: calc(100% - 250px); /* On prend 100% de l'écran MOINS le menu */
   height: 100vh;
 
-  background-image: url("../images/40.JPEG");
+  background-image: url("../images/40.JPEG?v=1");
   background-repeat: no-repeat;
 
   /* C'est ici que la magie opère pour ne pas rogner l'image : */
@@ -432,7 +439,7 @@ p {
 
 /* The Close Button */
 .close {
-  background: url(/asset/krot.gif) no-repeat;
+  background: url(/asset/krot.gif?v=1) no-repeat;
   background-size: contain; /* Ensure the image fits in the button */
   width: 50px; /* Adjust as needed */
   height: 50px; /* Adjust as needed */
@@ -443,7 +450,7 @@ p {
 
 .close:hover,
 .close:focus {
-  background: url(/asset/krot.gif) no-repeat;
+  background: url(/asset/krot.gif?v=1) no-repeat;
   background-size: contain;
   text-decoration: none;
   cursor: pointer;
@@ -531,12 +538,12 @@ p {
     height: 50px;
     width: 50px;
     left: 255px;
-    background: url(/asset/images/open2.png) no-repeat;
+    background: url(/asset/images/open2.png?v=1) no-repeat;
     cursor: pointer;
   }
 
   .close {
-    background: url(/asset/images/close2.png) no-repeat;
+    background: url(/asset/images/close2.png?v=1) no-repeat;
   }
 
   .main-content {
@@ -544,7 +551,7 @@ p {
     width: 100%;
 
     /* On remplace par l'image optimisée pour mobile */
-    background-image: url("../images/40.JPEGResponsive.JPEG");
+    background-image: url("../images/40.JPEGResponsive.JPEG?v=1");
 
     /* Tu peux ajuster selon l'image mobile : 'cover' pour remplir l'écran,
        ou 'contain' si tu veux aussi qu'elle s'affiche en entier sans rogner */

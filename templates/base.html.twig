@@ -8,9 +8,9 @@
         'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
         })(window,document,'script','dataLayer','GTM-WF4S4Q7K');</script>
         <!-- End Google Tag Manager -->
-        <link rel="icon" type="image/x-icon" href="{{ asset('asset/krot.gif') }}"/>
-        <link rel="shortcut icon" type="image/png" href="{{ asset('asset/images/logo.png') }}"/>
-        <link rel="apple-touch-icon" href="{{ asset('asset/images/logo.png') }}"/>
+        <link rel="icon" type="image/x-icon" href="{{ asset('asset/krot.gif', 'static_assets') }}"/>
+        <link rel="shortcut icon" type="image/png" href="{{ asset('asset/images/logo.png', 'static_assets') }}"/>
+        <link rel="apple-touch-icon" href="{{ asset('asset/images/logo.png', 'static_assets') }}"/>
         {% block head %}{% endblock %}
         <meta charset="utf-8">
         <title>
@@ -19,15 +19,15 @@
         </title>
         <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport"> {% block meta %}{% endblock %}
         <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.1/flowbite.min.css" rel="stylesheet"/>
-        <link rel="stylesheet" href="{{ asset('asset/css/app.css') }}">
+        <link rel="stylesheet" href="{{ asset('asset/css/app.css', 'static_assets') }}">
         {% block stylesheets %}{% endblock %}
         {% block og_meta %}
             <meta property="og:title" content="Bienvenue dans mon jardin">
             <meta property="og:type" content="website"/>
-            <meta property="og:image" content="{{ asset('asset/images/auberge.jpeg') }}">
+            <meta property="og:image" content="{{ asset('asset/images/auberge.jpeg', 'static_assets') }}">
             <meta property="og:url" content="https://carottecake.com/">
             <meta name="twitter:card" content="summary_large_image">
-            <meta name="twitter:image" content="{{ asset('asset/images/auberge.jpeg') }}">
+            <meta name="twitter:image" content="{{ asset('asset/images/auberge.jpeg', 'static_assets') }}">
             <meta property="og:description" content="Peintures, gravures, ateliers participatifs">
             <meta property="og:site_name" content="Caroline Marcellier">
             <meta name="twitter:image:alt" content="Caroline Marcellier auberge">
@@ -46,6 +46,6 @@
             {# {% include 'components/footer.html.twig' %} #}
         {% endblock %}
         <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.1/flowbite.min.js"></script>
-        <script src="{{ asset('asset/js/menu.js') }}"></script>
+        <script src="{{ asset('asset/js/menu.js', 'static_assets') }}"></script>
     </body>
 </html>

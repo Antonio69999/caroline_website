@@ -1,5 +1,5 @@
 {% block stylesheets %}
-    <link rel="stylesheet" href={{ asset("asset/css/duck.css") }}>
+    <link rel="stylesheet" href={{ asset("asset/css/duck.css", "static_assets") }}>
 {% endblock %}
 
 {% block body %}
@@ -64,4 +64,4 @@
     <a href="http://www.ma5a.com/">ma5a.com</a>
 </div>
 
-<script src={{ asset("asset/js/duck.js") }}></script>{% endblock %}{% block footer %}{% endblock %}
+<script src={{ asset("asset/js/duck.js", "static_assets") }}></script>{% endblock %}{% block footer %}{% endblock %}
