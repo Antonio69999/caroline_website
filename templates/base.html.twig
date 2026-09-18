@@ -18,8 +18,7 @@
             {% endblock %}
         </title>
         <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport"> {% block meta %}{% endblock %}
-        <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.1/flowbite.min.css" rel="stylesheet"/>
-        <link rel="stylesheet" href="{{ asset('asset/css/app.css', 'static_assets') }}">
+        <link rel="stylesheet" href="{{ asset('styles/app.css') }}">
         {% block stylesheets %}{% endblock %}
         {% block og_meta %}
             <meta property="og:title" content="Bienvenue dans mon jardin">
@@ -45,7 +44,5 @@
         {% block footer %}
             {# {% include 'components/footer.html.twig' %} #}
         {% endblock %}
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.1/flowbite.min.js"></script>
-        <script src="{{ asset('asset/js/menu.js', 'static_assets') }}"></script>
     </body>
 </html>
