@@ -1,13 +1,17 @@
 {% extends 'base.html.twig' %}
+
 {% block title %}Préambule{% endblock %}
+
 {% block body %}
-    <div class="narrow-content preambule-content">
-        <a href="{{ path('app_home')}}">
-            <img width="50" src="{{ asset('asset/images/logo.png', 'static_assets') }}" alt="Caroline Marcellier">
-        </a>
-        <video id="video" width="100%" controls loop>
-            <source src="{{ asset('asset/videos/video.mp4', 'static_assets') }}" type="video/mp4">
-            Your browser does not support the video tag.
+    <main class="page-content preambule-page">
+        <video class="preambule-video" controls loop>
+            <source
+                src="{{ asset('asset/videos/video.mp4', 'static_assets') }}"
+                type="video/mp4"
+            >
+            Votre navigateur ne prend pas en charge la lecture de vidéos.
         </video>
-    </div>
-{% endblock %}{% block footer %}{% endblock %}
+    </main>
+{% endblock %}
+
+{% block footer %}{% endblock %}

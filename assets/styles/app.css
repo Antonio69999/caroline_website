@@ -14,6 +14,9 @@
 
 :root {
   --sidebar-width: 250px;
+  --page-max-width: 1440px;
+  --content-max-width: 900px;
+  --page-padding: clamp(1.25rem, 4vw, 2.5rem);
 }
 
 /*
@@ -26,32 +29,38 @@
   one no matter what).
 */
 @layer components {
-
-/*
+  /*
   Single source of truth for "push this page's content past the fixed
   sidebar". Use this for content that should fill the available width
   (image grids, galleries) - it centers within the space to the right
   of the sidebar. Padding scales fluidly with viewport width instead
   of jumping at a single breakpoint.
 */
-.page-content {
-  margin-left: var(--sidebar-width);
-  width: calc(100% - var(--sidebar-width));
-  box-sizing: border-box;
-  padding: clamp(1.25rem, 4vw, 2.5rem);
-}
+  .page-content {
+    margin-left: var(--sidebar-width);
+    width: calc(100% - var(--sidebar-width));
+    min-width: 0;
+    box-sizing: border-box;
+    padding: var(--page-padding);
+  }
 
-/* Below the nav's breakpoint (md, 768px) the sidebar goes off-canvas,
+  /* Optional inner wrapper for wide pages. Existing pages keep working without it. */
+  .page-content__inner {
+    width: min(100%, var(--page-max-width));
+    margin-inline: auto;
+  }
+
+  /* Below the nav's breakpoint (md, 768px) the sidebar goes off-canvas,
    so content reclaims the full width. Kept in sync with the nav's
    Tailwind `md:` breakpoint - see templates/components/menu.html.twig. */
-@media (max-width: 767px) {
-  .page-content {
-    margin-left: 0;
-    width: 100%;
+  @media (max-width: 767px) {
+    .page-content {
+      margin-left: 0;
+      width: 100%;
+    }
   }
-}
 
-/*
+  /*
   For narrow, single-column content (an article's text, the contact
   form, legal copy): center on the full page width, the same way this
   content always has, rather than the space next to the sidebar. Since
@@ -59,453 +68,480 @@
   naturally clears the sidebar on normal screens. Margin/padding scale
   fluidly instead of jumping at a single breakpoint.
 */
-.narrow-content {
-  max-width: 900px;
-  margin: clamp(1.25rem, 3vw, 2.5rem) auto;
-  padding: 0 clamp(1rem, 4vw, 2.5rem);
-  box-sizing: border-box;
-}
+  .narrow-content {
+    width: min(100%, var(--content-max-width));
+    margin: clamp(1.25rem, 3vw, 2.5rem) auto;
+    padding-inline: clamp(1rem, 4vw, 2.5rem);
+    box-sizing: border-box;
+  }
 
-header {
-  position: fixed;
-  width: 100vw;
-  height: 200px;
-  background: white;
-  border-bottom: 1px solid lightgrey;
-  z-index: 100;
-}
+  header {
+    position: fixed;
+    width: 100%;
+    height: 200px;
+    background: white;
+    border-bottom: 1px solid lightgrey;
+    z-index: 100;
+  }
 
-#myVideo {
-  position: fixed;
-  right: 0;
-  bottom: 0;
-  min-width: 100%;
-  min-height: 100%;
-  object-fit: cover;
-}
+  #myVideo {
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    min-width: 100%;
+    min-height: 100%;
+    object-fit: cover;
+  }
 
-.logo {
-  position: relative;
-  width: 250px;
-  height: 250px;
-  background: url(/asset/images/logo.png?v=1) no-repeat;
-  background-size: contain;
-}
+  .logo {
+    position: relative;
+    width: 250px;
+    height: 250px;
+    background: url(/asset/images/logo.png?v=1) no-repeat;
+    background-size: contain;
+  }
 
-.menu {
-  font-family: "Alice";
-}
+  .menu {
+    font-family: "Alice";
+  }
 
-.menu h1 {
-  font-weight: bold;
-  letter-spacing: 1px;
-}
+  .menu h1 {
+    font-weight: bold;
+    letter-spacing: 1px;
+  }
 
-#name {
-  width: 210px;
-  border-bottom: 2px solid black;
-  padding-bottom: 5px; /* Adjust if necessary */
-  margin-bottom: 5px; /* Adjust if necessary */
-  white-space: nowrap; /* Prevent text wrapping */
-  overflow: hidden; /* Hide any overflowing text */
-  text-overflow: ellipsis; /* Add ellipsis if text overflows */
-}
+  #name {
+    width: 210px;
+    border-bottom: 2px solid black;
+    padding-bottom: 5px; /* Adjust if necessary */
+    margin-bottom: 5px; /* Adjust if necessary */
+    white-space: nowrap; /* Prevent text wrapping */
+    overflow: hidden; /* Hide any overflowing text */
+    text-overflow: ellipsis; /* Add ellipsis if text overflows */
+  }
 
-h2 {
-  position: relative;
-  top: 0px;
-  font-family: "Alice";
-  font-size: clamp(1.375rem, 1rem + 1.5vw, 1.875rem);
-  text-align: center;
-}
+  h2 {
+    position: relative;
+    top: 0px;
+    font-family: "Alice";
+    font-size: clamp(1.375rem, 1rem + 1.5vw, 1.875rem);
+    text-align: center;
+  }
 
-.parent-div {
-  position: relative;
-}
+  .parent-div {
+    position: relative;
+  }
 
-.subtitle,
-.article_subtitle {
-  font-size: clamp(1.375rem, 1rem + 1.5vw, 1.875rem);
-  margin: 0 0 1.5rem;
-}
+  .subtitle,
+  .article_subtitle {
+    font-size: clamp(1.375rem, 1rem + 1.5vw, 1.875rem);
+    margin: 0 0 1.5rem;
+  }
 
-p {
-  font-family: Verdana, sans-serif;
-}
+  p {
+    font-family: Verdana, sans-serif;
+  }
 
-.link {
-  width: 200px;
-  height: 200px;
-  margin: 10px;
-}
+  .link {
+    width: 200px;
+    height: 200px;
+    margin: 10px;
+  }
 
-.link img {
-  width: 200px;
-  height: 200px;
-}
+  .link img {
+    width: 200px;
+    height: 200px;
+  }
 
-.gallery {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 10px;
-  margin-top: 1.5rem;
-}
+  .gallery {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 1.5rem;
+  }
 
-.gallery img {
-  height: 220px;
-  width: auto;
-  max-width: 100%;
-  object-fit: cover;
-  border-radius: 4px;
-}
+  .gallery img {
+    height: 220px;
+    width: auto;
+    max-width: 100%;
+    object-fit: cover;
+    border-radius: 4px;
+  }
 
-.article-detail + .article-detail {
-  margin-top: 3rem;
-  padding-top: 2rem;
-  border-top: 1px solid lightgray;
-}
+  .article-detail + .article-detail {
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 1px solid lightgray;
+  }
 
-.legal-content {
-  max-width: 800px;
-  margin: 0 auto;
-  line-height: 1.6;
-}
+  .legal-content {
+    max-width: 800px;
+    margin: 0 auto;
+    line-height: 1.6;
+  }
 
-.legal-content > div {
-  margin-bottom: 1.5rem;
-}
+  .legal-content > div {
+    margin-bottom: 1.5rem;
+  }
 
-.preambule-content {
-  text-align: center;
-}
+  .preambule-content {
+    text-align: center;
+  }
 
-.preambule-content video {
-  max-width: 900px;
-  margin-top: 1.5rem;
-}
+  .preambule-content video {
+    max-width: 900px;
+    margin-top: 1.5rem;
+  }
 
-/* Contact page */
-.contact-page {
-  max-width: 900px;
-  margin: 0 auto;
-  text-align: center;
-}
+  /* Contact page */
+  .contact-page {
+    max-width: 900px;
+    margin: 0 auto;
+    text-align: center;
+  }
 
-.contact-page__inner {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
+  .contact-page__inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
 
-.contact-page__title {
-  font-size: clamp(1.25rem, 1rem + 1.5vw, 1.75rem);
-  font-weight: 500;
-  color: #1f2937;
-  margin: 0 0 1.25rem;
-}
+  .contact-page__title {
+    font-size: clamp(1.25rem, 1rem + 1.5vw, 1.75rem);
+    font-weight: 500;
+    color: #1f2937;
+    margin: 0 0 1.25rem;
+  }
 
-.alert-success {
-  width: 100%;
-  box-sizing: border-box;
-  margin-bottom: 1.5rem;
-  padding: 1rem 1.5rem;
-  border-radius: 0.5rem;
-  background: #dcfce7;
-  color: #15803d;
-}
+  .alert-success {
+    width: 100%;
+    box-sizing: border-box;
+    margin-bottom: 1.5rem;
+    padding: 1rem 1.5rem;
+    border-radius: 0.5rem;
+    background: #dcfce7;
+    color: #15803d;
+  }
 
-.alert-error {
-  width: 100%;
-  box-sizing: border-box;
-  margin-bottom: 1.5rem;
-  padding: 1rem 1.5rem;
-  border-radius: 0.5rem;
-  background: #fee2e2;
-  color: #b91c1c;
-}
+  .alert-error {
+    width: 100%;
+    box-sizing: border-box;
+    margin-bottom: 1.5rem;
+    padding: 1rem 1.5rem;
+    border-radius: 0.5rem;
+    background: #fee2e2;
+    color: #b91c1c;
+  }
 
-/* Honeypot field wrapper: kept in the DOM and submitted with the form (so it
+  /* Honeypot field wrapper: kept in the DOM and submitted with the form (so it
    keeps trapping bots), but never display:none/visibility:hidden so
    unsophisticated bots that only check computed visibility still find and
    fill it in. !important guards this rule against any later/more specific
    selector (e.g. a form-theme or utility class) accidentally pulling it
    back into the visible layout. */
-.hp-field {
-  position: absolute !important;
-  width: 1px !important;
-  height: 1px !important;
-  margin: -1px !important;
-  padding: 0 !important;
-  border: 0 !important;
-  overflow: hidden !important;
-  clip: rect(0, 0, 0, 0) !important;
-  clip-path: inset(50%) !important;
-  white-space: nowrap !important;
-  left: -9999px !important;
-  top: -9999px !important;
-}
+  .hp-field {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    margin: -1px !important;
+    padding: 0 !important;
+    border: 0 !important;
+    overflow: hidden !important;
+    clip: rect(0, 0, 0, 0) !important;
+    clip-path: inset(50%) !important;
+    white-space: nowrap !important;
+    left: -9999px !important;
+    top: -9999px !important;
+  }
 
-.contact-form {
-  width: 100%;
-  text-align: left;
-}
+  .contact-form {
+    width: 100%;
+    text-align: left;
+  }
 
-.contact-form__row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-}
+  .contact-form__row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
 
-.contact-form__field {
-  flex: 1 1 200px;
-  margin-bottom: 1rem;
-}
+  .contact-form__field {
+    flex: 1 1 200px;
+    margin-bottom: 1rem;
+  }
 
-.contact-form__field--full {
-  flex-basis: 100%;
-}
+  .contact-form__field--full {
+    flex-basis: 100%;
+  }
 
-.contact-form label {
-  display: block;
-  margin-bottom: 0.25rem;
-  font-size: 0.9rem;
-  color: #374151;
-}
+  .contact-form label {
+    display: block;
+    margin-bottom: 0.25rem;
+    font-size: 0.9rem;
+    color: #374151;
+  }
 
-.contact-form__input {
-  width: 100%;
-  box-sizing: border-box;
-  padding: 0.5rem 0.75rem;
-  font-size: 1rem;
-  font-family: inherit;
-  color: #374151;
-  background: #f3f4f6;
-  border: 1px solid #d1d5db;
-  border-radius: 4px;
-  transition: border-color 0.2s ease-in-out, background 0.2s ease-in-out;
-}
+  .contact-form__input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0.5rem 0.75rem;
+    font-size: 1rem;
+    font-family: inherit;
+    color: #374151;
+    background: #f3f4f6;
+    border: 1px solid #d1d5db;
+    border-radius: 4px;
+    transition:
+      border-color 0.2s ease-in-out,
+      background 0.2s ease-in-out;
+  }
 
-.contact-form__input:focus {
-  outline: none;
-  background: white;
-  border-color: #6366f1;
-}
+  .contact-form__input:focus {
+    outline: none;
+    background: white;
+    border-color: #6366f1;
+  }
 
-.contact-form__input--textarea {
-  min-height: 8rem;
-  resize: vertical;
-}
+  .contact-form__input--textarea {
+    min-height: 8rem;
+    resize: vertical;
+  }
 
-.contact-form__actions {
-  text-align: center;
-  margin-top: 0.5rem;
-}
+  .contact-form__actions {
+    text-align: center;
+    margin-top: 0.5rem;
+  }
 
-.btn-primary {
-  padding: 0.6rem 2rem;
-  font-size: 1.1rem;
-  background: white;
-  border: 1px solid rgba(0, 0, 0, 0.25);
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background 0.2s ease-in-out;
-}
+  .btn-primary {
+    padding: 0.6rem 2rem;
+    font-size: 1.1rem;
+    background: white;
+    border: 1px solid rgba(0, 0, 0, 0.25);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.2s ease-in-out;
+  }
 
-.btn-primary:hover {
-  background: #fbcfe8;
-}
+  .btn-primary:hover {
+    background: #fbcfe8;
+  }
 
-/*
+  /* Shared sizing safeguards: prevent media and flex/grid children from
+   creating accidental horizontal overflow on narrow screens. */
+  img,
+  video,
+  canvas,
+  svg {
+    max-width: 100%;
+  }
+
+  main,
+  section,
+  article,
+  .page-content,
+  .narrow-content {
+    min-width: 0;
+  }
+
+  /*
   Sticky footer: body is a column flex container spanning at least the
   full viewport height, and the footer's auto top margin pushes it to
   the bottom on short pages instead of leaving a gap underneath it.
   Fixed-position elements (the nav, its mobile backdrop, the modals)
   aren't flex items, so this doesn't affect them.
 */
-body {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-}
-
-/* Footer (rendered standalone, outside .page-content) */
-.footer {
-  margin-left: var(--sidebar-width);
-  width: calc(100% - var(--sidebar-width));
-  box-sizing: border-box;
-  background: #e5e5e5;
-  text-align: center;
-  margin-top: auto;
-}
-
-.footer__content {
-  padding: 1rem;
-}
-
-@media (max-width: 767px) {
-  .footer {
-    margin-left: 0;
-    width: 100%;
+  body {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 100vh;
+    min-height: 100dvh;
+    margin: 0;
+    overflow-x: hidden;
   }
-}
 
-.p-4 {
-  padding: 1rem;
-}
+  /* Footer (rendered standalone, outside .page-content) */
+  .footer {
+    margin-left: var(--sidebar-width);
+    width: calc(100% - var(--sidebar-width));
+    min-width: 0;
+    box-sizing: border-box;
+    background: #e5e5e5;
+    text-align: center;
+    margin-top: auto;
+  }
 
-.main-content {
-  margin-left: 250px; /* On laisse la place exacte du menu (250px) */
-  width: calc(100% - 250px); /* On prend 100% de l'écran MOINS le menu */
-  height: 100vh;
+  .footer__content {
+    padding: 1rem;
+  }
 
-  background-image: url("/asset/images/40.JPEG?v=1");
-  background-repeat: no-repeat;
+  @media (max-width: 767px) {
+    .footer {
+      margin-left: 0;
+      width: 100%;
+    }
+  }
 
-  /* C'est ici que la magie opère pour ne pas rogner l'image : */
-  background-size: contain;
-  background-position: center;
-}
-
-.scroll-text {
-  animation: scroll-up 20s linear infinite;
-  animation-delay: 2s; /* Delay before the text starts scrolling */
-  animation-fill-mode: forwards;
-}
-
-.pres-text {
-  color: white;
-  font-weight: bold;
-}
-
-/* The Modal (background) */
-.modal {
-  display: none; /* Hidden by default */
-  position: fixed; /* Stay in place */
-  z-index: 101; /* Sit on top */
-  padding-top: 100px; /* Location of the box */
-  left: 0;
-  top: 0;
-  width: 100%; /* Full width */
-  height: 100%; /* Full height */
-  overflow: auto; /* Enable scroll if needed */
-  background-color: rgb(0, 0, 0); /* Fallback color */
-  background-color: rgba(0, 0, 0, 0.4); /* Black w/ opacity */
-}
-
-/* Modal Content */
-.modal-content {
-  background-color: #fefefe;
-  margin: auto;
-  padding: 20px;
-  border: 1px solid #888;
-  width: 50%;
-  border-radius: 50px;
-}
-
-.carrot-title {
-  font-size: clamp(1.25rem, 1rem + 3vw, 2.5rem);
-  font-weight: bolder;
-  text-align: center;
-  font-family: Alice;
-  font-weight: bold;
-}
-
-.carrot-ingredient {
-  line-height: 2.5;
-  font-size: clamp(0.9375rem, 0.8rem + 1vw, 1.5625rem);
-  text-align: left;
-  font-family: Alice;
-  font-weight: bold;
-}
-
-/* The Close Button (recipe modal only) */
-.close {
-  background: url(/asset/krot.gif?v=1) no-repeat;
-  background-size: contain; /* Ensure the image fits in the button */
-  width: 50px; /* Adjust as needed */
-  height: 50px; /* Adjust as needed */
-  display: inline-block; /* To allow width and height to take effect */
-  text-indent: -9999px; /* Hide the existing 'X' text */
-  float: right;
-}
-
-.close:hover,
-.close:focus {
-  background: url(/asset/krot.gif?v=1) no-repeat;
-  background-size: contain;
-  text-decoration: none;
-  cursor: pointer;
-}
-
-.videoModal {
-  display: none;
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 9999;
-  align-items: center;
-  justify-content: center;
-}
-
-.contact-image {
-  margin-bottom: 1.5rem;
-}
-
-.contact-image img {
-  max-width: 100%;
-  height: auto;
-}
-
-.credits {
-  font-size: small;
-}
-
-.description {
-  max-width: 800px; /* Limite la largeur du bloc (à ajuster selon tes goûts) */
-  margin: 40px auto; /* Centre le bloc horizontalement et ajoute de l'espace en haut/bas */
-  padding: 20px; /* Ajoute un espace à l'intérieur du bloc pour aérer le texte */
-  text-align: center; /* Ajoute ceci uniquement si tu veux que le texte soit centré, sinon retire-le */
-  line-height: 1.6; /* Améliore la lisibilité du texte */
-}
-
-.article_pictures {
-  height: 200px;
-  width: 200px;
-  object-fit: cover;
-}
-
-#message {
-  margin-left: 50px;
-}
-
-#openModal.caroline {
-  font-style: normal;
-}
-
-#openModal.caroline:hover {
-  font-style: italic;
-}
-
-@media (max-width: 767px) {
-  .modal-content {
-    width: 300px;
-    font-size: 0.8em;
+  .p-4 {
+    padding: 1rem;
   }
 
   .main-content {
-    margin-left: 0;
-    width: 100%;
+    margin-left: var(--sidebar-width);
+    width: calc(100% - var(--sidebar-width));
+    min-width: 0;
+    min-height: 100vh;
+    min-height: 100dvh;
 
-    /* On remplace par l'image optimisée pour mobile */
-    background-image: url("/asset/images/40.JPEGResponsive.JPEG?v=1");
+    background-image: url("/asset/images/40.JPEG?v=1");
+    background-repeat: no-repeat;
 
-    /* Tu peux ajuster selon l'image mobile : 'cover' pour remplir l'écran,
-       ou 'contain' si tu veux aussi qu'elle s'affiche en entier sans rogner */
-    background-size: cover;
+    /* C'est ici que la magie opère pour ne pas rogner l'image : */
+    background-size: contain;
+    background-position: center;
   }
-}
 
+  .scroll-text {
+    animation: scroll-up 20s linear infinite;
+    animation-delay: 2s; /* Delay before the text starts scrolling */
+    animation-fill-mode: forwards;
+  }
+
+  .pres-text {
+    color: white;
+    font-weight: bold;
+  }
+
+  /* The Modal (background) */
+  .modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 101; /* Sit on top */
+    padding-top: 100px; /* Location of the box */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0, 0, 0); /* Fallback color */
+    background-color: rgba(0, 0, 0, 0.4); /* Black w/ opacity */
+  }
+
+  /* Modal Content */
+  .modal-content {
+    background-color: #fefefe;
+    margin: auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 50%;
+    border-radius: 50px;
+  }
+
+  .carrot-title {
+    font-size: clamp(1.25rem, 1rem + 3vw, 2.5rem);
+    font-weight: bolder;
+    text-align: center;
+    font-family: Alice;
+    font-weight: bold;
+  }
+
+  .carrot-ingredient {
+    line-height: 2.5;
+    font-size: clamp(0.9375rem, 0.8rem + 1vw, 1.5625rem);
+    text-align: left;
+    font-family: Alice;
+    font-weight: bold;
+  }
+
+  /* The Close Button (recipe modal only) */
+  .close {
+    background: url(/asset/krot.gif?v=1) no-repeat;
+    background-size: contain; /* Ensure the image fits in the button */
+    width: 50px; /* Adjust as needed */
+    height: 50px; /* Adjust as needed */
+    display: inline-block; /* To allow width and height to take effect */
+    text-indent: -9999px; /* Hide the existing 'X' text */
+    float: right;
+  }
+
+  .close:hover,
+  .close:focus {
+    background: url(/asset/krot.gif?v=1) no-repeat;
+    background-size: contain;
+    text-decoration: none;
+    cursor: pointer;
+  }
+
+  .videoModal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 9999;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .contact-image {
+    margin-bottom: 1.5rem;
+  }
+
+  .contact-image img {
+    max-width: 100%;
+    height: auto;
+  }
+
+  .credits {
+    font-size: small;
+  }
+
+  .description {
+    max-width: 800px; /* Limite la largeur du bloc (à ajuster selon tes goûts) */
+    margin: 40px auto; /* Centre le bloc horizontalement et ajoute de l'espace en haut/bas */
+    padding: 20px; /* Ajoute un espace à l'intérieur du bloc pour aérer le texte */
+    text-align: center; /* Ajoute ceci uniquement si tu veux que le texte soit centré, sinon retire-le */
+    line-height: 1.6; /* Améliore la lisibilité du texte */
+  }
+
+  .article_pictures {
+    height: 200px;
+    width: 200px;
+    object-fit: cover;
+  }
+
+  #message {
+    margin-left: 50px;
+  }
+
+  #openModal.caroline {
+    font-style: normal;
+  }
+
+  #openModal.caroline:hover {
+    font-style: italic;
+  }
+
+  @media (max-width: 767px) {
+    .modal-content {
+      width: 300px;
+      font-size: 0.8em;
+    }
+
+    .main-content {
+      margin-left: 0;
+      width: 100%;
+      min-height: 100vh;
+      min-height: 100dvh;
+
+      /* On remplace par l'image optimisée pour mobile */
+      background-image: url("/asset/images/40.JPEGResponsive.JPEG?v=1");
+
+      /* Tu peux ajuster selon l'image mobile : 'cover' pour remplir l'écran,
+       ou 'contain' si tu veux aussi qu'elle s'affiche en entier sans rogner */
+      background-size: cover;
+    }
+  }
 } /* end @layer components */

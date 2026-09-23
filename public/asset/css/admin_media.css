@@ -1,20 +1,55 @@
+/*
+ * Styles personnalisés de l'admin Carotte Cake.
+ *
+ * IMPORTANT :
+ * On ne définit plus ici de "vraies" couleurs light/dark (#fff, #777, etc.).
+ * Les composants personnalisés se branchent sur les variables d'EasyAdmin /
+ * Bootstrap et suivent donc automatiquement le thème sélectionné.
+ */
+
+/* Petite couche d'abstraction pour garder le fichier lisible et compatible
+   avec plusieurs versions d'EasyAdmin. */
+:root,
+.ea-dark-scheme {
+  --carotte-admin-surface: var(
+    --content-panel-bg,
+    var(--body-bg, var(--bs-body-bg, #fff))
+  );
+  --carotte-admin-surface-soft: var(
+    --form-control-bg,
+    var(--bs-tertiary-bg, var(--carotte-admin-surface))
+  );
+  --carotte-admin-text: var(--text-color, var(--bs-body-color, currentColor));
+  --carotte-admin-muted: var(
+    --text-muted-color,
+    var(--bs-secondary-color, currentColor)
+  );
+  --carotte-admin-border: var(
+    --border-color,
+    var(--bs-border-color, currentColor)
+  );
+  --carotte-admin-accent: var(--link-color, var(--bs-link-color, #0d6efd));
+}
+
 /* Galerie triable dans le formulaire d'un article */
 .media-gallery-panel {
   margin: 1.5rem 0;
   padding: 1rem 1.25rem;
-  background: #fff;
-  border: 1px solid #e0e0e0;
+  color: var(--carotte-admin-text);
+  background: var(--carotte-admin-surface);
+  border: 1px solid var(--carotte-admin-border);
   border-radius: 8px;
 }
 
 .media-gallery-title {
   margin: 0 0 1rem;
+  color: inherit;
   font-size: 1.1rem;
 }
 
 .media-gallery-hint {
   font-weight: normal;
-  color: #777;
+  color: var(--carotte-admin-muted);
   font-size: 0.85rem;
 }
 
@@ -27,11 +62,13 @@
 .media-gallery-item {
   position: relative;
   width: 140px;
+  max-width: 100%;
   cursor: grab;
-  border: 1px solid #ddd;
+  color: var(--carotte-admin-text);
+  border: 1px solid var(--carotte-admin-border);
   border-radius: 6px;
   overflow: hidden;
-  background: #fafafa;
+  background: var(--carotte-admin-surface-soft);
 }
 
 .media-gallery-item:active {
@@ -48,7 +85,7 @@
 .media-gallery-caption {
   font-size: 0.75rem;
   padding: 0.25rem 0.4rem;
-  color: #555;
+  color: var(--carotte-admin-muted);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -58,32 +95,40 @@
   position: absolute;
   top: 4px;
   right: 4px;
-  background: rgba(255, 255, 255, 0.9);
-  border-radius: 4px;
   padding: 2px 5px;
+  color: var(--carotte-admin-text);
+  background: color-mix(in srgb, var(--carotte-admin-surface) 90%, transparent);
+  border: 1px solid var(--carotte-admin-border);
+  border-radius: 4px;
   text-decoration: none;
   font-size: 0.85rem;
+  backdrop-filter: blur(4px);
+}
+
+.media-gallery-edit-link:hover {
+  color: var(--carotte-admin-accent);
 }
 
 .media-gallery-help,
 .media-gallery-empty {
   margin: 0.75rem 0 0;
   font-size: 0.85rem;
-  color: #777;
+  color: var(--carotte-admin-muted);
 }
 
 /* Médiathèque : grille de cartes */
 .media-library-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 180px), 1fr));
   gap: 1rem;
 }
 
 .media-library-card {
-  border: 1px solid #e0e0e0;
+  color: var(--carotte-admin-text);
+  border: 1px solid var(--carotte-admin-border);
   border-radius: 8px;
   overflow: hidden;
-  background: #fff;
+  background: var(--carotte-admin-surface);
   display: flex;
   flex-direction: column;
 }
@@ -93,7 +138,7 @@
   height: 140px;
   object-fit: cover;
   display: block;
-  background: #f0f0f0;
+  background: var(--carotte-admin-surface-soft);
 }
 
 .media-library-card-body {
@@ -110,6 +155,9 @@
   padding: 0.25rem 0.4rem;
 }
 
+/* On laisse à EasyAdmin la main sur les contrôles de formulaire :
+   il sait déjà leur donner les bonnes couleurs selon le thème. */
+
 .media-library-card-actions {
   display: flex;
   justify-content: space-between;
@@ -121,10 +169,10 @@
 .media-library-empty {
   padding: 2rem;
   text-align: center;
-  color: #777;
+  color: var(--carotte-admin-muted);
 }
 
-/* Flèches ▲▼ : alternative clavier au glisser-déposer (liste des articles) */
+/* Flèches ▲▼ : alternative clavier au glisser-déposer */
 .position-move-buttons {
   display: inline-flex;
   gap: 0.25rem;
@@ -136,12 +184,19 @@
 .media-gallery-move-btn {
   min-width: 28px;
   min-height: 28px;
-  border: 1px solid #ccc;
+  color: var(--carotte-admin-text);
+  border: 1px solid var(--carotte-admin-border);
   border-radius: 4px;
-  background: #fff;
+  background: var(--carotte-admin-surface-soft);
   cursor: pointer;
   font-size: 0.8rem;
   line-height: 1;
+}
+
+.position-move-btn:hover:not(:disabled),
+.media-gallery-move-btn:hover:not(:disabled) {
+  color: var(--carotte-admin-accent);
+  border-color: var(--carotte-admin-accent);
 }
 
 .position-move-btn:disabled,
@@ -150,7 +205,6 @@
   cursor: default;
 }
 
-/* Flèches ▲▼ : alternative clavier au glisser-déposer (galerie d'un article) */
 .media-gallery-move-buttons {
   display: flex;
   gap: 0.35rem;
@@ -158,38 +212,48 @@
   padding: 0.3rem 0.4rem 0.4rem;
 }
 
-/* Focus bien visible sur tous les contrôles interactifs ajoutés */
+/* Focus accessible, basé sur la couleur d'accent du thème */
 .position-move-btn:focus-visible,
 .media-gallery-move-btn:focus-visible,
 .admin-help-banner summary:focus-visible {
-  outline: 3px solid #2684ff;
+  outline: 3px solid var(--carotte-admin-accent);
   outline-offset: 2px;
 }
 
-/* Ce lien est dans un conteneur à coins arrondis (overflow: hidden) : un anneau
-   de focus classique serait rogné, on le fait donc apparaître vers l'intérieur. */
 .media-gallery-edit-link:focus-visible {
-  outline: 3px solid #2684ff;
+  outline: 3px solid var(--carotte-admin-accent);
   outline-offset: -3px;
 }
 
-/* Mode d'emploi dépliable, en haut des pages Articles / Médiathèque */
+/* Mode d'emploi dépliable des pages Articles / Médiathèque */
 .admin-help-banner {
   margin: 0 0 1rem;
   padding: 0.75rem 1rem;
-  background: #eef6ff;
-  border: 1px solid #cfe4ff;
+  color: var(--carotte-admin-text);
+  background: color-mix(
+    in srgb,
+    var(--carotte-admin-accent) 8%,
+    var(--carotte-admin-surface)
+  );
+  border: 1px solid
+    color-mix(
+      in srgb,
+      var(--carotte-admin-accent) 28%,
+      var(--carotte-admin-border)
+    );
   border-radius: 8px;
 }
 
 .admin-help-banner summary {
   cursor: pointer;
+  color: inherit;
   font-weight: 600;
 }
 
 .admin-help-banner ul {
   margin: 0.6rem 0 0;
   padding-left: 1.2rem;
+  color: var(--carotte-admin-muted);
 }
 
 .admin-help-banner li {

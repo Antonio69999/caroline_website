@@ -3,37 +3,54 @@
 {% block title %}
     Galeries
 {% endblock %}
+
 {% block meta %}
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
     <meta name="description" content="Caroline MARCELLIER, galeries, mes différents travaux"/>
     <meta name="author" content="Caroline MARCELLIER"/>
 {% endblock %}
+
 {% block stylesheets %}
     <link rel="stylesheet" href="{{ asset('asset/css/categories.css', 'static_assets') }}">
 {% endblock %}
 
 {% block body %}
-    <div class="page-content">
-        <h2 class="subtitle">{{ category.titre }}</h2>
-        <div class="content">
-            {% for article in articles %}
-                <a href="{{path('app_article_show',{"id": article.id})}}">
+    <div class="page-content category-page">
+        <div class="category-page__inner">
+            <h2 class="category-page__title">{{ category.titre }}</h2>
+
+            <div class="category-grid">
+                {% for article in articles %}
                     {% if article.media|length > 0 %}
                         {% set randomImage = random(article.media) %}
-                        <div class="link text-center">
-                            <img class="article_pictures" src="{{ asset('uploads/attachments/' ~ randomImage.imageName) }}" alt="{{ randomImage.imageName }}">
-                            <div class="imagetitle">
-                                <p>
+
+                        <a
+                            class="category-card"
+                            href="{{ path('app_article_show', {'id': article.id}) }}"
+                        >
+                            <img
+                                class="category-card__image"
+                                src="{{ asset('uploads/attachments/' ~ randomImage.imageName) }}"
+                                alt="{{ randomImage.imageName }}"
+                            >
+
+                            <span class="category-card__overlay">
+                                <span class="category-card__title">
                                     {{ article.titre }}
-                                </p>
-                            </div>
-                        </div>
+                                </span>
+                            </span>
+                        </a>
                     {% endif %}
-                </a>
-            {% endfor %}
+                {% endfor %}
+            </div>
+
+            {% if category.description %}
+                <div class="category-page__description">
+                    {{ category.description|raw }}
+                </div>
+            {% endif %}
         </div>
     </div>
-    <div class="description">
-        {{ category.description|raw }}
-    </div>
-{% endblock %}{% block footer %}{% endblock %}
+{% endblock %}
+
+{% block footer %}{% endblock %}
