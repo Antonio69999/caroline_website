@@ -4,7 +4,8 @@
     <details class="admin-help-banner">
         <summary>❓ Comment ça marche ?</summary>
         <ul>
-            <li>Pour ajouter des photos : clique sur "Ajouter" en haut à droite.</li>
+            <li>Pour ajouter des photos : clique sur "Ajouter" en haut à droite, ou glisse-dépose directement tes fichiers sur la zone d'envoi de cette page.</li>
+            <li>Pour voir une photo en grand : clique dessus dans la grille ci-dessous.</li>
             <li>Pour changer l'ordre des photos <strong>d'un article</strong> : ouvre cet article et glisse-dépose les photos dans sa galerie (ou utilise les flèches ▲▼).</li>
             <li>Pour renommer une légende ou déplacer une photo vers un autre article : modifie directement les champs sur sa carte ci-dessous, puis clique sur "Enregistrer".</li>
         </ul>
@@ -18,7 +19,14 @@
                 {% if entity.isAccessible %}
                     <div class="media-library-card" data-id="{{ entity.primaryKeyValueAsString }}">
                         {% if entity.instance.imageName %}
-                            <img src="{{ asset('uploads/attachments/' ~ entity.instance.imageName) }}" alt="{{ entity.instance.legende }}">
+                            <img
+                                src="{{ asset('uploads/attachments/' ~ entity.instance.imageName) }}"
+                                alt="{{ entity.instance.legende }}"
+                                class="media-library-zoomable"
+                                tabindex="0"
+                                role="button"
+                                aria-label="Agrandir « {{ entity.instance.legende }} »"
+                            >
                         {% else %}
                             <img src="" alt="" style="visibility:hidden;">
                         {% endif %}
@@ -62,6 +70,11 @@
     {% else %}
         <p class="media-library-empty">Aucune photo pour le moment. Utilise le bouton "Ajouter" en haut à droite.</p>
     {% endif %}
+
+    <div class="media-lightbox" id="media-lightbox" hidden>
+        <button type="button" class="media-lightbox-close" aria-label="Fermer l'aperçu">&times;</button>
+        <img src="" alt="">
+    </div>
 
     {% block delete_form %}
         {{ include('@EasyAdmin/crud/includes/_action_confirmation_modal.html.twig', with_context: false) }}

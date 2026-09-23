@@ -54,4 +54,15 @@ public function findArticlesByCategorie(Categorie $categorie)
         ->getQuery()
         ->getResult();
 }
+
+/**
+ * Catégories dans l'ordre choisi dans l'admin (glisser-déposer) : c'est cet
+ * ordre qui pilote l'affichage dans la sidebar du site.
+ *
+ * @return Categorie[]
+ */
+public function findAllOrdered(): array
+{
+    return $this->findBy([], ['position' => 'ASC']);
+}
 }

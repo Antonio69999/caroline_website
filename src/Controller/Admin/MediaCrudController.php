@@ -132,6 +132,8 @@ class MediaCrudController extends AbstractCrudController
     return $assets
       ->addCssFile('asset/css/admin_media.css')
       ->addJsFile('asset/js/admin_image_resize.js')
+      ->addJsFile('asset/js/admin_media_lightbox.js')
+      ->addJsFile('asset/js/admin_media_dropzone.js')
       ->addJsFile('asset/js/admin_unsaved_warning.js');
   }
 

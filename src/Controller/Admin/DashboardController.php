@@ -57,8 +57,10 @@ class DashboardController extends AbstractDashboardController
     yield MenuItem::section('Ressources');
     yield MenuItem::linkToCrud('Médiathèque', 'fas fa-images', Media::class);
 
-    // Optionnel mais très pratique : un bouton pour retourner sur le site public
+    // Un bouton pour retourner sur le site public, ouvert dans un nouvel onglet
+    // pour ne pas perdre la page d'admin en cours
     yield MenuItem::section('Site Web');
-    // yield MenuItem::linkToRoute('Retour au site', 'fas fa-external-link-alt', 'nom_de_ta_route_accueil');
+    yield MenuItem::linkToRoute('Retour au site', 'fas fa-external-link-alt', 'app_home')
+      ->setLinkTarget('_blank');
   }
 }

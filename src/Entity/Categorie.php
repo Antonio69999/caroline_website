@@ -7,6 +7,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Gedmo\Mapping\Annotation as Gedmo;
 
 #[ORM\Entity(repositoryClass: CategorieRepository::class)]
 class Categorie
@@ -30,6 +31,10 @@ class Categorie
 
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $modifieeLe = null;
+
+    #[Gedmo\SortablePosition]
+    #[ORM\Column(type: 'integer')]
+    private int $position = 0;
 
     public function __construct()
     {
@@ -116,6 +121,18 @@ class Categorie
     public function setModifieeLe(?\DateTimeImmutable $modifierLe): static
     {
         $this->modifieeLe = $modifierLe;
+
+        return $this;
+    }
+
+    public function getPosition(): int
+    {
+        return $this->position;
+    }
+
+    public function setPosition(int $position): static
+    {
+        $this->position = $position;
 
         return $this;
     }

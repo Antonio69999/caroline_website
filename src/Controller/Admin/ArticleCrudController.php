@@ -85,7 +85,10 @@ class ArticleCrudController extends AbstractCrudController
   public function configureCrud(Crud $crud): Crud
   {
     return $crud
-      ->setDefaultSort(['position' => 'ASC'])
+      // Regroupés par catégorie (dans l'ordre choisi pour la sidebar), puis par
+      // position au sein de chaque catégorie : le glisser-déposer ne réordonne
+      // jamais entre catégories, donc c'est aussi l'ordre qui doit s'afficher
+      ->setDefaultSort(['categorie.position' => 'ASC', 'position' => 'ASC'])
       ->setPageTitle('index', '🎨 Liste des Articles')
       // Définir sur quels champs la barre de recherche globale fonctionne
       ->setSearchFields(['titre', 'description'])
@@ -111,19 +114,23 @@ class ArticleCrudController extends AbstractCrudController
   public function configureFields(string $pageName): iterable
   {
     return [
-      IdField::new('id')->onlyOnIndex(), // Afficher l'ID seulement dans la liste
+      // Le tri des colonnes est désactivé sur la liste : les articles sont
+      // regroupés par catégorie puis triés par position (voir configureCrud),
+      // et cet ordre doit rester fixe pour que le glisser-déposer garde un sens.
+      IdField::new('id')->onlyOnIndex()->setSortable(false), // Afficher l'ID seulement dans la liste
 
-      TextField::new('titre', 'Titre de l\'article'),
+      TextField::new('titre', 'Titre de l\'article')->setSortable(false),
 
       // On affiche la catégorie directement dans la liste
       AssociationField::new('categorie', 'Catégorie')
-        ->autocomplete(), // Ajoute une barre de recherche dans le menu déroulant du formulaire (très utile si tu as 50 catégories)
+        ->autocomplete() // Ajoute une barre de recherche dans le menu déroulant du formulaire (très utile si tu as 50 catégories)
+        ->setSortable(false),
 
       // Rendre le tableau plus propre : on cache la description longue sur la liste (index)
       TextEditorField::new('description')->hideOnIndex(),
 
       // Formatage propre des dates
-      DateTimeField::new('creeLe', 'Créé le')->setFormat('dd/MM/yyyy HH:mm')->hideOnForm(),
+      DateTimeField::new('creeLe', 'Créé le')->setFormat('dd/MM/yyyy HH:mm')->hideOnForm()->setSortable(false),
       DateTimeField::new('ModifieLe', 'Modifié le')->setFormat('dd/MM/yyyy HH:mm')->onlyOnDetail(),
 
       Field::new('multipleFiles', 'Ajouter plusieurs images d\'un coup')
@@ -141,10 +148,11 @@ class ArticleCrudController extends AbstractCrudController
       // On ne montre plus ce numéro brut dans le formulaire : le glisser-déposer
       // (et les flèches ▲▼) de la liste s'occupent déjà de l'ordre, l'exposer ici
       // en plus n'apporterait qu'une occasion de se tromper.
-      IntegerField::new('position', 'Ordre')->onlyOnIndex(),
+      IntegerField::new('position', 'Ordre')->onlyOnIndex()->setSortable(false),
 
       BooleanField::new('publie', 'Publié sur le site')
         ->renderAsSwitch(true)
+        ->setSortable(false)
         ->setHelp('Décoche pour préparer un article sans qu\'il soit visible par les visiteurs.'),
     ];
   }

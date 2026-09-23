@@ -13,9 +13,9 @@ class HomeController extends AbstractController
   #[Route('/', name: 'app_home')]
   public function index(CategorieRepository $categorieRepository, ArticleRepository $articleRepository): Response
   {
-    // Récupérer la première catégorie (vous pouvez ajuster la logique selon vos besoins)
-    $categorie = $categorieRepository->findOneBy([], ['id' => 'ASC']);
-    $categories = $categorieRepository->findAll();
+    // Récupérer la première catégorie (dans l'ordre choisi dans l'admin)
+    $categorie = $categorieRepository->findOneBy([], ['position' => 'ASC']);
+    $categories = $categorieRepository->findAllOrdered();
 
     // Récupérer les articles liés à la catégorie (publiés uniquement)
     $articles = $articleRepository->findBy(['categorie' => $categorie, 'publie' => true]);
@@ -32,7 +32,7 @@ class HomeController extends AbstractController
   public function preambule(CategorieRepository $cr): Response
   {
     return $this->render('components/video.html.twig', [
-      'categories' => $cr->findAll(),
+      'categories' => $cr->findAllOrdered(),
     ]);
   }
 
@@ -40,14 +40,14 @@ class HomeController extends AbstractController
   public function legal(CategorieRepository $cr): Response
   {
     return $this->render('components/legal.html.twig', [
-      'categories' => $cr->findAll(),
+      'categories' => $cr->findAllOrdered(),
     ]);
   }
 
   #[Route('/category', name: 'app_category')]
   public function category(CategorieRepository $cr): Response
   {
-    $categories = $cr->findAll();
+    $categories = $cr->findAllOrdered();
 
     return $this->render('category/index.html.twig', [
       'categories' => $categories,
@@ -64,7 +64,7 @@ class HomeController extends AbstractController
     }
 
     $articles = $ar->findWithPosition($id);
-    $categories = $cr->findAll();
+    $categories = $cr->findAllOrdered();
 
     return $this->render('category/show.html.twig', [
       'category' => $category,
@@ -77,7 +77,7 @@ class HomeController extends AbstractController
   public function showArticle(int $id, ArticleRepository $ar, CategorieRepository $cr): Response
   {
     $articles = $ar->findBy(['id' => $id, 'publie' => true]);
-    $categories = $cr->findAll();
+    $categories = $cr->findAllOrdered();
 
     return $this->render('articles/index.html.twig', [
       'articles' => $articles,

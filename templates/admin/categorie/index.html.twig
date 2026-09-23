@@ -1,0 +1,13 @@
+{% extends '@EasyAdmin/crud/index.html.twig' %}
+
+{% block main %}
+    <details class="admin-help-banner">
+        <summary>❓ Comment ça marche ?</summary>
+        <ul>
+            <li>Pour ajouter une nouvelle catégorie : clique sur "Ajouter" en haut à droite.</li>
+            <li>Pour changer l'ordre d'affichage des catégories dans la sidebar du site : glisse-dépose une ligne du tableau (ou utilise les flèches ▲▼ à côté du numéro).</li>
+        </ul>
+    </details>
+
+    {{ parent() }}
+{% endblock %}

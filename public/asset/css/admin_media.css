@@ -172,6 +172,19 @@
   color: var(--carotte-admin-muted);
 }
 
+/* Liste des Articles : en-tête de groupe par catégorie */
+.article-category-header-row td {
+  padding: 0.5rem 0.9rem;
+  color: var(--carotte-admin-text);
+  background: color-mix(
+    in srgb,
+    var(--carotte-admin-accent) 10%,
+    var(--carotte-admin-surface)
+  );
+  border-top: 2px solid var(--carotte-admin-border);
+  font-weight: 600;
+}
+
 /* Flèches ▲▼ : alternative clavier au glisser-déposer */
 .position-move-buttons {
   display: inline-flex;
@@ -258,4 +271,82 @@
 
 .admin-help-banner li {
   margin-bottom: 0.35rem;
+}
+
+/* Médiathèque : aperçu en grand (lightbox) */
+.media-library-zoomable {
+  cursor: zoom-in;
+}
+
+.media-lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  background: rgba(0, 0, 0, 0.85);
+}
+
+.media-lightbox[hidden] {
+  display: none;
+}
+
+.media-lightbox img {
+  display: block;
+  max-width: 100%;
+  max-height: 100%;
+  border-radius: 6px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+}
+
+.media-lightbox-close {
+  position: absolute;
+  top: 1rem;
+  right: 1.5rem;
+  padding: 0.25rem 0.6rem;
+  color: #fff;
+  background: none;
+  border: none;
+  font-size: 2rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.media-lightbox-close:focus-visible {
+  outline: 3px solid #fff;
+  outline-offset: 2px;
+}
+
+/* Médiathèque : glisser-déposer de photos sur le formulaire d'ajout */
+.media-dropzone-active {
+  outline: 2px dashed var(--carotte-admin-accent);
+  outline-offset: 4px;
+  background: color-mix(in srgb, var(--carotte-admin-accent) 6%, transparent);
+  border-radius: 6px;
+}
+
+.media-dropzone-hint {
+  margin: 0.4rem 0 0;
+  color: var(--carotte-admin-muted);
+  font-size: 0.85rem;
+}
+
+.media-dropzone-filelist {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin: 0.5rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.media-dropzone-filelist li {
+  padding: 0.2rem 0.5rem;
+  color: var(--carotte-admin-text);
+  background: var(--carotte-admin-surface-soft);
+  border: 1px solid var(--carotte-admin-border);
+  border-radius: 4px;
+  font-size: 0.8rem;
 }

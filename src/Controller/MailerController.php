@@ -34,7 +34,7 @@ class MailerController extends AbstractController
   #[Route('/contact', name: 'contact', methods: ['GET', 'POST'])]
   public function sendMail(Request $request, MailerInterface $mailer, CategorieRepository $cr): Response
   {
-    $categories = $cr->findAll();
+    $categories = $cr->findAllOrdered();
     $session = $request->getSession();
 
     $form = $this->createForm(ContactType::class);
