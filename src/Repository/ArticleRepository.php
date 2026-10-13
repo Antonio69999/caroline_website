@@ -34,4 +34,23 @@ class ArticleRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
+
+    /**
+     * Articles publiés, dans l'ordre du site (catégorie puis position), pour
+     * le sélecteur de liens de l'éditeur de texte de l'admin : un brouillon
+     * n'est pas proposé, son lien mènerait à une page vide.
+     *
+     * @return Article[]
+     */
+    public function findPublishedForLinks(): array
+    {
+        return $this->createQueryBuilder('a')
+            ->innerJoin('a.categorie', 'c')
+            ->addSelect('c')
+            ->where('a.publie = true')
+            ->orderBy('c.position', 'ASC')
+            ->addOrderBy('a.position', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
 }

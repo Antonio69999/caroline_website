@@ -273,6 +273,40 @@
   margin-bottom: 0.35rem;
 }
 
+/* Sélecteur « Lier vers un article » au-dessus de l'éditeur de texte d'une page de texte (CV) */
+.cv-link-picker {
+  margin: 0 0 0.75rem;
+  padding: 0.75rem 1rem;
+  color: var(--carotte-admin-text);
+  background: var(--carotte-admin-surface-soft);
+  border: 1px solid var(--carotte-admin-border);
+  border-radius: 8px;
+}
+
+.cv-link-picker__label {
+  display: block;
+  margin: 0 0 0.35rem;
+  font-weight: 600;
+}
+
+.cv-link-picker__row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.cv-link-picker__select {
+  flex: 1 1 260px;
+  min-width: 0;
+}
+
+.cv-link-picker__hint {
+  margin: 0.5rem 0 0;
+  color: var(--carotte-admin-muted);
+  font-size: 0.85rem;
+}
+
 /* Médiathèque : aperçu en grand (lightbox) */
 .media-library-zoomable {
   cursor: zoom-in;

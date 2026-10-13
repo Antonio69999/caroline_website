@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Categorie;
 use App\Repository\ArticleRepository;
 use App\Repository\CategorieRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -28,12 +29,16 @@ class HomeController extends AbstractController
     ]);
   }
 
+  // Ancienne page du Préambule (une vidéo). Le Préambule est maintenant une catégorie
+  // « vitrine » comme les autres : on garde cette adresse pour les liens déjà partagés.
   #[Route('/preamble', name: 'preambule')]
   public function preambule(CategorieRepository $cr): Response
   {
-    return $this->render('components/video.html.twig', [
-      'categories' => $cr->findAllOrdered(),
-    ]);
+    $vitrine = $cr->findOneBy(['type' => Categorie::TYPE_VITRINE], ['position' => 'ASC']);
+
+    return $vitrine
+      ? $this->redirectToRoute('app_category_show', ['id' => $vitrine->getId()])
+      : $this->redirectToRoute('app_home');
   }
 
   #[Route('/legal', name: 'legal')]
@@ -63,8 +68,25 @@ class HomeController extends AbstractController
       throw $this->createNotFoundException('The category does not exist');
     }
 
-    $articles = $ar->findWithPosition($id);
     $categories = $cr->findAllOrdered();
+
+    // Page de texte (ex. le CV) : le texte prend la place de la grille d'articles
+    if ($category->isTexte()) {
+      return $this->render('category/text.html.twig', [
+        'category' => $category,
+        'categories' => $categories,
+      ]);
+    }
+
+    // Vitrine (ex. le Préambule) : une page libre faite de blocs empilés
+    if ($category->isVitrine()) {
+      return $this->render('category/vitrine.html.twig', [
+        'category' => $category,
+        'categories' => $categories,
+      ]);
+    }
+
+    $articles = $ar->findWithPosition($id);
 
     return $this->render('category/show.html.twig', [
       'category' => $category,

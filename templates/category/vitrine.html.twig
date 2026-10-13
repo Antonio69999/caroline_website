@@ -1,0 +1,71 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+    {{ category.titre }}
+{% endblock %}
+
+{% block meta %}
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <meta name="description" content="Caroline MARCELLIER, {{ category.titre }}"/>
+    <meta name="author" content="Caroline MARCELLIER"/>
+{% endblock %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('asset/css/categories.css', 'static_assets') }}">
+{% endblock %}
+
+{% block body %}
+    <div class="page-content category-page">
+        <div class="category-page__inner">
+            <h2 class="category-page__title">{{ category.titre }}</h2>
+
+            <div class="vitrine">
+                {% for bloc in category.blocs %}
+                    {% if bloc.type == 'texte' %}
+                        {% if bloc.contenu %}
+                            <section class="vitrine-bloc vitrine-bloc--texte">
+                                <div class="category-text">
+                                    {{ bloc.contenu|raw }}
+                                </div>
+                            </section>
+                        {% endif %}
+                    {% elseif bloc.fichierName %}
+                        {% set fichier = asset('uploads/vitrine/' ~ bloc.fichierName) %}
+
+                        {% if bloc.type == 'image' %}
+                            <figure class="vitrine-bloc vitrine-bloc--image vitrine-bloc--{{ bloc.largeur }}">
+                                <img
+                                    class="vitrine-media"
+                                    src="{{ fichier }}"
+                                    alt="{{ bloc.titre }}"
+                                    loading="lazy"
+                                >
+                            </figure>
+                        {% elseif bloc.type == 'son' %}
+                            <section class="vitrine-bloc vitrine-bloc--son">
+                                {% if bloc.titre %}
+                                    <p class="vitrine-bloc__titre">{{ bloc.titre }}</p>
+                                {% endif %}
+                                {# Jamais de lecture automatique : c'est le visiteur qui lance le son #}
+                                <audio class="vitrine-audio" controls preload="none" src="{{ fichier }}">
+                                    Votre navigateur ne prend pas en charge la lecture de sons.
+                                </audio>
+                            </section>
+                        {% elseif bloc.type == 'video' %}
+                            <section class="vitrine-bloc vitrine-bloc--video vitrine-bloc--{{ bloc.largeur }}">
+                                {% if bloc.titre %}
+                                    <p class="vitrine-bloc__titre">{{ bloc.titre }}</p>
+                                {% endif %}
+                                <video class="vitrine-media" controls preload="metadata" playsinline src="{{ fichier }}">
+                                    Votre navigateur ne prend pas en charge la lecture de vidéos.
+                                </video>
+                            </section>
+                        {% endif %}
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block footer %}{% endblock %}

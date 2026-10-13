@@ -75,6 +75,37 @@
     box-sizing: border-box;
   }
 
+  @media (max-width: 767px) {
+    .contact-page.narrow-content {
+      width: 100%;
+      max-width: 900px;
+      margin: 1.25rem auto;
+      padding-inline: 1rem;
+    }
+
+    .contact-page__inner {
+      max-width: 100%;
+    }
+
+    .contact-image {
+      margin-bottom: 1.5rem;
+    }
+
+    .contact-image__picture {
+      width: 100%;
+      max-width: 320px;
+    }
+
+    .contact-page__inner > form {
+      max-width: 100%;
+    }
+
+    .contact-form__row {
+      grid-template-columns: 1fr;
+      gap: 0;
+    }
+  }
+
   header {
     position: fixed;
     width: 100%;
@@ -185,53 +216,147 @@
     margin-bottom: 1.5rem;
   }
 
-  .preambule-content {
-    text-align: center;
-  }
+  /* =========================
+   CONTACT
+   ========================= */
 
-  .preambule-content video {
-    max-width: 900px;
-    margin-top: 1.5rem;
-  }
-
-  /* Contact page */
   .contact-page {
-    max-width: 900px;
-    margin: 0 auto;
+    box-sizing: border-box;
     text-align: center;
   }
 
   .contact-page__inner {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    width: 100%;
+    max-width: 760px;
+    margin-inline: auto;
+  }
+
+  .contact-image {
+    width: 100%;
+    margin-bottom: 2.5rem;
+    text-align: center;
+  }
+
+  .contact-image__picture {
+    display: block;
+    width: min(100%, 620px);
+    height: auto;
+    margin-inline: auto;
+  }
+
+  .contact-image .credits {
+    margin: 0.4rem 0 0;
   }
 
   .contact-page__title {
-    font-size: clamp(1.25rem, 1rem + 1.5vw, 1.75rem);
+    margin: 0 0 2rem;
+    font-size: clamp(1.6rem, 2vw, 2rem);
     font-weight: 500;
     color: #1f2937;
-    margin: 0 0 1.25rem;
   }
 
-  .alert-success {
+  /*
+ * Important :
+ * le form est un élément direct de contact-page__inner.
+ * On lui donne donc explicitement toute la largeur.
+ */
+  .contact-page__inner > form {
     width: 100%;
-    box-sizing: border-box;
-    margin-bottom: 1.5rem;
-    padding: 1rem 1.5rem;
-    border-radius: 0.5rem;
-    background: #dcfce7;
-    color: #15803d;
+    max-width: 680px;
+    margin-inline: auto;
   }
 
-  .alert-error {
+  .contact-form {
+    width: 100%;
+    text-align: left;
+  }
+
+  .contact-form__row {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.25rem;
+  }
+
+  .contact-form__field {
+    min-width: 0;
+    margin-bottom: 1.25rem;
+  }
+
+  .contact-form__field--full {
+    width: 100%;
+  }
+
+  .contact-form label {
+    display: block;
+    margin-bottom: 0.4rem;
+    font-size: 0.9rem;
+    color: #374151;
+  }
+
+  .contact-form__input {
     width: 100%;
     box-sizing: border-box;
-    margin-bottom: 1.5rem;
-    padding: 1rem 1.5rem;
-    border-radius: 0.5rem;
-    background: #fee2e2;
-    color: #b91c1c;
+    padding: 0.75rem 0.9rem;
+    font-family: inherit;
+    font-size: 1rem;
+    color: #374151;
+    background: #f5f5f5;
+    border: 1px solid #d1d5db;
+    border-radius: 4px;
+    transition:
+      border-color 0.2s ease,
+      background-color 0.2s ease;
+  }
+
+  .contact-form__input:focus {
+    outline: none;
+    background: #fff;
+    border-color: #555;
+  }
+
+  .contact-form__input--textarea {
+    min-height: 170px;
+    resize: vertical;
+  }
+
+  .contact-form__actions {
+    margin-top: 0.5rem;
+    text-align: center;
+  }
+
+  .btn-primary {
+    padding: 0.75rem 2.5rem;
+    font-family: inherit;
+    font-size: 1rem;
+    background: #fff;
+    border: 1px solid #aaa;
+    border-radius: 4px;
+    cursor: pointer;
+    transition:
+      background-color 0.2s ease,
+      border-color 0.2s ease;
+  }
+
+  .btn-primary:hover {
+    background: #fbcfe8;
+    border-color: #777;
+  }
+
+  /* Shared sizing safeguards: prevent media and flex/grid children from
+   creating accidental horizontal overflow on narrow screens. */
+  img,
+  video,
+  canvas,
+  svg {
+    max-width: 100%;
+  }
+
+  main,
+  section,
+  article,
+  .page-content,
+  .narrow-content {
+    min-width: 0;
   }
 
   /* Honeypot field wrapper: kept in the DOM and submitted with the form (so it
@@ -255,95 +380,6 @@
     top: -9999px !important;
   }
 
-  .contact-form {
-    width: 100%;
-    text-align: left;
-  }
-
-  .contact-form__row {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1rem;
-  }
-
-  .contact-form__field {
-    flex: 1 1 200px;
-    margin-bottom: 1rem;
-  }
-
-  .contact-form__field--full {
-    flex-basis: 100%;
-  }
-
-  .contact-form label {
-    display: block;
-    margin-bottom: 0.25rem;
-    font-size: 0.9rem;
-    color: #374151;
-  }
-
-  .contact-form__input {
-    width: 100%;
-    box-sizing: border-box;
-    padding: 0.5rem 0.75rem;
-    font-size: 1rem;
-    font-family: inherit;
-    color: #374151;
-    background: #f3f4f6;
-    border: 1px solid #d1d5db;
-    border-radius: 4px;
-    transition:
-      border-color 0.2s ease-in-out,
-      background 0.2s ease-in-out;
-  }
-
-  .contact-form__input:focus {
-    outline: none;
-    background: white;
-    border-color: #6366f1;
-  }
-
-  .contact-form__input--textarea {
-    min-height: 8rem;
-    resize: vertical;
-  }
-
-  .contact-form__actions {
-    text-align: center;
-    margin-top: 0.5rem;
-  }
-
-  .btn-primary {
-    padding: 0.6rem 2rem;
-    font-size: 1.1rem;
-    background: white;
-    border: 1px solid rgba(0, 0, 0, 0.25);
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background 0.2s ease-in-out;
-  }
-
-  .btn-primary:hover {
-    background: #fbcfe8;
-  }
-
-  /* Shared sizing safeguards: prevent media and flex/grid children from
-   creating accidental horizontal overflow on narrow screens. */
-  img,
-  video,
-  canvas,
-  svg {
-    max-width: 100%;
-  }
-
-  main,
-  section,
-  article,
-  .page-content,
-  .narrow-content {
-    min-width: 0;
-  }
-
   /*
   Sticky footer: body is a column flex container spanning at least the
   full viewport height, and the footer's auto top margin pushes it to
@@ -363,23 +399,51 @@
 
   /* Footer (rendered standalone, outside .page-content) */
   .footer {
+    box-sizing: border-box;
+    margin-top: auto;
     margin-left: var(--sidebar-width);
     width: calc(100% - var(--sidebar-width));
-    min-width: 0;
-    box-sizing: border-box;
-    background: #e5e5e5;
-    text-align: center;
-    margin-top: auto;
+
+    background: #fff;
+    border-top: 1px solid #e5e5e5;
   }
 
   .footer__content {
-    padding: 1rem;
+    width: min(100% - 3rem, 1000px);
+    margin-inline: auto;
+    padding: 1.5rem 0;
+
+    text-align: center;
+    color: #555;
+  }
+
+  .footer__content p {
+    margin: 0.25rem 0;
+    line-height: 1.5;
+  }
+
+  .footer__content a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .footer__content a:hover {
+    text-decoration: underline;
+  }
+
+  .footer .credits {
+    font-size: 0.75rem;
   }
 
   @media (max-width: 767px) {
     .footer {
       margin-left: 0;
       width: 100%;
+    }
+
+    .footer__content {
+      width: calc(100% - 2rem);
+      padding: 1.25rem 0;
     }
   }
 

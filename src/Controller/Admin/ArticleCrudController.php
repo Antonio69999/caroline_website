@@ -117,7 +117,7 @@ class ArticleCrudController extends AbstractCrudController
       // Le tri des colonnes est désactivé sur la liste : les articles sont
       // regroupés par catégorie puis triés par position (voir configureCrud),
       // et cet ordre doit rester fixe pour que le glisser-déposer garde un sens.
-      IdField::new('id')->onlyOnIndex()->setSortable(false), // Afficher l'ID seulement dans la liste
+      // IdField::new('id')->onlyOnIndex()->setSortable(false), // Afficher l'ID seulement dans la liste
 
       TextField::new('titre', 'Titre de l\'article')->setSortable(false),
 

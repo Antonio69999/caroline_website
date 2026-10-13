@@ -1,0 +1,67 @@
+/* Formulaire d'une catégorie « vitrine » : liste de blocs (texte, image, son, vidéo). */
+
+/* Place, dans l'en-tête de chaque bloc, pour la poignée et les flèches (à gauche de la corbeille). */
+.vitrine-blocs .accordion-header {
+  padding-inline-end: 125px;
+}
+
+.vitrine-blocs .accordion-button {
+  min-width: 0;
+}
+
+.vitrine-bloc-label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.vitrine-bloc-controls {
+  position: absolute;
+  inset-block-start: 50%;
+  inset-inline-end: 38px;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  transform: translateY(-50%);
+}
+
+.vitrine-bloc-handle {
+  padding: 0 0.45rem;
+  font-size: 1.2rem;
+  line-height: 1;
+  cursor: grab;
+  user-select: none;
+  opacity: 0.6;
+}
+
+.vitrine-bloc-handle:hover {
+  opacity: 1;
+}
+
+.vitrine-bloc-move {
+  padding: 0 0.3rem;
+  line-height: 1.4;
+  text-decoration: none;
+}
+
+/* Pendant un glisser-déposer */
+.vitrine-blocs .sortable-ghost {
+  opacity: 0.4;
+}
+
+.vitrine-blocs .sortable-chosen .vitrine-bloc-handle {
+  cursor: grabbing;
+}
+
+/* Les champs d'un bloc passent avant le libellé étroit d'EasyAdmin (20 %) : on laisse
+   l'éditeur de texte et le champ fichier occuper la largeur sans déborder. */
+.vitrine-blocs .accordion-item .form-widget {
+  min-width: 0;
+}
+
+/* Un bloc texte n'a pas besoin de l'éditeur haut de la page de texte entière. */
+.vitrine-blocs .category-rich-editor .ql-editor {
+  min-height: 160px;
+  max-height: 50vh;
+}

@@ -13,3 +13,10 @@ vich_uploader:
       uri_prefix: /uploads/images/article
       upload_destination: "%kernel.project_dir%/public/uploads/images/article"
       namer: Vich\UploaderBundle\Naming\SmartUniqueNamer
+
+    # Fichiers des blocs d'une vitrine (images, sons, vidéos). Ici Vich fait tout :
+    # envoi, nom unique et suppression du fichier quand le bloc disparaît.
+    bloc:
+      uri_prefix: /uploads/vitrine
+      upload_destination: "%kernel.project_dir%/public/uploads/vitrine"
+      namer: Vich\UploaderBundle\Naming\SmartUniqueNamer
