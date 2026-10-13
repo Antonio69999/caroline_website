@@ -48,7 +48,11 @@ document.addEventListener("DOMContentLoaded", function () {
     const files = event.dataTransfer?.files;
     if (files && files.length > 0) {
       input.files = files;
-      renderFileNames(files);
+      // Un dépôt ne déclenche pas "change" tout seul : on le simule pour que les
+      // autres scripts (réduction/conversion des photos, alerte "modifications non
+      // enregistrées") voient les fichiers, comme avec le sélecteur de fichiers.
+      // Ce même évènement met aussi à jour la liste des noms ci-dessus.
+      input.dispatchEvent(new Event("change", { bubbles: true }));
     }
   });
 });
