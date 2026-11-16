@@ -629,10 +629,154 @@
     font-style: italic;
   }
 
+  /* Easter egg : la petite carotte qui danse (templates/components/easter_egg.html.twig).
+     Petite, dans le coin en bas à droite, jamais au milieu de la page. */
+  .krot {
+    position: fixed;
+    right: 14px;
+    bottom: 10px;
+    z-index: 80; /* sous le menu mobile (90+) et les fenêtres (101) */
+    width: 88px;
+    height: 88px;
+    padding: 0;
+    border: 0;
+    background: none;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    animation: krot-in 0.9s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+    transition: transform 0.2s ease;
+  }
+
+  .krot[hidden] {
+    display: none;
+  }
+
+  .krot.krot-dev {
+    bottom: 54px;
+  }
+
+  .krot img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+  }
+
+  .krot:hover,
+  .krot:focus-visible {
+    transform: scale(1.18) rotate(-4deg);
+  }
+
+  /* Petite bulle qui donne envie de cliquer, puis s'efface toute seule */
+  .krot-bubble {
+    position: absolute;
+    right: 62px;
+    top: 6px;
+    padding: 3px 9px;
+    border-radius: 12px;
+    background: #fff;
+    border: 1px solid #d4d4d4;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+    font-family: "Alice";
+    font-size: 14px;
+    white-space: nowrap;
+    color: #333;
+    opacity: 0;
+    animation: krot-bubble 0.5s ease 1.2s both;
+    transition: opacity 0.8s;
+  }
+
+  .krot.krot-quiet .krot-bubble {
+    animation: none;
+    opacity: 0;
+  }
+
+  .krot.krot-found {
+    animation: none;
+    transform: scale(0);
+    opacity: 0;
+    transition: transform 0.4s ease, opacity 0.4s ease;
+  }
+
+  /* Entrée : la carotte glisse depuis le bord droit de l'écran en rebondissant */
+  @keyframes krot-in {
+    from {
+      transform: translateX(140%);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+
+  @keyframes krot-bubble {
+    from {
+      opacity: 0;
+      transform: translateY(4px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Fond sombre commun avec la recette (.modal) ; ici la photo est centrée et apparaît en fondu. */
+  .egg-modal {
+    padding-top: 0;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
+
+  .egg-image {
+    display: block;
+    max-width: 92vw;
+    max-height: 92vh;
+    max-height: 92dvh;
+    border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.35);
+    animation: egg-fade-in 0.7s ease both;
+  }
+
+  @keyframes egg-fade-in {
+    from {
+      opacity: 0;
+      transform: scale(0.97);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .egg-image,
+    .krot,
+    .krot-bubble {
+      animation: none;
+    }
+
+    .krot-bubble {
+      opacity: 1;
+    }
+  }
+
   @media (max-width: 767px) {
     .modal-content {
       width: 300px;
       font-size: 0.8em;
+    }
+
+    /* La petite carotte est encore plus discrète sur téléphone */
+    .krot {
+      width: 72px;
+      height: 72px;
+      right: 8px;
+    }
+
+    .krot-bubble {
+      right: 50px;
     }
 
     .main-content {

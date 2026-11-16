@@ -1,0 +1,122 @@
+{#
+    Easter egg : après un moment passé sur le site (quelle que soit la page), la petite carotte qui
+    danse apparaît dans un coin. Un clic dessus affiche une photo.
+
+    - Le temps est cumulé d'une page à l'autre (sessionStorage) et ne compte que quand l'onglet est visible.
+    - Une fois la carotte trouvée (cliquée), elle ne revient plus sur ce navigateur (localStorage).
+    - Pour la voir tout de suite (démo, test) : ajouter ?krot à l'adresse d'une page.
+#}
+{# En local (debug), la barre de débogage Symfony occupe le bas de l'écran : on remonte la carotte pour qu'elle reste cliquable. #}
+<button type="button" id="krot" class="krot{{ app.debug ? ' krot-dev' : '' }}" aria-label="Une surprise ! Cliquez sur la petite carotte" hidden>
+    <span class="krot-bubble" aria-hidden="true">psst&nbsp;!</span>
+    <img src="{{ asset('asset/krot.gif', 'static_assets') }}" alt="" width="96" height="96" decoding="async">
+</button>
+
+<div id="eggModal" class="modal egg-modal" role="dialog" aria-modal="true" aria-label="Photo">
+    {# L'image n'est chargée qu'à l'ouverture (data-src) : elle ne pèse rien pour les autres visiteurs #}
+    <img id="eggImage" class="egg-image" data-src="{{ asset('asset/images/pas-de.jpg', 'static_assets') }}" alt="Un mur gris sur lequel est peint « pas de… » en lettres gothiques noires, avec des coulures, à côté d'une boîte aux lettres jaune de La Poste.">
+</div>
+
+<script>
+(function () {
+    const KROT_DELAY = 45000; // temps passé sur le site (en ms) avant que la carotte n'apparaisse
+    const TIME_KEY = 'krotTime';   // temps cumulé, pour la session
+    const SHOWN_KEY = 'krotShown'; // la carotte est déjà apparue : elle réapparaît tout de suite sur les pages suivantes
+    const FOUND_KEY = 'krotFound'; // la carotte a été cliquée : on ne la remontre plus
+
+    const krot = document.getElementById('krot');
+    const eggModal = document.getElementById('eggModal');
+    const eggImage = document.getElementById('eggImage');
+
+    if (!krot || !eggModal || !eggImage) {
+        return;
+    }
+
+    // Le stockage du navigateur peut être indisponible (navigation privée…) : on ne casse jamais la page pour ça.
+    function read(storage, key) {
+        try {
+            return window[storage].getItem(key);
+        } catch (e) {
+            return null;
+        }
+    }
+
+    function write(storage, key, value) {
+        try {
+            window[storage].setItem(key, value);
+        } catch (e) {
+            // sans stockage, l'easter egg fonctionne quand même sur la page courante
+        }
+    }
+
+    const forced = new URLSearchParams(window.location.search).has('krot');
+
+    if (!forced && read('localStorage', FOUND_KEY) === '1') {
+        return;
+    }
+
+    let shown = false;
+
+    function showKrot() {
+        if (shown) {
+            return;
+        }
+
+        shown = true;
+        write('sessionStorage', SHOWN_KEY, '1');
+        krot.hidden = false;
+        // La bulle « psst ! » ne reste que quelques secondes ; la carotte, elle, continue de danser.
+        setTimeout(function () {
+            krot.classList.add('krot-quiet');
+        }, 7000);
+    }
+
+    function setEggOpen(isOpen) {
+        if (isOpen && !eggImage.getAttribute('src')) {
+            eggImage.setAttribute('src', eggImage.dataset.src);
+        }
+
+        eggModal.style.display = isOpen ? 'flex' : 'none';
+    }
+
+    krot.addEventListener('click', function () {
+        write('localStorage', FOUND_KEY, '1');
+        krot.classList.add('krot-found');
+        setEggOpen(true);
+        setTimeout(function () {
+            krot.hidden = true;
+        }, 400);
+    });
+
+    eggModal.addEventListener('click', function () {
+        setEggOpen(false);
+    });
+
+    document.addEventListener('keydown', function (event) {
+        if (event.key === 'Escape') {
+            setEggOpen(false);
+        }
+    });
+
+    if (forced || read('sessionStorage', SHOWN_KEY) === '1') {
+        setTimeout(showKrot, forced ? 800 : 2500);
+        return;
+    }
+
+    // Chronomètre : une seconde de plus à chaque tick, uniquement si l'onglet est visible.
+    let elapsed = parseInt(read('sessionStorage', TIME_KEY), 10) || 0;
+    const timer = setInterval(function () {
+        if (document.hidden) {
+            return;
+        }
+
+        elapsed += 1000;
+        write('sessionStorage', TIME_KEY, String(elapsed));
+
+        if (elapsed >= KROT_DELAY) {
+            clearInterval(timer);
+            showKrot();
+        }
+    }, 1000);
+})();
+</script>

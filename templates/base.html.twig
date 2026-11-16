@@ -67,6 +67,8 @@
         <!-- End Google Tag Manager (noscript) -->
         {% include '/components/menu.html.twig' %}
         {% block body %}{% endblock %}
+        {# Easter egg de la petite carotte (hors page de connexion, qui le désactive) #}
+        {% block easter_egg %}{% include 'components/easter_egg.html.twig' %}{% endblock %}
         {% block footer %}
             {# {% include 'components/footer.html.twig' %} #}
         {% endblock %}
