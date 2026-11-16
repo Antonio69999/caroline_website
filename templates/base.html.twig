@@ -1,7 +1,12 @@
 <!DOCTYPE html>
-<html lang="fr">
+{# Le site est déjà en français : on interdit la traduction automatique du navigateur.
+   Sinon Chrome/Edge « traduisent » le français en français, en remplaçant au passage les polices du site.
+   Trois signaux pour couvrir tous les navigateurs : l'attribut standard translate="no", la classe
+   notranslate (Google Traduction) et la balise meta google. #}
+<html lang="fr" translate="no" class="notranslate">
     <head>
         <meta charset="utf-8">
+        <meta name="google" content="notranslate">
         {# Le zoom au pincement reste permis (accessibilité, et on veut pouvoir regarder une œuvre de près) #}
         <meta content="width=device-width, initial-scale=1" name="viewport">
         <title>{% block title %}{{ seo is defined ? seo.title : 'Caroline Marcellier' }}{% endblock %}</title>

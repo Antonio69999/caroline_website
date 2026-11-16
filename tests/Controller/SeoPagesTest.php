@@ -130,6 +130,11 @@ class SeoPagesTest extends WebTestCase
 
         self::assertResponseIsSuccessful();
         self::assertSelectorExists('html[lang="fr"]');
+
+        // Pas de traduction automatique : le site est déjà en français et la traduction casse les polices
+        self::assertSelectorExists('html[translate="no"].notranslate');
+        self::assertSame('notranslate', $crawler->filter('meta[name="google"]')->attr('content'));
+
         self::assertSame('Caroline Marcellier, artiste – peinture, gravure, calligraphie', trim($crawler->filter('title')->text()));
         self::assertStringContainsString('Loire', $crawler->filter('meta[name="description"]')->attr('content'));
         self::assertSame(self::SITE . '/', $crawler->filter('link[rel="canonical"]')->attr('href'));

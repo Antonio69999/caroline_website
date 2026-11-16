@@ -608,9 +608,14 @@
       /* On remplace par l'image optimisée pour mobile */
       background-image: url("/asset/images/40-mobile.jpg?v=1");
 
-      /* Tu peux ajuster selon l'image mobile : 'cover' pour remplir l'écran,
-       ou 'contain' si tu veux aussi qu'elle s'affiche en entier sans rogner */
-      background-size: cover;
+      /* La photo mobile a presque le même format qu'un téléphone : avec « cover » centré,
+         il n'y a aucune marge sur les côtés et le cadrage tombe pile sur la personne.
+         On l'agrandit donc de 25 % en largeur (la hauteur suit, elle couvre toujours l'écran)
+         et on la décale vers la droite : la personne sort du centre, on voit surtout
+         les grandes lettres peintes sur le mur. Verticalement, 70 % garde les pieds à l'écran
+         (même avec les barres du navigateur) sans montrer les bandes blanches du fichier. */
+      background-size: 125% auto;
+      background-position: 100% 70%;
     }
   }
 } /* end @layer components */
