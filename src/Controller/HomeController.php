@@ -2,7 +2,6 @@
 
 namespace App\Controller;
 
-use App\Entity\Article;
 use App\Entity\Categorie;
 use App\Repository\ArticleRepository;
 use App\Repository\CategorieRepository;
@@ -104,43 +103,10 @@ class HomeController extends AbstractController
 
     return $this->render('category/show.html.twig', [
       'category' => $category,
-      'groupes' => $this->groupesParAnnee($articles),
+      'articles' => $articles,
       'categories' => $categories,
       'seo' => $this->seo->category($category, $articles),
     ]);
-  }
-
-  /**
-   * Les vignettes d'une catégorie, découpées par année (une grille sous chaque intertitre).
-   * Les articles arrivent déjà triés (voir ArticleRepository::findWithPosition) : année la plus
-   * récente d'abord, sans année à la fin. Seuls ceux qui ont une photo ont une vignette.
-   * « debut » = nombre de vignettes des groupes précédents (pour charger les 6 premières tout de suite).
-   *
-   * @param Article[] $articles
-   *
-   * @return list<array{annee: ?int, debut: int, articles: list<Article>}>
-   */
-  private function groupesParAnnee(array $articles): array
-  {
-    $groupes = [];
-    $rang = 0;
-
-    foreach ($articles as $article) {
-      if ($article->getMedia()->isEmpty()) {
-        continue;
-      }
-
-      $dernier = array_key_last($groupes);
-      if (null === $dernier || $groupes[$dernier]['annee'] !== $article->getAnnee()) {
-        $groupes[] = ['annee' => $article->getAnnee(), 'debut' => $rang, 'articles' => []];
-        $dernier = array_key_last($groupes);
-      }
-
-      $groupes[$dernier]['articles'][] = $article;
-      ++$rang;
-    }
-
-    return $groupes;
   }
 
   #[Route(

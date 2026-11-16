@@ -9,49 +9,33 @@
         <div class="category-page__inner">
             <h1 class="category-page__title">{{ category.titre }}</h1>
 
-            {#
-                Une grille par année, la plus récente d'abord (voir HomeController::groupesParAnnee).
-                Les intertitres n'apparaissent que si au moins un article de la catégorie a une année :
-                une catégorie sans aucune année s'affiche comme avant, en une seule grille.
-            #}
-            {% set avecAnnees = groupes|filter(g => g.annee is not null)|length > 0 %}
+            <div class="category-grid">
+                {% for article in articles %}
+                    {% if article.media|length > 0 %}
+                        {% set randomImage = random(article.media) %}
 
-            {% for groupe in groupes %}
-                <section class="category-year">
-                    {% if avecAnnees %}
-                        <h2 class="category-year__title">{{ groupe.annee ?? 'Autres' }}</h2>
-                    {% endif %}
-
-                    <div class="category-grid">
-                        {% for article in groupe.articles %}
-                            {% set randomImage = random(article.media) %}
-
-                            <a
-                                class="category-card"
-                                href="{{ article_path(article) }}"
+                        <a
+                            class="category-card"
+                            href="{{ article_path(article) }}"
+                        >
+                            {# Les premières vignettes sont visibles tout de suite ; les autres ne se chargent qu'en défilant #}
+                            <img
+                                class="category-card__image"
+                                src="{{ thumb_url(randomImage.imageName) }}"
+                                alt="{{ randomImage.legende ?: article.titre }}"
+                                {% if loop.index > 6 %}loading="lazy"{% endif %}
+                                decoding="async"
                             >
-                                {# Les premières vignettes sont visibles tout de suite ; les autres ne se chargent qu'en défilant #}
-                                <img
-                                    class="category-card__image"
-                                    src="{{ thumb_url(randomImage.imageName) }}"
-                                    alt="{{ randomImage.legende ?: article.titre }}"
-                                    {% if groupe.debut + loop.index > 6 %}loading="lazy"{% endif %}
-                                    decoding="async"
-                                >
 
-                                <span class="category-card__overlay">
-                                    <span class="category-card__title">
-                                        {{ article.titre }}
-                                    </span>
+                            <span class="category-card__overlay">
+                                <span class="category-card__title">
+                                    {{ article.titre }}
                                 </span>
-                            </a>
-                        {% endfor %}
-                    </div>
-                </section>
-            {% else %}
-                {# Galerie encore vide : la grille (vide) reste là, comme avant #}
-                <div class="category-grid"></div>
-            {% endfor %}
+                            </span>
+                        </a>
+                    {% endif %}
+                {% endfor %}
+            </div>
 
             {% if category.description %}
                 <div class="category-page__description">

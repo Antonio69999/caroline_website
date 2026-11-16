@@ -89,12 +89,11 @@ class ArticleCrudController extends AbstractCrudController
   public function configureCrud(Crud $crud): Crud
   {
     return $crud
-      // Le même ordre que sur le site : par catégorie (dans l'ordre de la sidebar),
-      // puis par année (la plus récente d'abord, sans année à la fin), puis par
-      // position. Le glisser-déposer ne réordonne qu'à l'intérieur d'un groupe
-      // « catégorie + année » (voir admin_drag_drop.js) : c'est là seulement que
-      // l'ordre manuel compte, l'année décidant du reste.
-      ->setDefaultSort(['categorie.position' => 'ASC', 'annee' => 'DESC', 'position' => 'ASC'])
+      // Regroupés par catégorie (dans l'ordre choisi pour la sidebar), puis par
+      // position au sein de chaque catégorie : le glisser-déposer ne réordonne
+      // jamais entre catégories, donc c'est aussi l'ordre qui doit s'afficher.
+      // L'année n'intervient pas : l'ordre est libre, l'année sert à s'y retrouver.
+      ->setDefaultSort(['categorie.position' => 'ASC', 'position' => 'ASC'])
       ->setPageTitle('index', '🎨 Liste des Articles')
       // Définir sur quels champs la barre de recherche globale fonctionne
       ->setSearchFields(['titre', 'description'])
@@ -139,7 +138,7 @@ class ArticleCrudController extends AbstractCrudController
       IntegerField::new('annee', 'Année')
         ->setSortable(false)
         ->setFormTypeOption('attr', ['min' => 1900, 'max' => 2100, 'placeholder' => 'ex. ' . date('Y')])
-        ->setHelp('L\'année de l\'œuvre ou de l\'atelier. Sur le site, les articles de la catégorie sont rangés par année, la plus récente en premier, chacune sous son intertitre (« 2025 », « 2024 »…). Laisse vide si l\'année n\'a pas de sens ici : sans année, l\'article passe après les autres.'),
+        ->setHelp('L\'année de l\'œuvre ou de l\'atelier, pour t\'y retrouver dans la liste des articles. Elle n\'est pas affichée sur le site et ne change pas l\'ordre : c\'est toi qui le choisis dans la liste. Facultative.'),
 
       // Rendre le tableau plus propre : on cache la description longue sur la liste (index)
       TextEditorField::new('description')
@@ -178,11 +177,12 @@ class ArticleCrudController extends AbstractCrudController
   {
     return $assets
       ->addHtmlContentToHead('<script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>')
-      ->addCssFile('asset/css/admin_media.css')
+      // Versionnés (?v=…, voir config/packages/assets.yaml) : après une mise en ligne, le
+      // navigateur de Caroline recharge ces fichiers s'ils ont changé au lieu de garder
+      // l'ancienne version en cache
+      ->addCssFile(Asset::new('asset/css/admin_media.css')->package('static_assets'))
       ->addCssFile('asset/css/admin_draft.css')
       ->addJsFile('asset/js/admin_upload_loader.js')
-      // Versionné (?v=…) : ce script a changé (regroupement par année), un navigateur
-      // ne doit pas garder l'ancienne version en cache après la mise en ligne
       ->addJsFile(Asset::new('asset/js/admin_drag_drop.js')->package('static_assets'))
       ->addJsFile('asset/js/admin_media_reorder.js')
       ->addJsFile('asset/js/admin_image_resize.js')

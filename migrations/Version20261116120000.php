@@ -8,16 +8,15 @@ use Doctrine\DBAL\Schema\Schema;
 use Doctrine\Migrations\AbstractMigration;
 
 /**
- * Ajoute l'année (facultative) d'un article : les pages des catégories rangent leurs
- * articles par année, la plus récente d'abord, sous un intertitre par année.
- * Purement additive : la colonne est vide pour les articles existants, qui gardent
- * donc exactement leur ordre actuel tant que Caroline ne leur donne pas d'année.
+ * Ajoute l'année (facultative) d'un article : un repère pour s'y retrouver dans la liste
+ * de l'admin. Elle n'est ni affichée sur le site ni utilisée pour ranger les articles.
+ * Purement additive : la colonne est vide pour les articles existants, rien ne change sur le site.
  */
 final class Version20261116120000 extends AbstractMigration
 {
     public function getDescription(): string
     {
-        return 'Add optional article.annee (year), used to group a category\'s articles by year';
+        return 'Add optional article.annee (year), shown in the admin list as a landmark only';
     }
 
     public function up(Schema $schema): void
