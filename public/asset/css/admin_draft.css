@@ -1,0 +1,65 @@
+/* Brouillon automatique des formulaires de l'admin (voir admin_draft.js) : le bandeau « Brouillon
+   retrouvé » au-dessus du formulaire, et la pastille « Brouillon gardé » en bas de l'écran.
+   Les couleurs viennent des variables d'EasyAdmin / de admin_media.css, donc suivent le thème
+   clair / sombre (en thème sombre EasyAdmin garde --content-panel-bg clair : on ne l'utilise pas). */
+
+.draft-banner {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-block-end: 1.25rem;
+  padding: 1rem 1.25rem;
+  color: var(--carotte-admin-text, var(--text-color, inherit));
+  background: var(--form-control-bg, var(--bs-tertiary-bg, #f1f3f5));
+  border: 1px solid var(--carotte-admin-border, rgba(127, 127, 127, 0.4));
+  border-inline-start: 5px solid var(--carotte-admin-accent, #0d6efd);
+  border-radius: 8px;
+}
+
+.draft-banner p {
+  margin: 0;
+}
+
+.draft-banner__note {
+  color: var(--carotte-admin-muted, inherit);
+}
+
+.draft-banner__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.draft-status {
+  position: fixed;
+  inset-block-end: 1rem;
+  inset-inline-end: 1rem;
+  z-index: 1040;
+  max-width: min(26rem, calc(100vw - 2rem));
+  padding: 0.45rem 0.85rem;
+  font-size: 0.85rem;
+  color: var(--carotte-admin-text, var(--text-color, inherit));
+  background: var(--form-control-bg, var(--bs-tertiary-bg, #f1f3f5));
+  border: 1px solid var(--carotte-admin-border, rgba(127, 127, 127, 0.4));
+  border-radius: 999px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  pointer-events: none;
+}
+
+.draft-status[hidden] {
+  display: none;
+}
+
+.draft-status[data-state='saved']::before {
+  content: '💾 ';
+}
+
+.draft-status[data-state='partial'],
+.draft-status[data-state='error'] {
+  border-color: var(--bs-warning, #ffc107);
+}
+
+.draft-status[data-state='partial']::before,
+.draft-status[data-state='error']::before {
+  content: '⚠️ ';
+}

@@ -4,6 +4,7 @@ namespace App\Tests\Controller;
 
 use App\Entity\Bloc;
 use App\Entity\Categorie;
+use App\Seo\SiteUrls;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
@@ -70,7 +71,7 @@ class CategoryVitrinePageTest extends WebTestCase
         $vitrine->addBloc($this->bloc(Bloc::TYPE_IMAGE, 1, "Un tableau d'automne", null, 'tableau.jpg', Bloc::LARGEUR_ETROITE));
         $this->persist($vitrine);
 
-        $crawler = $client->request('GET', '/category/' . $vitrine->getId());
+        $crawler = $client->request('GET', static::getContainer()->get(SiteUrls::class)->categoryPath($vitrine));
 
         self::assertResponseIsSuccessful();
         self::assertSelectorTextContains('.category-page__title', 'Préambule de test');
@@ -85,6 +86,9 @@ class CategoryVitrinePageTest extends WebTestCase
         self::assertStringContainsString('vitrine-bloc--son', $classes[2]);
         self::assertStringContainsString('vitrine-bloc--video', $classes[3]);
         self::assertStringContainsString('vitrine-bloc--moyenne', $classes[3]);
+
+        // Les textes d'une vitrine ont les mêmes titres et polices que les pages de texte
+        self::assertSelectorExists('link[rel="stylesheet"][href*="category_text.css"]');
 
         // Texte : le HTML de l'éditeur est rendu tel quel
         self::assertSelectorTextContains('.vitrine-bloc--texte .category-text h2', 'Bienvenue');
@@ -121,7 +125,7 @@ class CategoryVitrinePageTest extends WebTestCase
         $vitrine->addBloc($this->bloc(Bloc::TYPE_TEXTE, 2, null, '<p>Seul bloc complet</p>'));
         $this->persist($vitrine);
 
-        $crawler = $client->request('GET', '/category/' . $vitrine->getId());
+        $crawler = $client->request('GET', static::getContainer()->get(SiteUrls::class)->categoryPath($vitrine));
 
         self::assertResponseIsSuccessful();
         self::assertCount(1, $crawler->filter('.vitrine > .vitrine-bloc'));
@@ -136,7 +140,7 @@ class CategoryVitrinePageTest extends WebTestCase
         $vitrine = (new Categorie())->setTitre('Vitrine vide')->setType(Categorie::TYPE_VITRINE)->setPosition(9303);
         $this->persist($vitrine);
 
-        $client->request('GET', '/category/' . $vitrine->getId());
+        $client->request('GET', static::getContainer()->get(SiteUrls::class)->categoryPath($vitrine));
 
         self::assertResponseIsSuccessful();
         self::assertSelectorTextContains('.category-page__title', 'Vitrine vide');
@@ -152,7 +156,7 @@ class CategoryVitrinePageTest extends WebTestCase
         $galerie->addBloc($this->bloc(Bloc::TYPE_TEXTE, 0, null, '<p>Ne doit pas apparaître</p>'));
         $this->persist($galerie);
 
-        $client->request('GET', '/category/' . $galerie->getId());
+        $client->request('GET', static::getContainer()->get(SiteUrls::class)->categoryPath($galerie));
 
         self::assertResponseIsSuccessful();
         self::assertSelectorExists('.category-grid');
@@ -167,12 +171,14 @@ class CategoryVitrinePageTest extends WebTestCase
         $vitrine = (new Categorie())->setTitre('Préambule menu')->setType(Categorie::TYPE_VITRINE)->setPosition(9305);
         $this->persist($vitrine);
 
-        $crawler = $client->request('GET', '/category/' . $vitrine->getId());
+        $crawler = $client->request('GET', static::getContainer()->get(SiteUrls::class)->categoryPath($vitrine));
 
         self::assertResponseIsSuccessful();
 
         // Elle est dans le menu comme n'importe quelle catégorie (donc déplaçable dans l'admin)
-        $link = $crawler->filter('#main-menu a[href="/category/' . $vitrine->getId() . '"]');
+        $path = static::getContainer()->get(SiteUrls::class)->categoryPath($vitrine);
+        self::assertSame('/category/' . $vitrine->getId() . '/preambule-menu', $path, "L'adresse du menu contient le titre de la page");
+        $link = $crawler->filter('#main-menu a[href="' . $path . '"]');
         self::assertCount(1, $link);
         self::assertStringContainsString('Préambule menu', $link->text());
 
@@ -190,7 +196,7 @@ class CategoryVitrinePageTest extends WebTestCase
 
         $client->request('GET', '/preamble');
 
-        self::assertResponseRedirects('/category/' . $premiere->getId());
+        self::assertResponseRedirects(static::getContainer()->get(SiteUrls::class)->categoryPath($premiere));
     }
 
     public function testOldPreambleUrlFallsBackToTheHomePageWithoutAnyVitrine(): void

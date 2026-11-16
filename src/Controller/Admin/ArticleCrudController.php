@@ -119,7 +119,9 @@ class ArticleCrudController extends AbstractCrudController
       // et cet ordre doit rester fixe pour que le glisser-déposer garde un sens.
       // IdField::new('id')->onlyOnIndex()->setSortable(false), // Afficher l'ID seulement dans la liste
 
-      TextField::new('titre', 'Titre de l\'article')->setSortable(false),
+      TextField::new('titre', 'Titre de l\'article')
+        ->setSortable(false)
+        ->setHelp('Ce titre est celui de la page dans Google et il entre dans son adresse. Un titre précis (« Vase gravé aux fougères ») est trouvé plus facilement que « Sans titre 12 ».'),
 
       // On affiche la catégorie directement dans la liste
       AssociationField::new('categorie', 'Catégorie')
@@ -127,7 +129,9 @@ class ArticleCrudController extends AbstractCrudController
         ->setSortable(false),
 
       // Rendre le tableau plus propre : on cache la description longue sur la liste (index)
-      TextEditorField::new('description')->hideOnIndex(),
+      TextEditorField::new('description')
+        ->hideOnIndex()
+        ->setHelp('Le début de ce texte sert de résumé dans Google (environ 150 caractères). Précise la technique, le support, les dimensions, l\'année, le lieu : ce sont les mots que les gens cherchent.'),
 
       // Formatage propre des dates
       DateTimeField::new('creeLe', 'Créé le')->setFormat('dd/MM/yyyy HH:mm')->hideOnForm()->setSortable(false),
@@ -162,10 +166,13 @@ class ArticleCrudController extends AbstractCrudController
     return $assets
       ->addHtmlContentToHead('<script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>')
       ->addCssFile('asset/css/admin_media.css')
+      ->addCssFile('asset/css/admin_draft.css')
       ->addJsFile('asset/js/admin_upload_loader.js')
       ->addJsFile('asset/js/admin_drag_drop.js')
       ->addJsFile('asset/js/admin_media_reorder.js')
       ->addJsFile('asset/js/admin_image_resize.js')
+      // Brouillon automatique (gardé dans le navigateur), puis l'alerte qui s'en sert
+      ->addJsFile('asset/js/admin_draft.js')
       ->addJsFile('asset/js/admin_unsaved_warning.js');
   }
 

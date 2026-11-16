@@ -1,6 +1,10 @@
 <!DOCTYPE html>
-<html>
+<html lang="fr">
     <head>
+        <meta charset="utf-8">
+        {# Le zoom au pincement reste permis (accessibilité, et on veut pouvoir regarder une œuvre de près) #}
+        <meta content="width=device-width, initial-scale=1" name="viewport">
+        <title>{% block title %}{{ seo is defined ? seo.title : 'Caroline Marcellier' }}{% endblock %}</title>
         <!-- Google Tag Manager -->
         <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
         new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
@@ -12,26 +16,43 @@
         <link rel="shortcut icon" type="image/png" href="{{ asset('asset/images/logo.png', 'static_assets') }}"/>
         <link rel="apple-touch-icon" href="{{ asset('asset/images/logo.png', 'static_assets') }}"/>
         {% block head %}{% endblock %}
-        <meta charset="utf-8">
-        <title>
-            {% block title %}Welcome!
-            {% endblock %}
-        </title>
-        <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport"> {% block meta %}{% endblock %}
+        <meta name="author" content="Caroline MARCELLIER"/>
+        {#
+            Référencement : tout vient de l'objet « seo » que fabrique App\Seo\SeoBuilder pour chaque
+            page publique. Une page qui n'en fournit pas (connexion, erreurs…) reste hors de Google.
+        #}
+        {% block meta %}
+            {% if seo is defined %}
+                <meta name="description" content="{{ seo.description }}"/>
+                <meta name="robots" content="{{ seo.robots }}"/>
+                {# Demande aux robots d'IA de ne pas utiliser les textes et images pour s'entraîner. Dans une balise à part :
+                   Google ne connaît pas ces mots et les ignore, sans effet sur le reste des consignes. #}
+                <meta name="robots" content="noai, noimageai"/>
+                <link rel="canonical" href="{{ seo.canonical }}"/>
+                {{ seo_json_ld(seo) }}
+            {% else %}
+                <meta name="robots" content="noindex, nofollow"/>
+            {% endif %}
+        {% endblock %}
         <link rel="stylesheet" href="{{ asset('styles/app.css') }}">
+        <link rel="stylesheet" href="{{ asset('asset/css/seo.css', 'static_assets') }}">
         {% block stylesheets %}{% endblock %}
         {% block og_meta %}
-            <meta property="og:title" content="Bienvenue dans mon jardin">
-            <meta property="og:type" content="website"/>
-            <meta property="og:image" content="{{ asset('asset/images/auberge.jpeg', 'static_assets') }}">
-            <meta property="og:url" content="https://carottecake.com/">
-            <meta name="twitter:card" content="summary_large_image">
-            <meta name="twitter:image" content="{{ asset('asset/images/auberge.jpeg', 'static_assets') }}">
-            <meta property="og:description" content="Peintures, gravures, ateliers participatifs">
-            <meta property="og:site_name" content="Caroline Marcellier">
-            <meta name="twitter:image:alt" content="Caroline Marcellier auberge">
-            <meta property="fb:app_id" content=""/>
-            <meta name="twitter:site" content="@caroline-marceliier">
+            {% if seo is defined %}
+                <meta property="og:site_name" content="Caroline Marcellier">
+                <meta property="og:locale" content="fr_FR">
+                <meta property="og:type" content="website"/>
+                <meta property="og:title" content="{{ seo.title }}">
+                <meta property="og:description" content="{{ seo.description }}">
+                <meta property="og:url" content="{{ seo.canonical }}">
+                <meta property="og:image" content="{{ seo.image }}">
+                <meta property="og:image:alt" content="{{ seo.imageAlt }}">
+                <meta name="twitter:card" content="summary_large_image">
+                <meta name="twitter:title" content="{{ seo.title }}">
+                <meta name="twitter:description" content="{{ seo.description }}">
+                <meta name="twitter:image" content="{{ seo.image }}">
+                <meta name="twitter:image:alt" content="{{ seo.imageAlt }}">
+            {% endif %}
         {% endblock %}
     </head>
     <body>

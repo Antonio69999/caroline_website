@@ -1,4 +1,4 @@
-document.addEventListener("DOMContentLoaded", function () {
+(function () {
   // Champs d'upload multiple concernés (photos d'un article, nouvelles photos
   // de la médiathèque). Les photos de téléphone font souvent 5-10 Mo : on les
   // réduit ici, dans le navigateur, avant l'envoi.
@@ -13,55 +13,72 @@ document.addEventListener("DOMContentLoaded", function () {
   // haute que JPEG_QUALITY car l'image est ensuite réduite (donc recompressée).
   const HEIC_TYPES = ["image/heic", "image/heif", "image/heic-sequence", "image/heif-sequence"];
   const HEIC_JPEG_QUALITY = 0.9;
-  // Dossier vendor/ à côté de ce script (marche même si le site n'est pas à la racine du domaine).
-  const thisScript = document.querySelector('script[src*="admin_image_resize.js"]');
-  const HEIC_LIBRARY_URL = new URL(
-    "vendor/heic-to.iife.js",
-    thisScript?.src || new URL("/asset/js/", window.location.href)
-  ).href;
 
-  const SUBMIT_BUTTONS = '.action-save, form.ea-crud-form [type="submit"]';
+  // Les boutons d'enregistrement d'EasyAdmin 4 (« Créer », « Sauvegarder… ») sont dans l'en-tête de la
+  // page, rattachés au formulaire par son id : on les reconnaît à leur nom (ea[newForm] / ea[editForm]).
+  const SUBMIT_BUTTONS =
+    '.action-save, form.ea-crud-form [type="submit"], button[type="submit"][name^="ea[newForm]"], button[type="submit"][name^="ea[editForm]"]';
 
   let busyCount = 0;
 
-  document.querySelectorAll(SELECTOR).forEach((input) => {
-    let latestRun = 0;
+  // Les autres scripts de l'admin (la vitrine d'une catégorie) réutilisent la même
+  // préparation des photos : une seule façon de réduire / convertir, partout.
+  //  - prepare(file)       : renvoie la photo réduite (ou convertie), ou le fichier tel quel
+  //  - blockSubmit(bool)   : bloque / débloque l'enregistrement pendant un traitement
+  //  - isBusy()            : une photo est-elle en cours de traitement ? (le brouillon automatique
+  //                          attend la version réduite plutôt que de garder l'original)
+  window.CarotteImages = {
+    prepare: resizeIfNeeded,
+    blockSubmit(blocked) {
+      busyCount += blocked ? 1 : -1;
+      refreshSubmitButtons();
+    },
+    isBusy: () => busyCount > 0,
+  };
 
-    input.addEventListener("change", async function () {
-      if (!input.files || input.files.length === 0) {
-        return;
-      }
+  document.addEventListener("DOMContentLoaded", function () {
+    document.querySelectorAll(SELECTOR).forEach((input) => {
+      let latestRun = 0;
 
-      const thisRun = ++latestRun;
-      setBusy(input, true);
-
-      try {
-        const resizedFiles = await Promise.all(
-          Array.from(input.files).map((file) => resizeIfNeeded(file))
-        );
-
-        // Si une nouvelle sélection est arrivée entre-temps, c'est elle qui compte.
-        if (thisRun !== latestRun) {
+      input.addEventListener("change", async function () {
+        if (!input.files || input.files.length === 0) {
           return;
         }
 
-        const dataTransfer = new DataTransfer();
-        resizedFiles.forEach((file) => dataTransfer.items.add(file));
-        input.files = dataTransfer.files;
-      } finally {
-        setBusy(input, false);
-      }
+        const thisRun = ++latestRun;
+        setBusy(input, true);
+
+        try {
+          const resizedFiles = await Promise.all(
+            Array.from(input.files).map((file) => resizeIfNeeded(file))
+          );
+
+          // Si une nouvelle sélection est arrivée entre-temps, c'est elle qui compte.
+          if (thisRun !== latestRun) {
+            return;
+          }
+
+          const dataTransfer = new DataTransfer();
+          resizedFiles.forEach((file) => dataTransfer.items.add(file));
+          input.files = dataTransfer.files;
+        } finally {
+          setBusy(input, false);
+        }
+      });
     });
   });
+
+  function refreshSubmitButtons() {
+    document.querySelectorAll(SUBMIT_BUTTONS).forEach((button) => {
+      button.disabled = busyCount > 0;
+    });
+  }
 
   // La conversion d'une photo d'iPhone prend quelques secondes : pendant ce
   // temps on bloque l'enregistrement (sinon la photo d'origine partirait).
   function setBusy(input, busy) {
     busyCount += busy ? 1 : -1;
-
-    document.querySelectorAll(SUBMIT_BUTTONS).forEach((button) => {
-      button.disabled = busyCount > 0;
-    });
+    refreshSubmitButtons();
 
     let notice = input.parentElement.querySelector(".image-prepare-notice");
     if (busyCount > 0 && !notice) {
@@ -151,6 +168,16 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
+  // Dossier vendor/ à côté de ce script (marche même si le site n'est pas à la racine du domaine).
+  function heicLibraryUrl() {
+    const thisScript = document.querySelector('script[src*="admin_image_resize.js"]');
+
+    return new URL(
+      "vendor/heic-to.iife.js",
+      thisScript?.src || new URL("/asset/js/", window.location.href)
+    ).href;
+  }
+
   // La bibliothèque pèse 3 Mo : on ne la charge que si une photo HEIC est choisie.
   let heicLibraryPromise = null;
 
@@ -163,7 +190,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         const script = document.createElement("script");
-        script.src = HEIC_LIBRARY_URL;
+        script.src = heicLibraryUrl();
         script.onload = () =>
           window.HeicTo ? resolve(window.HeicTo) : reject(new Error("HeicTo introuvable"));
         script.onerror = () => reject(new Error("Chargement de la conversion HEIC impossible"));
@@ -176,4 +203,4 @@ document.addEventListener("DOMContentLoaded", function () {
 
     return heicLibraryPromise;
   }
-});
+})();

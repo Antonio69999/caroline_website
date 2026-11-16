@@ -136,7 +136,10 @@
     font-family: "Alice";
   }
 
-  .menu h1 {
+  /* Le nom de Caroline en haut du menu (un <span> : le <h1> de chaque page est son titre).
+     display:block + bold + letter-spacing reprennent exactement l'ancien rendu en h1. */
+  .menu .caroline {
+    display: block;
     font-weight: bold;
     letter-spacing: 1px;
   }
@@ -458,7 +461,9 @@
     min-height: 100vh;
     min-height: 100dvh;
 
-    background-image: url("/asset/images/40.JPEG?v=1");
+    /* Même photo que 40.JPEG (10 Mo, 10244 px de large), réduite à 2560 px : 555 Ko.
+       La page d'accueil se charge bien plus vite (important pour Google). */
+    background-image: url("/asset/images/40-2560.jpg?v=1");
     background-repeat: no-repeat;
 
     /* C'est ici que la magie opère pour ne pas rogner l'image : */
@@ -601,7 +606,7 @@
       min-height: 100dvh;
 
       /* On remplace par l'image optimisée pour mobile */
-      background-image: url("/asset/images/40.JPEGResponsive.JPEG?v=1");
+      background-image: url("/asset/images/40-mobile.jpg?v=1");
 
       /* Tu peux ajuster selon l'image mobile : 'cover' pour remplir l'écran,
        ou 'contain' si tu veux aussi qu'elle s'affiche en entier sans rogner */

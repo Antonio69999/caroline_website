@@ -36,6 +36,27 @@ class ArticleRepository extends ServiceEntityRepository
     }
 
     /**
+     * Tous les articles publiés avec leur catégorie et leurs photos, dans l'ordre du
+     * site, en une seule requête : sert au sitemap, qui liste chaque page et chaque image.
+     *
+     * @return Article[]
+     */
+    public function findPublishedForSitemap(): array
+    {
+        return $this->createQueryBuilder('a')
+            ->innerJoin('a.categorie', 'c')
+            ->addSelect('c')
+            ->leftJoin('a.media', 'm')
+            ->addSelect('m')
+            ->where('a.publie = true')
+            ->orderBy('c.position', 'ASC')
+            ->addOrderBy('a.position', 'ASC')
+            ->addOrderBy('m.position', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
      * Articles publiés, dans l'ordre du site (catégorie puis position), pour
      * le sélecteur de liens de l'éditeur de texte de l'admin : un brouillon
      * n'est pas proposé, son lien mènerait à une page vide.

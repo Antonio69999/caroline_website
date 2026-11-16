@@ -1,4 +1,196 @@
-/* Formulaire d'une catégorie « vitrine » : liste de blocs (texte, image, son, vidéo). */
+/* Formulaire d'une catégorie « vitrine » : liste de blocs (texte, image, son, vidéo).
+   Les couleurs viennent des variables d'EasyAdmin / de admin_media.css : elles suivent le thème
+   clair / sombre. --carotte-admin-surface n'est pas utilisée ici : en thème sombre, EasyAdmin
+   garde --content-panel-bg clair, ce qui donnerait des zones blanches au texte illisible. */
+
+.vitrine-blocs {
+  /* Le cadre de la barre d'ajout, et ce qui est « creusé » dedans (zone de dépôt, boutons, messages). */
+  --vitrine-panel: var(--form-control-bg, var(--bs-tertiary-bg, #f1f3f5));
+  --vitrine-inset: var(--body-bg, var(--bs-body-bg, #fff));
+}
+
+/* ---- Ce que la barre « Ajouter » remplace ---------------------------------------------- */
+
+/* Le bouton « Ajouter un nouvel élément » d'EasyAdmin reste dans la page (le script le
+   déclenche en coulisses pour créer chaque bloc) mais ne se montre plus. */
+.vitrine-blocs .field-collection-add-button,
+.vitrine-blocs .collection-empty {
+  display: none;
+}
+
+/* ---- Barre d'ajout --------------------------------------------------------------------- */
+
+.vitrine-toolbar {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  margin-block-end: 1rem;
+  padding: 1rem;
+  color: var(--carotte-admin-text);
+  background: var(--vitrine-panel);
+  border: 1px solid var(--carotte-admin-border);
+  border-radius: 8px;
+}
+
+.vitrine-toolbar.is-dragging {
+  outline: 2px dashed var(--carotte-admin-accent);
+  outline-offset: 3px;
+}
+
+.vitrine-toolbar__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.vitrine-dropzone {
+  padding: 1rem;
+  color: var(--carotte-admin-muted);
+  text-align: center;
+  cursor: pointer;
+  background: var(--vitrine-inset);
+  border: 2px dashed var(--carotte-admin-border);
+  border-radius: 8px;
+}
+
+.vitrine-dropzone:hover,
+.vitrine-dropzone:focus-visible,
+.vitrine-toolbar.is-dragging .vitrine-dropzone {
+  color: var(--carotte-admin-text);
+  border-color: var(--carotte-admin-accent);
+  outline: none;
+}
+
+/* ---- Taille par défaut ----------------------------------------------------------------- */
+
+.vitrine-sizes {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 1rem;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.vitrine-sizes__legend {
+  float: none;
+  width: auto;
+  margin: 0;
+  padding: 0;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.vitrine-sizes__choices,
+.vitrine-blocs [id$='_largeur'] {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+/* Les boutons radio deviennent des boutons à cocher : les trois tailles se comparent d'un coup d'œil. */
+.vitrine-size-choice,
+.vitrine-blocs [id$='_largeur'] .form-check {
+  position: relative;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+}
+
+.vitrine-size-choice input,
+.vitrine-blocs [id$='_largeur'] .form-check-input {
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline-start: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.vitrine-size-choice label,
+.vitrine-blocs [id$='_largeur'] .form-check-label {
+  display: block;
+  padding: 0.3rem 0.8rem;
+  font-size: 0.9rem;
+  color: var(--carotte-admin-text);
+  background: var(--vitrine-inset);
+  border: 1px solid var(--carotte-admin-border);
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.vitrine-size-choice input:checked + label,
+.vitrine-blocs [id$='_largeur'] .form-check-input:checked + .form-check-label {
+  color: #fff;
+  background: var(--carotte-admin-accent);
+  border-color: var(--carotte-admin-accent);
+}
+
+.vitrine-size-choice input:focus-visible + label,
+.vitrine-blocs [id$='_largeur'] .form-check-input:focus-visible + .form-check-label {
+  outline: 2px solid var(--carotte-admin-accent);
+  outline-offset: 2px;
+}
+
+/* ---- Messages, compteur, page vide ----------------------------------------------------- */
+
+.vitrine-messages:empty {
+  display: none;
+}
+
+.vitrine-message {
+  margin: 0 0 0.35rem;
+  padding: 0.45rem 0.75rem;
+  font-size: 0.9rem;
+  border-inline-start: 4px solid var(--carotte-admin-border);
+  border-radius: 4px;
+  background: var(--vitrine-inset);
+}
+
+.vitrine-message:last-child {
+  margin-block-end: 0;
+}
+
+.vitrine-message--success {
+  border-inline-start-color: #2e9e5b;
+}
+
+.vitrine-message--warning {
+  border-inline-start-color: #e0a100;
+}
+
+.vitrine-message--error {
+  border-inline-start-color: #d63b3b;
+}
+
+.vitrine-tools {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.25rem;
+  margin-block-end: 0.35rem;
+  font-size: 0.85rem;
+}
+
+.vitrine-tools__count {
+  margin-inline-end: auto;
+  color: var(--carotte-admin-muted);
+}
+
+.vitrine-empty {
+  margin: 0 0 1rem;
+  padding: 1rem;
+  color: var(--carotte-admin-muted);
+  text-align: center;
+  border: 1px dashed var(--carotte-admin-border);
+  border-radius: 8px;
+}
+
+/* ---- En-tête d'un bloc ----------------------------------------------------------------- */
 
 /* Place, dans l'en-tête de chaque bloc, pour la poignée et les flèches (à gauche de la corbeille). */
 .vitrine-blocs .accordion-header {
@@ -7,13 +199,41 @@
 
 .vitrine-blocs .accordion-button {
   min-width: 0;
+  gap: 0.6rem;
+}
+
+.vitrine-bloc-badge {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+}
+
+.vitrine-bloc-icon {
+  font-size: 1.4rem;
+  line-height: 1;
+}
+
+.vitrine-bloc-thumb {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 4px;
 }
 
 .vitrine-bloc-label {
+  flex: 0 1 auto;
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.vitrine-bloc-size {
+  flex: none;
+  font-weight: 500;
 }
 
 .vitrine-bloc-controls {
@@ -45,6 +265,12 @@
   text-decoration: none;
 }
 
+/* La corbeille d'EasyAdmin est collée en haut de l'en-tête : on la centre, maintenant qu'il est plus haut. */
+.form-group.field-collection.vitrine-blocs .field-collection-delete-button {
+  inset-block-start: 50%;
+  transform: translateY(-50%);
+}
+
 /* Pendant un glisser-déposer */
 .vitrine-blocs .sortable-ghost {
   opacity: 0.4;
@@ -53,6 +279,8 @@
 .vitrine-blocs .sortable-chosen .vitrine-bloc-handle {
   cursor: grabbing;
 }
+
+/* ---- Contenu d'un bloc ----------------------------------------------------------------- */
 
 /* Les champs d'un bloc passent avant le libellé étroit d'EasyAdmin (20 %) : on laisse
    l'éditeur de texte et le champ fichier occuper la largeur sans déborder. */
@@ -64,4 +292,68 @@
 .vitrine-blocs .category-rich-editor .ql-editor {
   min-height: 160px;
   max-height: 50vh;
+}
+
+/* Aperçu : un petit modèle de la page, où l'image occupe la place qu'elle aura vraiment
+   (mêmes pourcentages que .vitrine-bloc--moyenne / --etroite dans categories.css). */
+.vitrine-bloc-preview {
+  margin-block-end: 1rem;
+}
+
+.vitrine-bloc-preview__frame {
+  max-width: 420px;
+  padding: 0.75rem;
+  text-align: center;
+  background: var(--vitrine-panel);
+  border: 1px solid var(--carotte-admin-border);
+  border-radius: 6px;
+}
+
+.vitrine-bloc-preview__frame img,
+.vitrine-bloc-preview__frame video {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin-inline: auto;
+  border-radius: 3px;
+}
+
+.vitrine-bloc-preview__frame audio {
+  display: block;
+  width: 100%;
+}
+
+.vitrine-bloc-preview[data-largeur='moyenne'] .vitrine-bloc-preview__frame img,
+.vitrine-bloc-preview[data-largeur='moyenne'] .vitrine-bloc-preview__frame video {
+  width: 65%;
+}
+
+.vitrine-bloc-preview[data-largeur='etroite'] .vitrine-bloc-preview__frame img,
+.vitrine-bloc-preview[data-largeur='etroite'] .vitrine-bloc-preview__frame video {
+  width: 40%;
+}
+
+.vitrine-bloc-preview__note {
+  margin: 0.35rem 0 0;
+  font-size: 0.8rem;
+  color: var(--carotte-admin-muted);
+}
+
+.vitrine-bloc-preview[data-kind='son'] .vitrine-bloc-preview__note {
+  display: none;
+}
+
+/* ---- Bloc à compléter ------------------------------------------------------------------ */
+
+.vitrine-bloc--erreur .accordion-item {
+  border-color: #d63b3b;
+}
+
+.vitrine-bloc-problem {
+  margin-block-end: 1rem;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.9rem;
+  color: #d63b3b;
+  border: 1px solid #d63b3b;
+  border-radius: 6px;
 }

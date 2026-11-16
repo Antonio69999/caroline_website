@@ -33,14 +33,16 @@ class Bloc
   ];
 
   // Largeur d'affichage d'une image ou d'une vidéo (sur mobile : toujours 100 %).
+  // Les pourcentages des libellés reprennent categories.css (.vitrine-bloc--moyenne / --etroite),
+  // et admin_vitrine_blocs.css pour l'aperçu dans l'admin : à garder d'accord.
   public const LARGEUR_PLEINE = 'pleine';
   public const LARGEUR_MOYENNE = 'moyenne';
   public const LARGEUR_ETROITE = 'etroite';
 
   public const LARGEURS = [
-    'Pleine largeur' => self::LARGEUR_PLEINE,
-    'Moyenne' => self::LARGEUR_MOYENNE,
-    'Étroite' => self::LARGEUR_ETROITE,
+    'Grande (100 %)' => self::LARGEUR_PLEINE,
+    'Moyenne (65 %)' => self::LARGEUR_MOYENNE,
+    'Petite (40 %)' => self::LARGEUR_ETROITE,
   ];
 
   // Formats acceptés par type de bloc : extensions (nom du fichier) et types MIME

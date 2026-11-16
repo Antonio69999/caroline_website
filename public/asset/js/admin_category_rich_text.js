@@ -217,6 +217,264 @@
     };
   }
 
+  // ---------------------------------------------------------------- polices et titres
+
+  // Polices proposées. « value » est le suffixe de la classe ql-font-xxx posée sur le texte :
+  // les styles correspondants (et les fichiers de police) sont dans category_text.css.
+  const FONTS = [
+    { value: 'alice', label: 'Alice', stack: '"Alice", serif' },
+    { value: 'playfair', label: 'Playfair Display', stack: '"Playfair Display", Georgia, serif' },
+    { value: 'lora', label: 'Lora', stack: '"Lora", Georgia, serif' },
+    { value: 'caveat', label: 'Caveat', stack: '"Caveat", cursive' },
+    { value: 'machine', label: 'Machine à écrire', stack: '"Courier New", Courier, monospace' },
+  ];
+  const DEFAULT_FONT_LABEL = 'Police du site';
+  const HEADING_LEVELS = [1, 2, 3, 4, 5, 6];
+
+  function registerFonts() {
+    if (!window.Quill || window.__categoryFontsRegistered) {
+      return;
+    }
+
+    // Par classes (ql-font-xxx) plutôt qu'en style en ligne : le HTML reste propre, et changer
+    // une police dans category_text.css la change aussi dans les textes déjà écrits.
+    const Font = Quill.import('formats/font');
+    Font.whitelist = FONTS.map((font) => font.value);
+    Quill.register(Font, true);
+    window.__categoryFontsRegistered = true;
+  }
+
+  // Taille réelle (px) du texte et de chaque titre dans l'éditeur, lue dans les styles
+  // eux-mêmes : le menu ne peut donc pas afficher autre chose que ce qui est à l'écran.
+  function measureTextSizes() {
+    const probe = document.createElement('div');
+    probe.className = 'category-rich-editor';
+    probe.setAttribute('aria-hidden', 'true');
+    probe.style.cssText = 'position:absolute;left:-9999px;top:0;width:600px;visibility:hidden;pointer-events:none;';
+
+    const container = document.createElement('div');
+    container.className = 'ql-container ql-snow';
+    const editor = document.createElement('div');
+    editor.className = 'ql-editor';
+
+    const paragraph = document.createElement('p');
+    paragraph.textContent = 'x';
+    editor.append(paragraph);
+
+    const headings = HEADING_LEVELS.map((level) => {
+      const heading = document.createElement(`h${level}`);
+      heading.textContent = 'x';
+      editor.append(heading);
+      return heading;
+    });
+
+    container.append(editor);
+    probe.append(container);
+    document.body.append(probe);
+
+    const sizes = { normal: parseFloat(getComputedStyle(paragraph).fontSize) };
+    HEADING_LEVELS.forEach((level, index) => {
+      sizes[level] = parseFloat(getComputedStyle(headings[index]).fontSize);
+    });
+
+    probe.remove();
+
+    return sizes;
+  }
+
+  const formatPx = (px) => `${Number(px.toFixed(1))} px`;
+
+  // Écrit dans les menus « Police » et « Titre » ce que chaque choix donne vraiment :
+  // « Titre 2 · 20 px », et chaque police dans sa propre police. Quill fabrique ses libellés
+  // en CSS (::before), c'est donc une feuille de style qu'on ajoute, une seule fois par page.
+  function installPickerLabels() {
+    if (document.getElementById('category-rich-picker-labels')) {
+      return;
+    }
+
+    const sizes = measureTextSizes();
+    const picker = '.category-rich-editor .ql-snow .ql-picker';
+    const both = (base, selector) => `${base} .ql-picker-label${selector}::before, ${base} .ql-picker-item${selector}::before`;
+    const css = [];
+
+    css.push(`${picker}.ql-font { width: 175px; }`);
+    css.push(`${both(`${picker}.ql-font`, '')} { content: '${DEFAULT_FONT_LABEL}'; font-family: Verdana, sans-serif; }`);
+    for (const font of FONTS) {
+      css.push(`${both(`${picker}.ql-font`, `[data-value="${font.value}"]`)} { content: '${font.label}'; font-family: ${font.stack}; }`);
+    }
+
+    css.push(`${picker}.ql-header { width: 175px; }`);
+    css.push(`${both(`${picker}.ql-header`, '')} { content: 'Texte normal · ${formatPx(sizes.normal)}'; }`);
+    for (const level of HEADING_LEVELS) {
+      css.push(`${both(`${picker}.ql-header`, `[data-value="${level}"]`)} { content: 'Titre ${level} · ${formatPx(sizes[level])}'; }`);
+      // Dans la liste déroulante, chaque titre est écrit à sa taille réelle.
+      css.push(`${picker}.ql-header .ql-picker-item[data-value="${level}"]::before { font-size: ${sizes[level]}px; }`);
+    }
+
+    const style = document.createElement('style');
+    style.id = 'category-rich-picker-labels';
+    style.textContent = css.join('\n');
+    document.head.append(style);
+  }
+
+  // ------------------------------------------------------------------------ lien externe
+
+  // Ce que l'utilisateur tape → une adresse que Quill acceptera, ou une explication.
+  function normalizeLink(raw) {
+    const value = raw.trim();
+
+    if (value === '') {
+      return { error: 'Écris l’adresse du lien.' };
+    }
+    if (/^(javascript|data|vbscript|file):/i.test(value)) {
+      return { error: 'Cette adresse n’est pas acceptée : utilise une adresse de site (https://…), un e-mail ou un numéro (tel:…).' };
+    }
+    if (/^(https?:\/\/|mailto:|tel:|\/|#)/i.test(value)) {
+      return { url: value };
+    }
+    if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+      return { url: `mailto:${value}` };
+    }
+    if (/\s/.test(value)) {
+      return { error: 'L’adresse ne doit pas contenir d’espace.' };
+    }
+
+    // « www.exemple.fr » → « https://www.exemple.fr »
+    return { url: `https://${value}` };
+  }
+
+  function createLinkDialog({ onSave, onRemove }) {
+    const dialog = document.createElement('dialog');
+    dialog.className = 'category-article-dialog category-link-dialog';
+
+    const header = document.createElement('div');
+    header.className = 'category-article-dialog__header';
+    const title = document.createElement('strong');
+    title.textContent = 'Lier vers un site';
+    const close = createButton('Fermer', 'close-link-dialog');
+    close.classList.remove('btn-secondary');
+    close.classList.add('btn-light');
+    header.append(title, close);
+
+    const form = document.createElement('form');
+    form.className = 'category-link-dialog__form';
+    form.noValidate = true;
+
+    const field = (label, control) => {
+      const row = document.createElement('div');
+      row.className = 'category-link-dialog__row';
+      const labelNode = document.createElement('label');
+      labelNode.textContent = label;
+      labelNode.append(control);
+      row.append(labelNode);
+      return row;
+    };
+
+    const selected = document.createElement('p');
+    selected.className = 'category-link-dialog__selected';
+
+    const textInput = document.createElement('input');
+    textInput.type = 'text';
+    textInput.className = 'form-control';
+    textInput.placeholder = 'Ex. : Mon site, Voir l’exposition…';
+    const textRow = field('Texte du lien', textInput);
+
+    const urlInput = document.createElement('input');
+    urlInput.type = 'text';
+    urlInput.className = 'form-control';
+    urlInput.placeholder = 'https://www.exemple.fr';
+    urlInput.setAttribute('autocomplete', 'off');
+    urlInput.setAttribute('autocapitalize', 'off');
+    urlInput.spellcheck = false;
+    const urlRow = field('Adresse du lien', urlInput);
+
+    const help = document.createElement('p');
+    help.className = 'category-link-dialog__help';
+    help.textContent = 'Un site (https://…), une adresse e-mail ou un numéro de téléphone. Le lien s’ouvre dans un nouvel onglet.';
+
+    const error = document.createElement('p');
+    error.className = 'category-link-dialog__error';
+    error.setAttribute('role', 'alert');
+    error.hidden = true;
+
+    const actions = document.createElement('div');
+    actions.className = 'category-link-dialog__actions';
+    const save = createButton('Enregistrer le lien', 'save-link');
+    save.type = 'submit';
+    save.classList.remove('btn-secondary');
+    save.classList.add('btn-primary');
+    const remove = createButton('Retirer le lien', 'remove-link');
+    remove.classList.remove('btn-secondary');
+    remove.classList.add('btn-outline-danger');
+    const cancel = createButton('Annuler', 'cancel-link');
+    cancel.classList.remove('btn-secondary');
+    cancel.classList.add('btn-light');
+    actions.append(save, remove, cancel);
+
+    form.append(selected, textRow, urlRow, help, error, actions);
+    dialog.append(header, form);
+    document.body.append(dialog);
+
+    const showError = (message) => {
+      error.textContent = message;
+      error.hidden = message === '';
+    };
+
+    close.addEventListener('click', () => dialog.close());
+    cancel.addEventListener('click', () => dialog.close());
+    remove.addEventListener('click', () => {
+      dialog.close();
+      onRemove();
+    });
+    urlInput.addEventListener('input', () => showError(''));
+    textInput.addEventListener('input', () => showError(''));
+
+    form.addEventListener('submit', (event) => {
+      event.preventDefault();
+
+      const normalized = normalizeLink(urlInput.value);
+      if (normalized.error) {
+        showError(normalized.error);
+        urlInput.focus();
+        return;
+      }
+
+      const text = textInput.value.trim();
+      if (!textRow.hidden && text === '') {
+        showError('Écris le texte qui sera cliquable.');
+        textInput.focus();
+        return;
+      }
+
+      dialog.close();
+      onSave({ url: normalized.url, text });
+    });
+
+    return {
+      // text : le texte déjà sélectionné (ou celui du lien sur lequel on est) ; vide = à écrire ici.
+      open({ text, url }) {
+        showError('');
+        urlInput.value = url;
+        textInput.value = '';
+
+        const needsText = text === '';
+        textRow.hidden = !needsText;
+        selected.hidden = needsText;
+        selected.textContent = needsText ? '' : `Texte lié : « ${text.length > 80 ? `${text.slice(0, 80)}…` : text} »`;
+        remove.hidden = url === '';
+        title.textContent = url === '' ? 'Lier vers un site' : 'Modifier le lien';
+
+        if (typeof dialog.showModal === 'function') {
+          dialog.showModal();
+        } else {
+          dialog.setAttribute('open', 'open');
+        }
+        requestAnimationFrame(() => (needsText ? textInput : urlInput).focus());
+      },
+      element: dialog,
+    };
+  }
+
   function normalizeHtml(quill) {
     return quill.getText().trim() === '' ? '' : quill.root.innerHTML;
   }
@@ -227,6 +485,8 @@
 
     input.dataset.quillEnhanced = '1';
     registerDividerBlot();
+    registerFonts();
+    installPickerLabels();
 
     const articles = readArticles(marker, trix, input);
     const field = trix?.closest('.form-group, .field-text_editor, .field-textarea') ?? input.parentElement;
@@ -240,6 +500,11 @@
     const undoButton = createButton('↶ Annuler', 'undo');
     const redoButton = createButton('↷ Rétablir', 'redo');
     const articleButton = createButton('Lier vers un article', 'article');
+    const linkButton = createButton(
+      'Lier vers un site',
+      'link',
+      'Sélectionne un mot ou un groupe de mots, puis clique ici pour en faire un lien vers un site, un e-mail… (raccourci : Ctrl+K)'
+    );
     const dividerButton = createButton('Séparateur', 'divider');
     const htmlButton = createButton('</> HTML', 'html', 'Afficher ou modifier le HTML');
     const fullscreenButton = createButton('Plein écran', 'fullscreen');
@@ -253,6 +518,7 @@
       undoButton,
       redoButton,
       articleButton,
+      linkButton,
       dividerButton,
       htmlButton,
       fullscreenButton
@@ -278,8 +544,10 @@
       input.insertAdjacentElement('afterend', shell);
     }
 
+    // Police, puis niveau de titre : les libellés des deux menus sont écrits par installPickerLabels().
     const toolbarOptions = [
-      [{ header: [1, 2, 3, 4, false] }],
+      [{ font: [false, ...FONTS.map((font) => font.value)] }],
+      [{ header: [...HEADING_LEVELS, false] }],
       ['bold', 'italic', 'underline', 'strike'],
       [{ color: [] }, { background: [] }],
       [{ list: 'ordered' }, { list: 'bullet' }],
@@ -291,11 +559,19 @@
       ['clean'],
     ];
 
+    // Le bouton de lien de Quill (et son raccourci Ctrl+K) ne faisait rien sans texte
+    // sélectionné et n'affichait qu'une petite bulle : il ouvre maintenant la même boîte
+    // que « Lier vers un site » (déclarée plus bas, une fois l'éditeur créé).
+    let openLinkDialog = () => {};
+
     const quill = new Quill(editorHost, {
       theme: 'snow',
       placeholder: 'Écris ici le contenu de la page…',
       modules: {
-        toolbar: toolbarOptions,
+        toolbar: {
+          container: toolbarOptions,
+          handlers: { link: () => openLinkDialog() },
+        },
         history: {
           delay: 800,
           maxStack: 150,
@@ -343,7 +619,24 @@
     updateStatus();
     syncInput(false);
 
-    const articleDialog = createArticleDialog(articles, (article) => {
+    // Brouillon automatique (admin_draft.js) : un texte retrouvé est remis dans l'éditeur, qui le
+    // recopie ensuite dans le champ comme pour une frappe. preventDefault dit « je m'en occupe ».
+    input.addEventListener('carotte:restore', (event) => {
+      event.preventDefault();
+      const html = event.detail?.value ?? '';
+
+      if (sourceMode) {
+        source.value = html;
+        syncInput(true);
+        return;
+      }
+
+      quill.clipboard.dangerouslyPasteHTML(html, 'api');
+      syncInput(true);
+      updateStatus();
+    });
+
+    const articleDialog =createArticleDialog(articles, (article) => {
       const range = savedRange ?? quill.getSelection(true) ?? { index: quill.getLength() - 1, length: 0 };
       const title = article.titre || 'Voir l’article';
       const url = article.url;
@@ -360,6 +653,54 @@
 
       quill.focus();
       syncInput(true);
+    });
+
+    // Lien vers un site : sur le texte sélectionné, sur le lien où se trouve le curseur
+    // (pour le modifier ou le retirer), ou à insérer avec son texte s'il n'y a rien de sélectionné.
+    const LinkBlot = Quill.import('formats/link');
+    let linkTarget = { index: 0, length: 0 };
+
+    const linkDialog = createLinkDialog({
+      onSave: ({ url, text }) => {
+        if (linkTarget.length > 0) {
+          quill.formatText(linkTarget.index, linkTarget.length, 'link', url, 'user');
+          quill.setSelection(linkTarget.index + linkTarget.length, 0, 'silent');
+        } else {
+          quill.insertText(linkTarget.index, text, { link: url }, 'user');
+          quill.setSelection(linkTarget.index + text.length, 0, 'silent');
+        }
+        quill.focus();
+      },
+      onRemove: () => {
+        quill.formatText(linkTarget.index, linkTarget.length, 'link', false, 'user');
+        quill.focus();
+      },
+    });
+
+    openLinkDialog = () => {
+      const range = quill.getSelection() ?? savedRange ?? { index: Math.max(quill.getLength() - 1, 0), length: 0 };
+      let url = '';
+      linkTarget = { index: range.index, length: range.length };
+
+      if (range.length === 0) {
+        // Curseur dans un lien existant : c'est tout ce lien qui est concerné.
+        const [blot, offset] = quill.scroll.descendant(LinkBlot, range.index);
+        if (blot) {
+          linkTarget = { index: range.index - offset, length: blot.length() };
+          url = LinkBlot.formats(blot.domNode) ?? '';
+        }
+      } else {
+        const link = quill.getFormat(range.index, range.length).link;
+        url = typeof link === 'string' ? link : '';
+      }
+
+      const text = linkTarget.length > 0 ? quill.getText(linkTarget.index, linkTarget.length).replace(/\s+/g, ' ').trim() : '';
+      linkDialog.open({ text, url });
+    };
+
+    linkButton.addEventListener('click', () => {
+      savedRange = quill.getSelection() ?? savedRange;
+      openLinkDialog();
     });
 
     undoButton.addEventListener('click', () => {

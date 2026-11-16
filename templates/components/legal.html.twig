@@ -1,5 +1,6 @@
 {% extends 'base.html.twig' %}
-{% block title %}Mentions légales{% endblock %}
+{# Page volontairement hors de Google (« noindex ») : voir SeoBuilder::legal() #}
+{% set seo = seo_page('legal') %}
 {% block body %}
 <div class="narrow-content legal-content">
 <div>

@@ -1,16 +1,24 @@
 {% extends 'base.html.twig' %}
-{% block meta %}
-    <meta name="description" content="Caroline MARCELLIER, peinture, gravure et calligraphie, ateliers participatifs, peinture sur vitrine, gravure sur verre, prestations pédagogiques."/>
-    <meta name="author" content="Caroline MARCELLIER"/>
-{% endblock %}
-{% block title %}Caroline MARCELLIER, peinture, gravure
+
+{% block head %}
+    {# L'image de fond est l'élément le plus gros de la page : on la fait charger tout de suite #}
+    <link rel="preload" as="image" href="/asset/images/40-2560.jpg" media="(min-width: 768px)">
+    <link rel="preload" as="image" href="/asset/images/40-mobile.jpg" media="(max-width: 767px)">
 {% endblock %}
 
 {% block stylesheets %}{% endblock %}
 
 {% block body %}
     <div class="parent-div">
-        <div class="main-content"></div>
+        <div class="main-content">
+            {# Le visuel de l'accueil est une image : ce texte dit aux moteurs de recherche et aux
+               lecteurs d'écran ce que fait Caroline. Invisible à l'écran. #}
+            <h1 class="visually-hidden">Caroline Marcellier, artiste dans la Loire : peinture, gravure et calligraphie</h1>
+            <p class="visually-hidden">
+                Peinture, gravure et calligraphie, ateliers participatifs, peinture sur vitrine,
+                gravure sur verre et prestations pédagogiques.
+            </p>
+        </div>
     </div>
 
 {% endblock %}

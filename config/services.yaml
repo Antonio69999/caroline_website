@@ -5,7 +5,19 @@
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
   media_attachments: "/uploads/attachments"
-  
+
+  # Adresse officielle du site, sans barre finale : c'est elle qu'on donne à Google
+  # (balise canonical, sitemap, données structurées). Une seule adresse par page,
+  # même si le site répond aussi en http ou en www. Surchargeable avec la variable
+  # d'environnement SITE_URL (par ex. pour un site de recette).
+  env(SITE_URL): "https://carottecake.com"
+  app.site_url: "%env(SITE_URL)%"
+
+  # Adresses des profils de Caroline sur d'autres sites (Instagram, Facebook, galerie en
+  # ligne…). Google s'en sert pour relier toutes ses pages entre elles. Volontairement
+  # vide : à remplir avec les vraies adresses, jamais avec des suppositions.
+  app.seo.same_as: []
+
 services:
   # default configuration for services in *this* file
   _defaults:

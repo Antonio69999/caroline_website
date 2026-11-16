@@ -6,6 +6,7 @@ use App\Entity\Bloc;
 use App\Entity\Categorie;
 use App\Form\BlocType;
 use App\Repository\ArticleRepository;
+use App\Service\UploadLimits;
 use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
@@ -93,12 +94,19 @@ class CategorieCrudController extends AbstractCrudController
       ->addHtmlContentToHead('<link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" rel="stylesheet">')
       ->addHtmlContentToHead('<script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>')
       ->addCssFile('asset/css/admin_media.css')
+      // Titres et polices : les mêmes que sur le site (c'est ce fichier qui fait que « Titre 2 » mesure 20 px)
+      ->addCssFile('asset/css/category_text.css')
       ->addCssFile('asset/css/admin_category_rich_text.css')
       ->addCssFile('asset/css/admin_vitrine_blocs.css')
+      ->addCssFile('asset/css/admin_draft.css')
       ->addJsFile('asset/js/admin_categorie_drag_drop.js')
       ->addJsFile('asset/js/admin_categorie_type.js')
       ->addJsFile('asset/js/admin_category_rich_text.js')
+      // Même réduction / conversion des photos que pour les articles (utilisée par la vitrine)
+      ->addJsFile('asset/js/admin_image_resize.js')
       ->addJsFile('asset/js/admin_vitrine_blocs.js')
+      // Brouillon automatique (gardé dans le navigateur), puis l'alerte qui s'en sert
+      ->addJsFile('asset/js/admin_draft.js')
       ->addJsFile('asset/js/admin_unsaved_warning.js');
   }
 
@@ -108,7 +116,8 @@ class CategorieCrudController extends AbstractCrudController
       // On cache l'ID partout, ça n'intéresse pas l'utilisateur
       IdField::new('id')->hideOnForm()->hideOnIndex(),
 
-      TextField::new('titre', 'Nom de la catégorie'),
+      TextField::new('titre', 'Nom de la catégorie')
+        ->setHelp('Ce nom apparaît dans le menu, en titre de la page et dans les résultats de Google, et il entre dans l\'adresse de la page. Choisis les mots que les gens taperaient pour te trouver : « Gravure sur verre » plutôt que « Verre ».'),
 
       ChoiceField::new('type', 'Type de page')
         ->setChoices([
@@ -126,14 +135,16 @@ class CategorieCrudController extends AbstractCrudController
         ->setHelp('Une galerie affiche ses articles. Une page de texte affiche à la place un texte mis en forme (par exemple ton CV). Une vitrine est une page libre faite de blocs empilés (textes, images, sons, vidéos), comme le Préambule. Pour ces deux derniers types, les articles rattachés à la catégorie ne sont pas montrés.'),
 
       // On cache la description longue sur la liste pour ne pas casser le tableau
-      TextEditorField::new('description', 'Description')->hideOnIndex(),
+      TextEditorField::new('description', 'Description')
+        ->hideOnIndex()
+        ->setHelp('Affichée sous les images (galeries). Le début sert aussi de résumé dans Google (environ 150 caractères) : dis en une ou deux phrases ce qu\'on trouve ici — technique, matière, lieu, ce qui rend ce travail unique. Sans texte, Google n\'a que les titres pour comprendre la page.'),
 
       // On garde volontairement TextEditorField : Trix reste le fallback si Quill
       // ne charge pas. Le JS remplace seulement l'interface visible du champ contenu.
       TextEditorField::new('contenu', 'Contenu de la page')
         ->onlyOnForms()
         ->setNumOfRows(20)
-        ->setHelp('Éditeur avancé : titres, gras, italique, souligné, couleurs, listes, alignement, indentation, citations, liens, séparateurs, HTML, annuler/rétablir et plein écran. Utilise « Lier vers un article » pour citer une œuvre du site.')
+        ->setHelp('Éditeur avancé : polices, titres 1 à 6 (leur taille en pixels est écrite dans le menu), gras, italique, souligné, couleurs, listes, alignement, indentation, citations, séparateurs, HTML, annuler/rétablir et plein écran. Pour faire un lien : sélectionne un mot ou un groupe de mots, puis « Lier vers un site » (autre site, e-mail…) ou « Lier vers un article » (une œuvre du site).')
         ->setFormTypeOption('attr', [
           'data-rich-category-editor' => '1',
           'data-linkable-articles' => $this->linkableArticlesJson($pageName),
@@ -141,6 +152,9 @@ class CategorieCrudController extends AbstractCrudController
 
       // Les blocs d'une vitrine : texte, image, son ou vidéo, empilés dans l'ordre choisi.
       // Pas de TextEditorField ici : chaque bloc texte utilise le même éditeur Quill (voir BlocType).
+      // La barre « Ajouter un texte / des images… » est construite par admin_vitrine_blocs.js
+      // au-dessus de la liste ; le bouton « Ajouter un nouvel élément » d'EasyAdmin, lui, est
+      // masqué (le script s'en sert en coulisses pour créer chaque bloc).
       CollectionField::new('blocs', 'Contenu de la page')
         ->onlyOnForms()
         ->setColumns(12)
@@ -151,7 +165,14 @@ class CategorieCrudController extends AbstractCrudController
         // Un bloc neuf démarre en « Texte » (sinon aucun type ne serait coché)
         ->setFormTypeOption('prototype_data', new Bloc())
         ->setFormTypeOption('entry_options.linkable_articles', $this->linkableArticlesJson($pageName))
-        ->setHelp('Ajoute des blocs avec « Ajouter » et réordonne-les en les glissant (ou avec les flèches ▲▼). Chaque bloc s\'adapte tout seul aux écrans de téléphone.'),
+        // Limites d'envoi du serveur : le script refuse un ajout qui les dépasserait,
+        // au lieu de laisser PHP jeter tout le formulaire à l'enregistrement.
+        ->setFormTypeOption('row_attr', [
+          'data-max-bytes' => (string) UploadLimits::perFile(),
+          'data-max-total-bytes' => (string) UploadLimits::total(),
+          'data-max-files' => (string) UploadLimits::maxFiles(),
+        ])
+        ->setHelp('La page se lit de haut en bas, dans l\'ordre des blocs. Ajoute-en avec les boutons ci-dessus (ou glisse tes fichiers dans la zone), puis déplace-les avec ⠿ ou ▲▼. Chaque bloc s\'adapte tout seul aux écrans de téléphone.'),
 
       // Le glisser-déposer (et les flèches ▲▼) de la liste s'occupent de l'ordre
       IntegerField::new('position', 'Ordre')->onlyOnIndex(),

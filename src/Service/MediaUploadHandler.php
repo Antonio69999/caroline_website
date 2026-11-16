@@ -21,6 +21,7 @@ class MediaUploadHandler
   public function __construct(
     #[Autowire(param: 'kernel.project_dir')] string $projectDir,
     private readonly EntityManagerInterface $em,
+    private readonly Thumbnailer $thumbnailer,
   ) {
     $this->uploadDir = $projectDir . '/public/uploads/attachments';
   }
@@ -45,6 +46,13 @@ class MediaUploadHandler
     }
 
     $file->move($this->uploadDir, $newFilename);
+
+    // La vignette (petite copie pour les grilles et galeries) est un confort : si elle ne peut
+    // pas être fabriquée, la photo est quand même enregistrée et le site utilise l'originale.
+    try {
+      $this->thumbnailer->generate($newFilename);
+    } catch (\Throwable) {
+    }
 
     return $newFilename;
   }

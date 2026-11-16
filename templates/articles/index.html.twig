@@ -1,16 +1,5 @@
 {% extends 'base.html.twig' %}
-{% block title %}
-    {% for article in articles %}
-        {{ article.titre }}
-    {% endfor %}
-{% endblock %}
 
-{% block meta %}
-    {% for article in articles %}
-        <meta name="description" content="{{ article.titre }}"/>
-    {% endfor %}
-    <meta name="author" content="Caroline MARCELLIER"/>
-{% endblock %}
 {% block stylesheets %}
     <link rel="stylesheet" href="{{ asset('asset/css/simplelightbox.min.css', 'static_assets') }}">
 {% endblock %}
@@ -18,21 +7,33 @@
 {% block body %}
 
     <div class="narrow-content">
-        {% for article in articles %}
-            <div class="article-detail">
-                <h2 class="article_subtitle">{{ article.titre }}</h2>
-                <div class="gallery">
-                    {% for media in article.media %}
-                        <a href="{{ asset('uploads/attachments/' ~ media.imageName) }}" title="{{ media.legende }}">
-                            <img src="{{ asset('uploads/attachments/' ~ media.imageName) }}" alt="{{ media.legende }}" title="{{ media.legende }}">
-                        </a>
-                    {% endfor %}
-                </div>
-                <div class="description">
-                    <p>{{ article.description|raw }}</p>
-                </div>
+        <div class="article-detail">
+            {# Lien vers la catégorie : aide les visiteurs à remonter, et relie la page au reste du site pour Google #}
+            {% if article.categorie and article.categorie.titre %}
+                <nav class="breadcrumb" aria-label="Fil d'Ariane">
+                    <a href="{{ category_path(article.categorie) }}">&larr; {{ article.categorie.titre }}</a>
+                </nav>
+            {% endif %}
+
+            <h1 class="article_subtitle">{{ article.titre }}</h1>
+            <div class="gallery">
+                {% for media in article.media %}
+                    {# Le clic ouvre la photo d'origine en grand ; la page, elle, n'affiche que sa vignette #}
+                    <a href="{{ asset('uploads/attachments/' ~ media.imageName) }}" title="{{ media.legende }}">
+                        <img
+                            src="{{ thumb_url(media.imageName) }}"
+                            alt="{{ media.legende ?: article.titre }}"
+                            title="{{ media.legende }}"
+                            {% if loop.first %}fetchpriority="high"{% else %}loading="lazy"{% endif %}
+                            decoding="async"
+                        >
+                    </a>
+                {% endfor %}
             </div>
-        {% endfor %}
+            <div class="description">
+                <p>{{ article.description|raw }}</p>
+            </div>
+        </div>
     </div>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
     <script src="{{ asset('asset/js/simple-lightbox.min.js', 'static_assets') }}"></script>

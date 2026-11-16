@@ -30,8 +30,9 @@
         </li>
 
         <li id="name" class="box-border px-2.5">
+            {# Un titre (h1) n'a pas sa place dans un bouton : chaque page a maintenant son propre h1 #}
             <button type="button" id="myBtn">
-                <h1 class="caroline" id="openModal">Caroline MARCELLIER</h1>
+                <span class="caroline" id="openModal">Caroline MARCELLIER</span>
             </button>
         </li>
 
@@ -39,7 +40,7 @@
             <li class="box-border px-2.5">
                 <a
                     class="block h-10 text-lg leading-10 transition-all duration-300 hover:border-b hover:border-gray-300"
-                    href="{{ path('app_category_show', {'id': category.id}) }}"
+                    href="{{ category_path(category) }}"
                 >
                     {{ category.titre }}
                 </a>

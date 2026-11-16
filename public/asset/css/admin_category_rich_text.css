@@ -47,13 +47,7 @@
   line-height: 1.65;
 }
 
-.category-rich-editor .ql-editor h1,
-.category-rich-editor .ql-editor h2,
-.category-rich-editor .ql-editor h3,
-.category-rich-editor .ql-editor h4 {
-  margin-top: 1.15em;
-  margin-bottom: 0.5em;
-}
+/* Les titres de l'éditeur (tailles, polices, marges) sont dans category_text.css : ce sont ceux du site. */
 
 .category-rich-editor .ql-editor hr {
   margin: 1.5rem 0;
@@ -176,6 +170,63 @@ body.category-rich-editor-fullscreen-open {
 
 .category-article-dialog__empty {
   padding: 1rem 0;
+}
+
+/* Boîte « Lier vers un site » : mêmes en-tête et cadre que « Lier vers un article ». */
+.category-link-dialog {
+  width: min(520px, calc(100vw - 2rem));
+}
+
+.category-link-dialog__form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  padding: 1rem;
+}
+
+.category-link-dialog__row label {
+  display: block;
+  width: 100%;
+  font-weight: 600;
+}
+
+.category-link-dialog__row .form-control {
+  margin-top: 0.3rem;
+  font-weight: 400;
+}
+
+.category-link-dialog__selected,
+.category-link-dialog__help,
+.category-link-dialog__error {
+  margin: 0;
+}
+
+.category-link-dialog__selected {
+  padding: 0.5rem 0.75rem;
+  background: rgba(127, 127, 127, 0.12);
+  border-radius: 0.35rem;
+  overflow-wrap: anywhere;
+}
+
+.category-link-dialog__help {
+  color: var(--bs-secondary-color, #6c757d);
+  font-size: 0.85rem;
+}
+
+.category-link-dialog__error {
+  color: #d63b3b;
+  font-size: 0.9rem;
+}
+
+.category-link-dialog__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.25rem;
+}
+
+.category-link-dialog [hidden] {
+  display: none !important;
 }
 
 @media (max-width: 767px) {

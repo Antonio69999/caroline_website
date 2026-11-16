@@ -1,11 +1,6 @@
 {% extends 'base.html.twig' %}
-{% block meta %}
-    <meta name="description" content="Caroline MARCELLIER, contact"/>
-    <meta name="author" content="Caroline MARCELLIER"/>
-{% endblock %}
-
-{% block title %}Caroline MARCELLIER contact
-{% endblock %}
+{# Titre, description et adresse officielle de la page : voir SeoBuilder::contact() #}
+{% set seo = seo_page('contact') %}
 
 {% block body %}
     <section class="narrow-content contact-page">

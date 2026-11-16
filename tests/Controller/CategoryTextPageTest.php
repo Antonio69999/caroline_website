@@ -4,8 +4,10 @@ namespace App\Tests\Controller;
 
 use App\Entity\Article;
 use App\Entity\Categorie;
+use App\Seo\SiteUrls;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Page publique d'une catégorie « texte » (le CV) : le texte mis en forme
@@ -67,7 +69,7 @@ class CategoryTextPageTest extends WebTestCase
             ->setPosition(9002);
         $this->persist($cv);
 
-        $crawler = $client->request('GET', '/category/' . $cv->getId());
+        $crawler = $client->request('GET', static::getContainer()->get(SiteUrls::class)->categoryPath($cv));
 
         self::assertResponseIsSuccessful();
         self::assertSelectorExists('.category-text');
@@ -79,7 +81,14 @@ class CategoryTextPageTest extends WebTestCase
         $link = $crawler->filter('.category-text a')->first();
         self::assertSame('/article/' . $article->getId(), $link->attr('href'));
 
+        // L'éditeur de texte enregistre l'adresse courte (/article/12) : elle renvoie (301, définitif)
+        // vers l'adresse officielle de l'article, celle qui contient son titre.
         $client->click($link->link());
+        self::assertResponseRedirects(
+            static::getContainer()->get(SiteUrls::class)->articlePath($article),
+            Response::HTTP_MOVED_PERMANENTLY,
+        );
+        $client->followRedirect();
         self::assertResponseIsSuccessful();
         self::assertSelectorTextContains('.article_subtitle', 'Tableau cité dans le CV');
     }
@@ -100,13 +109,45 @@ class CategoryTextPageTest extends WebTestCase
             ->setPosition(9005);
         $this->persist($cv);
 
-        $client->request('GET', '/category/' . $cv->getId());
+        $client->request('GET', static::getContainer()->get(SiteUrls::class)->categoryPath($cv));
 
         self::assertResponseIsSuccessful();
         self::assertSelectorTextContains('.category-text .ql-align-center', 'Titre centré');
         self::assertSelectorTextContains('.category-text u', 'Texte souligné');
         self::assertSelectorExists('.category-text blockquote');
         self::assertSelectorExists('.category-text hr');
+    }
+
+    public function testTextCategoryLoadsTheSharedTypographyAndKeepsFontClassesAndLinks(): void
+    {
+        $client = static::createClient();
+
+        // Ce que produit l'éditeur : un titre, une police au choix (classe ql-font-xxx) et un lien vers un site
+        $cv = (new Categorie())
+            ->setTitre('CV polices et liens')
+            ->setType(Categorie::TYPE_TEXTE)
+            ->setContenu(
+                '<h3>Une section</h3>'
+                . '<p><span class="ql-font-playfair">Élégant</span> et <a href="https://exemple.fr/expo" rel="noopener noreferrer" target="_blank">une exposition</a></p>'
+            )
+            ->setPosition(9006);
+        $this->persist($cv);
+
+        $crawler = $client->request('GET', static::getContainer()->get(SiteUrls::class)->categoryPath($cv));
+
+        self::assertResponseIsSuccessful();
+
+        // Les titres 2 à 6 n'ont de taille que dans cette feuille (Tailwind remet les titres à zéro) :
+        // sans elle, un titre 3 s'afficherait comme du texte normal
+        self::assertSelectorExists('link[rel="stylesheet"][href*="category_text.css"]');
+
+        self::assertSelectorExists('.category-text h3');
+        self::assertSelectorTextContains('.category-text .ql-font-playfair', 'Élégant');
+
+        $lien = $crawler->filter('.category-text a');
+        self::assertSame('https://exemple.fr/expo', $lien->attr('href'));
+        self::assertSame('_blank', $lien->attr('target'));
+        self::assertStringContainsString('noopener', $lien->attr('rel'));
     }
 
     public function testTextCategoryWithoutContentStillRenders(): void
@@ -116,7 +157,7 @@ class CategoryTextPageTest extends WebTestCase
         $cv = (new Categorie())->setTitre('CV vide')->setType(Categorie::TYPE_TEXTE)->setPosition(9003);
         $this->persist($cv);
 
-        $client->request('GET', '/category/' . $cv->getId());
+        $client->request('GET', static::getContainer()->get(SiteUrls::class)->categoryPath($cv));
 
         self::assertResponseIsSuccessful();
         self::assertSelectorTextContains('.category-page__title', 'CV vide');
@@ -136,7 +177,7 @@ class CategoryTextPageTest extends WebTestCase
 
         self::assertSame(Categorie::TYPE_GALERIE, $galerie->getType(), 'Le type par défaut doit rester "galerie"');
 
-        $client->request('GET', '/category/' . $galerie->getId());
+        $client->request('GET', static::getContainer()->get(SiteUrls::class)->categoryPath($galerie));
 
         self::assertResponseIsSuccessful();
         self::assertSelectorExists('.category-grid');

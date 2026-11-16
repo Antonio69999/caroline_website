@@ -131,9 +131,12 @@ class MediaCrudController extends AbstractCrudController
   {
     return $assets
       ->addCssFile('asset/css/admin_media.css')
+      ->addCssFile('asset/css/admin_draft.css')
       ->addJsFile('asset/js/admin_image_resize.js')
       ->addJsFile('asset/js/admin_media_lightbox.js')
       ->addJsFile('asset/js/admin_media_dropzone.js')
+      // Brouillon automatique (gardé dans le navigateur), puis l'alerte qui s'en sert
+      ->addJsFile('asset/js/admin_draft.js')
       ->addJsFile('asset/js/admin_unsaved_warning.js');
   }
 

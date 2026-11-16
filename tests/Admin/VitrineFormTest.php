@@ -6,6 +6,8 @@ use App\Controller\Admin\CategorieCrudController;
 use App\Entity\Admin;
 use App\Entity\Bloc;
 use App\Entity\Categorie;
+use App\Seo\SiteUrls;
+use App\Service\UploadLimits;
 use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGeneratorInterface;
@@ -23,6 +25,9 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 class VitrineFormTest extends WebTestCase
 {
     private const MP3 = "ID3\x03\x00\x00\x00\x00\x00\x00" . "\xFF\xFB\x90\x00";
+
+    /** Une image PNG valide de 1 pixel (en base64) : le serveur contrôle le vrai contenu des fichiers. */
+    private const PNG = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==';
 
     /** @var list<string> */
     private array $tmpFiles = [];
@@ -140,6 +145,115 @@ class VitrineFormTest extends WebTestCase
         self::assertStringContainsString('data-linkable-articles', $prototype);
     }
 
+    public function testTheCollectionExposesTheServerLimitsAndTheSizesAreThreeButtons(): void
+    {
+        $client = $this->loggedClient();
+        $crawler = $client->request('GET', $this->adminUrl(Action::NEW));
+
+        // Le script d'ajout refuse ce que PHP jetterait : il lit donc les limites réelles du serveur
+        $collection = $crawler->filter('[data-form-type-name-placeholder="__blocsname__"]');
+        self::assertSame((string) UploadLimits::perFile(), $collection->attr('data-max-bytes'));
+        self::assertSame((string) UploadLimits::total(), $collection->attr('data-max-total-bytes'));
+        self::assertSame((string) UploadLimits::maxFiles(), $collection->attr('data-max-files'));
+
+        // Les trois tailles sont des boutons radio (plus une liste déroulante), « Grande » cochée par défaut
+        $prototype = new Crawler();
+        $prototype->addHtmlContent($collection->attr('data-prototype'));
+        $tailles = $prototype->filter('input[type="radio"][name$="[largeur]"]');
+        self::assertSame(['pleine', 'moyenne', 'etroite'], $tailles->each(fn ($n) => $n->attr('value')));
+        self::assertSame('pleine', $prototype->filter('input[name$="[largeur]"]:checked')->attr('value'));
+
+        $libelles = $prototype->filter('label[for*="_largeur_"]')->each(fn ($n) => trim($n->text()));
+        self::assertSame(['Grande (100 %)', 'Moyenne (65 %)', 'Petite (40 %)'], $libelles);
+    }
+
+    public function testSeveralImagesAddedAtOnceKeepTheirOwnSizeAndOrder(): void
+    {
+        $client = $this->loggedClient();
+        $crawler = $client->request('GET', $this->adminUrl(Action::NEW));
+        $png = base64_decode(self::PNG);
+
+        // Ce que le navigateur envoie après un ajout de plusieurs images d'un coup : un bloc par fichier
+        $this->submit($client, $crawler, 'Test vitrine plusieurs images', [
+            0 => ['type' => 'image', 'contenu' => '', 'titre' => 'Le jardin en automne', 'largeur' => 'pleine', 'position' => '0'],
+            1 => ['type' => 'image', 'contenu' => '', 'titre' => 'Portrait de Caroline', 'largeur' => 'moyenne', 'position' => '1'],
+            2 => ['type' => 'texte', 'contenu' => '<p>Entre deux images</p>', 'titre' => '', 'largeur' => 'pleine', 'position' => '2'],
+            3 => ['type' => 'image', 'contenu' => '', 'titre' => 'Petite étude', 'largeur' => 'etroite', 'position' => '3'],
+        ], [
+            0 => $this->fixture('le-jardin-en-automne.png', $png),
+            1 => $this->fixture('portrait-de-caroline.png', $png),
+            3 => $this->fixture('petite-etude.png', $png),
+        ]);
+
+        self::assertResponseRedirects();
+
+        $em = static::getContainer()->get(EntityManagerInterface::class);
+        $em->clear();
+        $vitrine = $em->getRepository(Categorie::class)->findOneBy(['titre' => 'Test vitrine plusieurs images']);
+        self::assertNotNull($vitrine);
+
+        $blocs = $vitrine->getBlocs()->toArray();
+        self::assertSame(
+            [[Bloc::TYPE_IMAGE, 'pleine'], [Bloc::TYPE_IMAGE, 'moyenne'], [Bloc::TYPE_TEXTE, 'pleine'], [Bloc::TYPE_IMAGE, 'etroite']],
+            array_map(fn (Bloc $b) => [$b->getType(), $b->getLargeur()], $blocs),
+            'Chaque image garde sa propre taille, dans l\'ordre envoyé',
+        );
+
+        $dossier = static::getContainer()->getParameter('kernel.project_dir') . '/public/uploads/vitrine';
+        foreach ([$blocs[0], $blocs[1], $blocs[3]] as $image) {
+            self::assertNotNull($image->getFichierName());
+            self::assertFileExists($dossier . '/' . $image->getFichierName());
+            $this->uploaded[] = $image->getFichierName();
+        }
+        self::assertNotSame($blocs[0]->getFichierName(), $blocs[1]->getFichierName(), 'Deux fichiers envoyés ensemble ne doivent pas s\'écraser');
+
+        // La page publique reprend les trois tailles, dans le même ordre
+        $client->request('GET', static::getContainer()->get(SiteUrls::class)->categoryPath($vitrine));
+        self::assertResponseIsSuccessful();
+        $classes = $client->getCrawler()->filter('.vitrine-bloc--image')->each(fn ($n) => $n->attr('class'));
+        self::assertCount(3, $classes);
+        self::assertStringContainsString('vitrine-bloc--pleine', $classes[0]);
+        self::assertStringContainsString('vitrine-bloc--moyenne', $classes[1]);
+        self::assertStringContainsString('vitrine-bloc--etroite', $classes[2]);
+    }
+
+    public function testEditFormTellsTheScriptWhereTheStoredFileIsAndWhichSizeWasChosen(): void
+    {
+        $client = $this->loggedClient();
+        $em = static::getContainer()->get(EntityManagerInterface::class);
+        $dossier = static::getContainer()->getParameter('kernel.project_dir') . '/public/uploads/vitrine';
+
+        if (!is_dir($dossier)) {
+            mkdir($dossier, 0775, true);
+        }
+        $nom = 'test-vitrine-apercu.png';
+        file_put_contents($dossier . '/' . $nom, base64_decode(self::PNG));
+        $this->uploaded[] = $nom;
+
+        $vitrine = (new Categorie())->setTitre('Test vitrine aperçu')->setType(Categorie::TYPE_VITRINE)->setPosition(9402);
+        $texte = (new Bloc())->setType(Bloc::TYPE_TEXTE)->setContenu('<p>Un mot</p>')->setPosition(0);
+        $image = (new Bloc())->setType(Bloc::TYPE_IMAGE)->setTitre('Un tableau')->setLargeur(Bloc::LARGEUR_ETROITE)->setPosition(1);
+        $image->setFichierName($nom);
+        $vitrine->addBloc($texte)->addBloc($image);
+        $em->persist($vitrine);
+        $em->flush();
+        $id = $vitrine->getId();
+        $em->clear();
+
+        $crawler = $client->request('GET', $this->adminUrl(Action::EDIT, $id));
+        self::assertResponseIsSuccessful();
+
+        // L'aperçu (miniature, lecteur) vient de cette adresse : seul le bloc qui a un fichier en a une
+        $champs = $crawler->filter('input[type="file"][data-preview-url]');
+        self::assertCount(1, $champs);
+        self::assertSame('/uploads/vitrine/' . $nom, $champs->attr('data-preview-url'));
+        self::assertSame((string) UploadLimits::perFile(), $champs->attr('data-max-bytes'), 'La limite par fichier reste lue par le script');
+
+        // La taille déjà choisie est celle qui est cochée
+        self::assertSame('etroite', $crawler->filter('input[name="Categorie[blocs][1][largeur]"]:checked')->attr('value'));
+        self::assertSame('pleine', $crawler->filter('input[name="Categorie[blocs][0][largeur]"]:checked')->attr('value'));
+    }
+
     public function testCreatingAVitrineWithATextBlockAndAnMp3Block(): void
     {
         $client = $this->loggedClient();
@@ -174,7 +288,7 @@ class VitrineFormTest extends WebTestCase
         $this->uploaded[] = $son->getFichierName();
 
         // Et la page publique le montre
-        $client->request('GET', '/category/' . $vitrine->getId());
+        $client->request('GET', static::getContainer()->get(SiteUrls::class)->categoryPath($vitrine));
         self::assertResponseIsSuccessful();
         self::assertSelectorTextContains('.vitrine-bloc--texte h2', 'Bienvenue');
         self::assertSelectorExists('.vitrine-bloc--son audio[src="/uploads/vitrine/' . $son->getFichierName() . '"]');
@@ -273,7 +387,7 @@ class VitrineFormTest extends WebTestCase
         self::assertFileDoesNotExist($dossier . '/' . $nom, 'Supprimer un bloc doit supprimer son fichier');
 
         // La page publique suit le nouvel ordre
-        $client->request('GET', '/category/' . $id);
+        $client->request('GET', static::getContainer()->get(SiteUrls::class)->categoryPath($apres));
         $textes = $client->getCrawler()->filter('.vitrine-bloc--texte')->each(fn ($n) => trim($n->text()));
         self::assertSame(['Deuxième', 'Premier'], $textes);
     }
