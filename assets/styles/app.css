@@ -608,14 +608,17 @@
       /* On remplace par l'image optimisée pour mobile */
       background-image: url("/asset/images/40-mobile.jpg?v=1");
 
-      /* La photo mobile a presque le même format qu'un téléphone : avec « cover » centré,
-         il n'y a aucune marge sur les côtés et le cadrage tombe pile sur la personne.
-         On l'agrandit donc de 25 % en largeur (la hauteur suit, elle couvre toujours l'écran)
-         et on la décale vers la droite : la personne sort du centre, on voit surtout
-         les grandes lettres peintes sur le mur. Verticalement, 70 % garde les pieds à l'écran
-         (même avec les barres du navigateur) sans montrer les bandes blanches du fichier. */
-      background-size: 125% auto;
-      background-position: 100% 70%;
+      /* Sur mobile on ne montre PAS la personne, seulement les lettres peintes sur le mur.
+         La personne occupe presque toute la largeur de la photo et sa moitié basse (à partir
+         de ~50 % de la hauteur) : on agrandit donc l'image pour que l'écran n'en montre que
+         ~43 % de la hauteur (le haut), quel que soit le format de l'écran. La largeur est
+         calculée depuis la hauteur d'écran (image 2,3 × plus haute que l'écran, ratio 0,4638),
+         avec un minimum de 100 % pour toujours couvrir (téléphone en paysage).
+         Le décalage vertical de -10dvh cache la bande blanche que le fichier a en haut.
+         Côté droit (le grand « P ») ; pour le côté gauche (« Le », « S », « ne »),
+         passer le 100 % de background-position à 0 %. */
+      background-size: max(100%, 106.7dvh) auto;
+      background-position: 100% -10dvh;
     }
   }
 } /* end @layer components */
