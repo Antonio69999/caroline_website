@@ -22,6 +22,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use \Symfony\Component\Routing\Attribute\Route;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
 use EasyCorp\Bundle\EasyAdminBundle\Filter\EntityFilter;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Asset;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Assets;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
@@ -39,6 +40,9 @@ class ArticleCrudController extends AbstractCrudController
 
   public const ARTICLE_BASE_PATH = '/uploads/images/article/';
   public const ARTICLE_UPLOAD_DIR = 'public/uploads/images/article';
+
+  // Largement au-dessus du nombre d'articles du site : en pratique, une seule page
+  public const ARTICLES_PAR_PAGE = 1000;
 
   public static function getEntityFqcn(): string
   {
@@ -85,15 +89,19 @@ class ArticleCrudController extends AbstractCrudController
   public function configureCrud(Crud $crud): Crud
   {
     return $crud
-      // Regroupés par catégorie (dans l'ordre choisi pour la sidebar), puis par
-      // position au sein de chaque catégorie : le glisser-déposer ne réordonne
-      // jamais entre catégories, donc c'est aussi l'ordre qui doit s'afficher
-      ->setDefaultSort(['categorie.position' => 'ASC', 'position' => 'ASC'])
+      // Le même ordre que sur le site : par catégorie (dans l'ordre de la sidebar),
+      // puis par année (la plus récente d'abord, sans année à la fin), puis par
+      // position. Le glisser-déposer ne réordonne qu'à l'intérieur d'un groupe
+      // « catégorie + année » (voir admin_drag_drop.js) : c'est là seulement que
+      // l'ordre manuel compte, l'année décidant du reste.
+      ->setDefaultSort(['categorie.position' => 'ASC', 'annee' => 'DESC', 'position' => 'ASC'])
       ->setPageTitle('index', '🎨 Liste des Articles')
       // Définir sur quels champs la barre de recherche globale fonctionne
       ->setSearchFields(['titre', 'description'])
-      // Option sympa : afficher le nombre de résultats
-      ->setPaginatorPageSize(20)
+      // Tous les articles sur une seule page : le glisser-déposer ne fonctionne qu'entre
+      // les lignes affichées. Avec 20 par page, une catégorie à cheval sur deux pages ne
+      // pouvait plus être réordonnée (impossible de remonter un article de la page 2).
+      ->setPaginatorPageSize(self::ARTICLES_PAR_PAGE)
       ->showEntityActionsInlined()
       // Ajoute la galerie de photos triable sous le formulaire d'édition
       ->overrideTemplate('crud/edit', 'admin/article/edit.html.twig')
@@ -127,6 +135,11 @@ class ArticleCrudController extends AbstractCrudController
       AssociationField::new('categorie', 'Catégorie')
         ->autocomplete() // Ajoute une barre de recherche dans le menu déroulant du formulaire (très utile si tu as 50 catégories)
         ->setSortable(false),
+
+      IntegerField::new('annee', 'Année')
+        ->setSortable(false)
+        ->setFormTypeOption('attr', ['min' => 1900, 'max' => 2100, 'placeholder' => 'ex. ' . date('Y')])
+        ->setHelp('L\'année de l\'œuvre ou de l\'atelier. Sur le site, les articles de la catégorie sont rangés par année, la plus récente en premier, chacune sous son intertitre (« 2025 », « 2024 »…). Laisse vide si l\'année n\'a pas de sens ici : sans année, l\'article passe après les autres.'),
 
       // Rendre le tableau plus propre : on cache la description longue sur la liste (index)
       TextEditorField::new('description')
@@ -168,7 +181,9 @@ class ArticleCrudController extends AbstractCrudController
       ->addCssFile('asset/css/admin_media.css')
       ->addCssFile('asset/css/admin_draft.css')
       ->addJsFile('asset/js/admin_upload_loader.js')
-      ->addJsFile('asset/js/admin_drag_drop.js')
+      // Versionné (?v=…) : ce script a changé (regroupement par année), un navigateur
+      // ne doit pas garder l'ancienne version en cache après la mise en ligne
+      ->addJsFile(Asset::new('asset/js/admin_drag_drop.js')->package('static_assets'))
       ->addJsFile('asset/js/admin_media_reorder.js')
       ->addJsFile('asset/js/admin_image_resize.js')
       // Brouillon automatique (gardé dans le navigateur), puis l'alerte qui s'en sert

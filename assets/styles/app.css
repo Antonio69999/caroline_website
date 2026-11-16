@@ -61,18 +61,42 @@
   }
 
   /*
-  For narrow, single-column content (an article's text, the contact
-  form, legal copy): center on the full page width, the same way this
-  content always has, rather than the space next to the sidebar. Since
-  it's capped well under the sidebar's width away from full bleed, it
-  naturally clears the sidebar on normal screens. Margin/padding scale
-  fluidly instead of jumping at a single breakpoint.
+  For narrow, single-column content (an article, the contact form, legal
+  copy): centered in the space to the RIGHT of the sidebar, exactly like
+  .page-content (category pages), so a title doesn't jump sideways when
+  going from a category to one of its articles.
+
+  It used to be centered on the full page width, sidebar included: 125px
+  left of the visible center, and as soon as the window was narrower than
+  1400px (a 1440px MacBook with the browser zoom at 110 %, 125 %...) its
+  left part slid UNDER the fixed sidebar (124px hidden at 125 %).
+
+  margin-left = the larger of:
+    - the sidebar's width (the block fills the whole space next to it), or
+    - what centers a full-width block in that space:
+      sidebar + (rest - block) / 2 = (100% + sidebar - block) / 2.
+  Percentages in margins resolve against the body's width, like `width`.
+  A page can narrow the block by overriding --content-max-width
+  (see .legal-content): the centering formula follows on its own.
 */
   .narrow-content {
-    width: min(100%, var(--content-max-width));
-    margin: clamp(1.25rem, 3vw, 2.5rem) auto;
+    width: min(100% - var(--sidebar-width), var(--content-max-width));
+    margin-block: clamp(1.25rem, 3vw, 2.5rem);
+    margin-left: max(
+      var(--sidebar-width),
+      (100% + var(--sidebar-width) - var(--content-max-width)) / 2
+    );
+    margin-right: auto;
     padding-inline: clamp(1rem, 4vw, 2.5rem);
     box-sizing: border-box;
+  }
+
+  /* No sidebar on small screens (it goes off-canvas): plain centering. */
+  @media (max-width: 767px) {
+    .narrow-content {
+      width: min(100%, var(--content-max-width));
+      margin-inline: auto;
+    }
   }
 
   @media (max-width: 767px) {
@@ -209,10 +233,20 @@
     border-top: 1px solid lightgray;
   }
 
+  /* Narrower than other .narrow-content pages. Overriding the variable
+     (rather than max-width + margin: auto, which used to cancel the
+     sidebar offset) keeps the block centered next to the sidebar. */
   .legal-content {
-    max-width: 800px;
-    margin: 0 auto;
+    --content-max-width: 800px;
     line-height: 1.6;
+  }
+
+  /* Page d'un article : aussi large que la page de sa catégorie (1180px de contenu,
+     voir .category-page__inner dans categories.css, plus les marges intérieures), pour
+     que ses photos occupent la même largeur. Le texte, lui, reste limité à 800px
+     (.description) pour rester lisible. */
+  .article-page {
+    --content-max-width: calc(1180px + 2 * 2.5rem);
   }
 
   .legal-content > div {
@@ -568,6 +602,8 @@
   }
 
   .description {
+    /* Même police que les autres textes du site (pages de texte, description d'une catégorie) */
+    font-family: Verdana, sans-serif;
     max-width: 800px; /* Limite la largeur du bloc (à ajuster selon tes goûts) */
     margin: 40px auto; /* Centre le bloc horizontalement et ajoute de l'espace en haut/bas */
     padding: 20px; /* Ajoute un espace à l'intérieur du bloc pour aérer le texte */

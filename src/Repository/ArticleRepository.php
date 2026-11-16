@@ -21,7 +21,14 @@ class ArticleRepository extends ServiceEntityRepository
         parent::__construct($registry, Article::class);
     }
 
-    public function findWithPosition(int $categoryId)
+    /**
+     * Les articles publiés d'une catégorie, dans l'ordre de sa page : par année, la plus
+     * récente d'abord (MySQL range les articles sans année après, en tri décroissant),
+     * puis dans l'ordre choisi à la main dans l'admin pour une même année.
+     *
+     * @return Article[]
+     */
+    public function findWithPosition(int $categoryId): array
     {
         return $this->createQueryBuilder('a')
             ->leftJoin('a.media', 'm')
@@ -29,7 +36,8 @@ class ArticleRepository extends ServiceEntityRepository
             ->where('a.categorie = :categoryId')
             ->andWhere('a.publie = true')
             ->setParameter('categoryId', $categoryId)
-            ->orderBy('a.position', 'ASC')
+            ->orderBy('a.annee', 'DESC')
+            ->addOrderBy('a.position', 'ASC')
             ->addOrderBy('m.position', 'ASC')
             ->getQuery()
             ->getResult();
@@ -50,6 +58,7 @@ class ArticleRepository extends ServiceEntityRepository
             ->addSelect('m')
             ->where('a.publie = true')
             ->orderBy('c.position', 'ASC')
+            ->addOrderBy('a.annee', 'DESC')
             ->addOrderBy('a.position', 'ASC')
             ->addOrderBy('m.position', 'ASC')
             ->getQuery()
@@ -57,7 +66,7 @@ class ArticleRepository extends ServiceEntityRepository
     }
 
     /**
-     * Articles publiés, dans l'ordre du site (catégorie puis position), pour
+     * Articles publiés, dans l'ordre du site (catégorie, année, position), pour
      * le sélecteur de liens de l'éditeur de texte de l'admin : un brouillon
      * n'est pas proposé, son lien mènerait à une page vide.
      *
@@ -70,6 +79,7 @@ class ArticleRepository extends ServiceEntityRepository
             ->addSelect('c')
             ->where('a.publie = true')
             ->orderBy('c.position', 'ASC')
+            ->addOrderBy('a.annee', 'DESC')
             ->addOrderBy('a.position', 'ASC')
             ->getQuery()
             ->getResult();

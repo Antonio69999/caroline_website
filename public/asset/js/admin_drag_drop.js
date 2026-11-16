@@ -13,20 +13,28 @@ document.addEventListener("DOMContentLoaded", function () {
     return;
   }
 
-  // Les articles arrivent déjà triés par catégorie puis par position (voir
+  // Les articles arrivent déjà triés par catégorie, puis par année (la plus
+  // récente d'abord, sans année à la fin), puis par position (voir
   // ArticleCrudController::configureCrud) : on regroupe donc les lignes
-  // consécutives par catégorie, chaque groupe devenant son propre <tbody>
-  // avec son propre glisser-déposer. Sans "group" partagé entre les
-  // instances Sortable, il est impossible de glisser un article d'une
-  // catégorie vers une autre : l'ordre ne peut être changé qu'à l'intérieur
-  // d'une même catégorie, là où il a vraiment un sens.
+  // consécutives d'une même catégorie ET d'une même année, chaque groupe
+  // devenant son propre <tbody> avec son propre glisser-déposer. Sans "group"
+  // partagé entre les instances Sortable, il est impossible de glisser un
+  // article vers une autre catégorie ou une autre année : sur le site, c'est
+  // l'année qui range les articles, l'ordre manuel ne départage que ceux
+  // d'une même année. Pour changer d'année, on modifie le champ "Année".
   const groups = [];
   let currentLabel = null;
 
   rows.forEach((row) => {
-    const label =
+    const categorie =
       row.querySelector('td[data-column="categorie"]')?.textContent.trim() ||
       "Sans catégorie";
+    // Une année vide s'affiche "Null" (ou rien) : on ne garde que 4 chiffres
+    const annee =
+      row
+        .querySelector('td[data-column="annee"]')
+        ?.textContent.match(/\d{4}/)?.[0] || "sans année";
+    const label = categorie + " · " + annee;
 
     if (label !== currentLabel) {
       currentLabel = label;
@@ -66,8 +74,8 @@ document.addEventListener("DOMContentLoaded", function () {
         return;
       }
 
-      // La numérotation repart de 1 à chaque catégorie : c'est cet ordre,
-      // propre à la catégorie, qui compte (voir ArticleRepository::findWithPosition)
+      // La numérotation repart de 1 à chaque groupe (catégorie + année) : c'est
+      // cet ordre-là qui compte (voir ArticleRepository::findWithPosition)
       const visualNumber = index + 1;
       const titre =
         row.querySelector('td[data-column="titre"]')?.textContent.trim() ||
@@ -87,7 +95,7 @@ document.addEventListener("DOMContentLoaded", function () {
       upBtn.className = "position-move-btn";
       upBtn.dataset.direction = "up";
       upBtn.textContent = "▲";
-      upBtn.setAttribute("aria-label", `Monter « ${titre} » dans sa catégorie`);
+      upBtn.setAttribute("aria-label", `Monter « ${titre} » dans son année`);
       upBtn.disabled = isFirst;
 
       const downBtn = document.createElement("button");
@@ -95,7 +103,7 @@ document.addEventListener("DOMContentLoaded", function () {
       downBtn.className = "position-move-btn";
       downBtn.dataset.direction = "down";
       downBtn.textContent = "▼";
-      downBtn.setAttribute("aria-label", `Descendre « ${titre} » dans sa catégorie`);
+      downBtn.setAttribute("aria-label", `Descendre « ${titre} » dans son année`);
       downBtn.disabled = isLast;
 
       controls.append(upBtn, downBtn);

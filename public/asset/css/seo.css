@@ -26,9 +26,9 @@ h1.article_subtitle {
   text-align: center;
 }
 
-/* Lien « ← Catégorie » en haut d'un article. */
+/* Lien « ← Catégorie » en bas d'un article. */
 .breadcrumb {
-  margin: 0 0 1rem;
+  margin: 2rem 0 1rem;
   font-family: "Alice";
   font-size: 1rem;
   text-align: center;

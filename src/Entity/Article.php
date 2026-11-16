@@ -52,6 +52,18 @@ class Article
   #[ORM\Column(type: "integer")]
   private int $position = 0;
 
+  // L'année de l'œuvre / de l'atelier (pas la date de saisie dans l'admin : c'est creeLe).
+  // Sur la page d'une catégorie, les articles sont rangés par année, la plus récente d'abord,
+  // chaque année sous son intertitre ; « position » ne départage que ceux d'une même année.
+  // Facultative : sans année, l'article passe après ceux qui en ont une.
+  #[Assert\Range(
+    notInRangeMessage: "L'année doit être comprise entre {{ min }} et {{ max }}.",
+    min: 1900,
+    max: 2100,
+  )]
+  #[ORM\Column(type: Types::SMALLINT, nullable: true)]
+  private ?int $annee = null;
+
   // Permet de préparer un article (brouillon) sans qu'il soit visible sur le site.
   // Par défaut à true : un article existant ou nouvellement créé reste publié
   // tant que Caroline ne décoche pas volontairement la case.
@@ -194,6 +206,18 @@ class Article
   public function setPosition(int $position): static
   {
     $this->position = $position;
+
+    return $this;
+  }
+
+  public function getAnnee(): ?int
+  {
+    return $this->annee;
+  }
+
+  public function setAnnee(?int $annee): static
+  {
+    $this->annee = $annee;
 
     return $this;
   }
