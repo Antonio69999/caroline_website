@@ -5,7 +5,9 @@ namespace App\Controller\Admin;
 use App\Entity\Article;
 use App\Entity\Media;
 use App\Service\MediaUploadHandler;
+use App\Service\PhotoBatchUpload;
 use Doctrine\ORM\EntityManagerInterface;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Asset;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Assets;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
@@ -31,6 +33,7 @@ class MediaCrudController extends AbstractCrudController
     private readonly EntityManagerInterface $em,
     private readonly RequestStack $requestStack,
     private readonly MediaUploadHandler $mediaUploadHandler,
+    private readonly PhotoBatchUpload $photoBatchUpload,
   ) {}
 
   public static function getEntityFqcn(): string
@@ -133,6 +136,7 @@ class MediaCrudController extends AbstractCrudController
       ->addCssFile('asset/css/admin_media.css')
       ->addCssFile('asset/css/admin_draft.css')
       ->addJsFile('asset/js/admin_image_resize.js')
+      ->addJsFile(Asset::new('asset/js/admin_photo_batches.js')->package('static_assets'))
       ->addJsFile('asset/js/admin_media_lightbox.js')
       ->addJsFile('asset/js/admin_media_dropzone.js')
       // Brouillon automatique (gardé dans le navigateur), puis l'alerte qui s'en sert
@@ -156,7 +160,8 @@ class MediaCrudController extends AbstractCrudController
           'multiple' => true,
           'mapped' => false,
           'required' => true,
-          'attr' => ['accept' => 'image/*'],
+          // Plus de photos que le serveur n'en accepte d'un coup : envoi par lots (PhotoBatchUpload)
+          'attr' => ['accept' => 'image/*'] + $this->photoBatchUpload->inputAttributes(),
         ])
         ->onlyWhenCreating(),
 
@@ -214,19 +219,30 @@ class MediaCrudController extends AbstractCrudController
     $article = $entityInstance->getArticle();
     $position = $article ? $this->mediaUploadHandler->nextPositionForArticle($article) : 0;
 
-    if (!empty($uploadedFiles)) {
-      $firstFile = array_shift($uploadedFiles);
-      $entityInstance->setImageName($this->mediaUploadHandler->upload($firstFile));
+    // Les photos envoyées avec le formulaire, puis celles déjà déposées par lots (plus que le
+    // serveur n'en accepte en un envoi, voir PhotoBatchUpload) : un seul et même traitement.
+    $photos = [];
+    foreach ($uploadedFiles as $file) {
+      $photos[] = [
+        'fichier' => $this->mediaUploadHandler->upload($file),
+        'legende' => pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME),
+      ];
+    }
+    array_push($photos, ...$this->mediaUploadHandler->batchUploadedPhotos($request->request->all()[PhotoBatchUpload::FIELD] ?? null));
+
+    if (!empty($photos)) {
+      $first = array_shift($photos);
+      $entityInstance->setImageName($first['fichier']);
       if (!$entityInstance->getLegende()) {
-        $entityInstance->setLegende(pathinfo($firstFile->getClientOriginalName(), PATHINFO_FILENAME));
+        $entityInstance->setLegende($first['legende']);
       }
       $entityInstance->setPosition($position++);
 
-      // Les fichiers suivants deviennent chacun leur propre Media, à côté de celui en cours de création
-      foreach ($uploadedFiles as $file) {
+      // Les photos suivantes deviennent chacune leur propre Media, à côté de celui en cours de création
+      foreach ($photos as $photo) {
         $sibling = new Media();
-        $sibling->setImageName($this->mediaUploadHandler->upload($file));
-        $sibling->setLegende(pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME));
+        $sibling->setImageName($photo['fichier']);
+        $sibling->setLegende($photo['legende']);
         $sibling->setArticle($article);
         $sibling->setPosition($position++);
         $sibling->setCreeLe(new \DateTimeImmutable());

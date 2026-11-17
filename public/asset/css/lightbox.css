@@ -1,0 +1,52 @@
+/* Nom des photos agrandies (SimpleLightbox, page d'un article).
+
+   Par défaut, la librairie pose un bandeau gris foncé sur le bas de la photo,
+   ce qui gâche le cadrage. Ici, le nom passe SOUS la photo, en petit et sans
+   fond : il ne recouvre jamais l'image et ne change pas sa taille (celle-ci reste
+   calculée par la librairie, qui laisse toujours au moins 5 % de la hauteur de
+   l'écran sous la photo, cf. son réglage heightRatio: 0.9).
+
+   - Ordinateur (souris) : le nom n'apparaît qu'au survol de la photo.
+   - Mobile / tablette (pas de survol) : il reste affiché, discret, sous la photo.
+
+   Mêmes sélecteurs que simplelightbox.min.css, chargé juste avant : ces règles
+   l'emportent par ordre de chargement. */
+
+.sl-wrapper .sl-image .sl-caption {
+  top: 100%;
+  bottom: auto;
+  left: 0;
+  right: 0;
+  padding: 0.25rem 0 0;
+  background: none;
+  color: #666;
+  font-family: "Alice", serif;
+  font-size: 0.75rem;
+  line-height: 1.25;
+  letter-spacing: 0.02em;
+  text-align: center;
+  /* Une seule ligne : un nom long ne déborde pas hors de l'écran sous une photo haute. */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  /* Seule la photo déclenche le survol ; un clic sur le nom ferme comme un clic à côté. */
+  pointer-events: none;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .sl-wrapper .sl-image .sl-caption {
+    /* !important : la librairie anime l'opacité en style inline à l'ouverture. */
+    opacity: 0 !important;
+    transition: opacity 0.2s ease;
+  }
+
+  .sl-wrapper .sl-image:hover .sl-caption {
+    opacity: 1 !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sl-wrapper .sl-image .sl-caption {
+    transition: none;
+  }
+}

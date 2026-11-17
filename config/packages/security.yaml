@@ -38,6 +38,10 @@ security:
     # Note: Only the *first* access control that matches will be used
     access_control:
         - { path: ^/mon_petit_site, roles: ROLE_ADMIN }
+        # Actions de l'admin appelées par ses scripts (réordonner articles / photos / catégories,
+        # renommer ou déplacer une photo) : elles n'étaient protégées par rien, n'importe qui
+        # pouvait les appeler. Voir tests/Admin/AdminRoutesAccessTest.php.
+        - { path: ^/admin/, roles: ROLE_ADMIN }
         # - { path: ^/profile, roles: ROLE_USER }
 
 when@test:

@@ -58,6 +58,55 @@ class MediaUploadHandler
   }
 
   /**
+   * Une photo que l'envoi par lots accepte : une image, mais pas un SVG (qui peut contenir du
+   * script et serait servi tel quel depuis le site).
+   */
+  public function isAcceptedImage(UploadedFile $file): bool
+  {
+    $type = (string) $file->getMimeType();
+
+    return str_starts_with($type, 'image/') && !str_contains($type, 'svg');
+  }
+
+  /**
+   * Photos déjà déposées par lots (PhotoBatchUploadController) et renvoyées par le formulaire
+   * au moment d'enregistrer, sous la forme [['fichier' => …, 'legende' => …], …].
+   *
+   * Ces noms viennent du navigateur : on ne garde que de simples noms de fichiers (jamais un
+   * chemin), présents dans le dossier des photos, et qu'aucune photo du site n'utilise déjà
+   * (on ne peut pas « emprunter » la photo d'un autre article).
+   *
+   * @return list<array{fichier: string, legende: string}>
+   */
+  public function batchUploadedPhotos(mixed $raw): array
+  {
+    if (!is_array($raw)) {
+      return [];
+    }
+
+    $photos = [];
+    foreach ($raw as $item) {
+      $fichier = is_array($item) && is_string($item['fichier'] ?? null) ? $item['fichier'] : '';
+      if (
+        1 !== preg_match('/^[a-z0-9_][a-z0-9_-]*\.[a-z0-9]{2,5}$/i', $fichier)
+        || isset($photos[$fichier])
+        || !is_file($this->uploadDir . '/' . $fichier)
+        || $this->em->getRepository(Media::class)->count(['imageName' => $fichier]) > 0
+      ) {
+        continue;
+      }
+
+      $legende = is_string($item['legende'] ?? null) ? trim($item['legende']) : '';
+      $photos[$fichier] = [
+        'fichier' => $fichier,
+        'legende' => mb_substr('' !== $legende ? $legende : pathinfo($fichier, PATHINFO_FILENAME), 0, 255),
+      ];
+    }
+
+    return array_values($photos);
+  }
+
+  /**
    * Position à donner à la prochaine photo ajoutée à cet article (= fin de la galerie).
    */
   public function nextPositionForArticle(Article $article): int

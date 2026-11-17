@@ -5,6 +5,7 @@ namespace App\Controller\Admin;
 use App\Entity\Article;
 use App\Entity\Media;
 use App\Service\MediaUploadHandler;
+use App\Service\PhotoBatchUpload;
 use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
@@ -36,6 +37,7 @@ class ArticleCrudController extends AbstractCrudController
     private readonly EntityManagerInterface $em,
     private readonly RequestStack $requestStack,
     private readonly MediaUploadHandler $mediaUploadHandler,
+    private readonly PhotoBatchUpload $photoBatchUpload,
   ) {}
 
   public const ARTICLE_BASE_PATH = '/uploads/images/article/';
@@ -157,8 +159,9 @@ class ArticleCrudController extends AbstractCrudController
           'required' => false,
           'attr' => [
             'accept' => 'image/*', // Ouvre directement la fenêtre sur les images
-          ]
+          ] + $this->photoBatchUpload->inputAttributes(), // plus de photos que le serveur n'en accepte d'un coup : envoi par lots
         ])
+        ->setHelp('Tu peux en choisir autant que tu veux : au-delà de ce que le serveur accepte en une fois, elles partent automatiquement en plusieurs envois.')
         ->onlyOnForms(),
 
       // On ne montre plus ce numéro brut dans le formulaire : le glisser-déposer
@@ -186,6 +189,7 @@ class ArticleCrudController extends AbstractCrudController
       ->addJsFile(Asset::new('asset/js/admin_drag_drop.js')->package('static_assets'))
       ->addJsFile('asset/js/admin_media_reorder.js')
       ->addJsFile('asset/js/admin_image_resize.js')
+      ->addJsFile(Asset::new('asset/js/admin_photo_batches.js')->package('static_assets'))
       // Brouillon automatique (gardé dans le navigateur), puis l'alerte qui s'en sert
       ->addJsFile('asset/js/admin_draft.js')
       ->addJsFile('asset/js/admin_unsaved_warning.js');
@@ -217,15 +221,27 @@ class ArticleCrudController extends AbstractCrudController
       $newFilename = $this->mediaUploadHandler->upload($file);
       $originalFilename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
 
-      $media = new Media();
-      $media->setImageName($newFilename);
-      $media->setLegende($originalFilename);
-      $media->setArticle($article);
-      $media->setPosition($position++);
-      $media->setCreeLe(new \DateTimeImmutable());
-
-      $this->em->persist($media);
+      $this->addPhoto($article, $newFilename, $originalFilename, $position++);
     }
+
+    // Photos déjà déposées par lots (plus que le serveur n'en accepte en un envoi, voir
+    // PhotoBatchUpload) : il ne reste qu'à les rattacher à l'article, à la suite, dans l'ordre.
+    $batchUploaded = $this->mediaUploadHandler->batchUploadedPhotos($request->request->all()[PhotoBatchUpload::FIELD] ?? null);
+    foreach ($batchUploaded as $photo) {
+      $this->addPhoto($article, $photo['fichier'], $photo['legende'], $position++);
+    }
+  }
+
+  private function addPhoto(Article $article, string $imageName, string $legende, int $position): void
+  {
+    $media = new Media();
+    $media->setImageName($imageName);
+    $media->setLegende($legende);
+    $media->setArticle($article);
+    $media->setPosition($position);
+    $media->setCreeLe(new \DateTimeImmutable());
+
+    $this->em->persist($media);
   }
 
   public function persistEntity(EntityManagerInterface $em, $entityInstance): void
@@ -236,15 +252,20 @@ class ArticleCrudController extends AbstractCrudController
 
     $entityInstance->setCreeLe(new \DateTimeImmutable);
 
-    // 🆕 Définir automatiquement la position pour un nouvel article
+    // Un nouvel article se place EN TÊTE de sa catégorie (avant : tout en bas, et Caroline
+    // devait remonter chaque nouvel article à la main). Il prend une position plus petite
+    // que celle de tous les articles existants, sans qu'aucun autre article ne soit modifié :
+    // l'ordre déjà choisi reste intact, et les flèches ▲▼ / le glisser-déposer (reorder()
+    // ci-dessus) redistribuent ces positions comme les autres, même négatives.
+    // Jamais 0 : pour app:init-article-positions, 0 veut dire « pas encore rangé ».
     if ($entityInstance->getPosition() === 0) {
-      $maxPosition = $em->getRepository(Article::class)
+      $plusPetitePosition = $em->getRepository(Article::class)
         ->createQueryBuilder('a')
-        ->select('MAX(a.position)')
+        ->select('MIN(a.position)')
         ->getQuery()
         ->getSingleScalarResult();
 
-      $entityInstance->setPosition(($maxPosition ?? -1) + 1);
+      $entityInstance->setPosition(min((int) $plusPetitePosition - 1, -1));
     }
 
     $this->handleImageUploads($entityInstance);

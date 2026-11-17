@@ -2,6 +2,8 @@
 
 {% block stylesheets %}
     <link rel="stylesheet" href="{{ asset('asset/css/simplelightbox.min.css', 'static_assets') }}">
+    {# Après simplelightbox.min.css : remplace son bandeau gris par un nom discret sous la photo #}
+    <link rel="stylesheet" href="{{ asset('asset/css/lightbox.css', 'static_assets') }}">
 {% endblock %}
 
 {% block body %}

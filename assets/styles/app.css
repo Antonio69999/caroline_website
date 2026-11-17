@@ -601,14 +601,30 @@
     font-size: small;
   }
 
+  /* Texte d'un article (HTML de l'éditeur Trix de l'admin : des <div> coupés de <br>).
+
+     Aligné à GAUCHE. Centré, chaque ligne d'un long paragraphe partait d'un endroit
+     différent, et les espaces insécables que l'éditeur laisse en fin de ligne
+     décalaient encore certaines lignes vers la gauche.
+
+     Le BLOC, lui, reste centré sous le titre et les photos : il prend la largeur de
+     sa plus longue ligne (fit-content), sans dépasser 800px. Un texte court reste donc
+     visuellement centré ; un texte long remplit la colonne, avec le même bord gauche
+     droit sur tous les articles.
+
+     Pas de marge intérieure à gauche/droite : sur mobile, le texte s'aligne sur le
+     titre et les photos (avant : 20px plus à l'intérieur, colonne trop étroite). */
   .description {
     /* Même police que les autres textes du site (pages de texte, description d'une catégorie) */
     font-family: Verdana, sans-serif;
-    max-width: 800px; /* Limite la largeur du bloc (à ajuster selon tes goûts) */
-    margin: 40px auto; /* Centre le bloc horizontalement et ajoute de l'espace en haut/bas */
-    padding: 20px; /* Ajoute un espace à l'intérieur du bloc pour aérer le texte */
-    text-align: center; /* Ajoute ceci uniquement si tu veux que le texte soit centré, sinon retire-le */
-    line-height: 1.6; /* Améliore la lisibilité du texte */
+    width: fit-content;
+    max-width: 800px;
+    margin: 40px auto;
+    padding: 20px 0;
+    text-align: left;
+    line-height: 1.6;
+    /* Une très longue adresse web passe à la ligne au lieu de faire déborder la page sur mobile. */
+    overflow-wrap: break-word;
   }
 
   .article_pictures {
