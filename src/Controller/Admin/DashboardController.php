@@ -3,6 +3,7 @@
 namespace App\Controller\Admin;
 
 use App\Entity\Article;
+use App\Entity\Carotte;
 use App\Entity\Categorie;
 use App\Entity\Media;
 use Doctrine\ORM\EntityManagerInterface;
@@ -50,9 +51,13 @@ class DashboardController extends AbstractDashboardController
     yield MenuItem::linkToDashboard('Tableau de bord', 'fa fa-home');
 
     yield MenuItem::section('Gestion du Contenu');
+    // La photo de l'accueil et son cadrage (ordinateur / téléphone)
+    yield MenuItem::linkToRoute('Page d\'accueil', 'fas fa-house', 'admin_accueil');
     yield MenuItem::linkToCrud('Articles', 'fas fa-newspaper', Article::class)
       ->setBadge('Nouveau', 'success'); // Optionnel : tu peux mettre des badges dynamiques plus tard
     yield MenuItem::linkToCrud('Catégories', 'fas fa-folder', Categorie::class);
+    // Les petites carottes que Caroline cache sur les pages du site
+    yield MenuItem::linkToCrud('Carottes cachées', 'fas fa-carrot', Carotte::class);
 
     yield MenuItem::section('Ressources');
     yield MenuItem::linkToCrud('Médiathèque', 'fas fa-images', Media::class);

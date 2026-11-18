@@ -1,0 +1,44 @@
+/* Admin « Carottes cachées » (voir admin_carottes.js). */
+
+/* Réglages faits à la main : masqués quand « Au hasard » est choisi (l'attribut hidden doit gagner sur les styles d'EasyAdmin) */
+.carotte-reglage[hidden],
+.carotte-apercu[hidden],
+.carotte-image-apercu[hidden] {
+  display: none !important;
+}
+
+.carotte-image-apercu {
+  display: block;
+  max-width: min(100%, 320px);
+  max-height: 240px;
+  margin-top: 0.75rem;
+  border-radius: 6px;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+}
+
+.carotte-image-erreur {
+  margin: 0.5rem 0 0;
+  color: #b42318;
+  font-weight: 600;
+}
+
+/* Exemple de carotte à la taille et à la transparence choisies, sur fond de page */
+.carotte-apercu {
+  margin: 0.25rem 0 1.25rem;
+}
+
+.carotte-apercu__zone {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 120px;
+  border: 1px dashed rgba(0, 0, 0, 0.3);
+  border-radius: 6px;
+  background: #fff;
+}
+
+.carotte-apercu__legende {
+  margin: 0.4rem 0 0;
+  font-size: 0.85em;
+  opacity: 0.75;
+}

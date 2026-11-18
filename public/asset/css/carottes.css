@@ -1,0 +1,236 @@
+/* Carottes cachées (templates/components/carottes.html.twig, public/asset/js/carottes.js).
+   Ce fichier n'est chargé que sur les pages qui ont au moins une carotte.
+
+   Les carottes sont posées sur la PAGE (elles défilent avec elle, ce ne sont pas des boutons
+   flottants) : « tout en bas » veut dire qu'il faut descendre jusqu'au bout pour la trouver. */
+
+/* La couche des carottes couvre toute la page : body en est le repère. */
+body {
+  position: relative;
+}
+
+.carottes {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  /* À droite du menu sur ordinateur (le menu fixe occupe la gauche) */
+  left: var(--sidebar-width, 250px);
+  right: 0;
+  z-index: 20; /* au-dessus du contenu, sous le menu (100) et les fenêtres */
+  pointer-events: none; /* seule la carotte elle-même est cliquable, jamais la page autour */
+}
+
+@media (max-width: 767px) {
+  .carottes {
+    left: 0;
+  }
+}
+
+.carotte {
+  --carotte-taille: 72px;
+
+  position: absolute;
+  display: block;
+  width: var(--carotte-taille);
+  height: var(--carotte-taille);
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  pointer-events: auto;
+  opacity: var(--carotte-opacite, 1);
+  -webkit-tap-highlight-color: transparent;
+  animation: carotte-entree 0.8s ease both;
+  transition: transform 0.2s ease;
+}
+
+.carotte[hidden] {
+  display: none;
+}
+
+.carotte img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+/* Tailles */
+.carotte[data-taille="minuscule"] {
+  --carotte-taille: 24px;
+}
+
+.carotte[data-taille="petite"] {
+  --carotte-taille: 44px;
+}
+
+.carotte[data-taille="normale"] {
+  --carotte-taille: 72px;
+}
+
+.carotte[data-taille="grande"] {
+  --carotte-taille: 100px;
+}
+
+/* Place sur la page : trois lignes (haut, milieu, bas de la page) sur trois colonnes */
+.carotte[data-ligne="haut"] {
+  top: 12px;
+}
+
+.carotte[data-ligne="milieu"] {
+  top: 50%;
+  margin-top: calc(var(--carotte-taille) / -2);
+}
+
+.carotte[data-ligne="bas"] {
+  bottom: 12px;
+}
+
+.carotte[data-colonne="gauche"] {
+  left: 12px;
+}
+
+.carotte[data-colonne="centre"] {
+  left: 50%;
+  margin-left: calc(var(--carotte-taille) / -2);
+}
+
+.carotte[data-colonne="droite"] {
+  right: 12px;
+}
+
+/* Au clavier, la carotte se montre franchement même si elle est presque transparente */
+.carotte:focus-visible {
+  opacity: 1;
+  outline: 2px dashed #777;
+  outline-offset: 3px;
+}
+
+.carotte:hover {
+  transform: scale(1.15) rotate(-4deg);
+}
+
+.carotte.carotte--trouvee {
+  animation: none;
+  transform: scale(0);
+  opacity: 0;
+  transition: transform 0.4s ease, opacity 0.4s ease;
+}
+
+@keyframes carotte-entree {
+  from {
+    opacity: 0;
+    transform: scale(0.4);
+  }
+
+  to {
+    opacity: var(--carotte-opacite, 1);
+    transform: scale(1);
+  }
+}
+
+/* L'image révélée : fond sombre, image à la taille et à la place voulues */
+.carotte-fenetre {
+  position: fixed;
+  inset: 0;
+  z-index: 150; /* au-dessus du menu et de son bouton (110) */
+  display: flex;
+  box-sizing: border-box;
+  padding: 24px;
+  cursor: pointer;
+  /* Une image qui ne prend pas toute la place laisse voir la page : le fond reste léger */
+  background: rgba(0, 0, 0, 0.2);
+  animation: carotte-fond 0.4s ease both;
+}
+
+.carotte-fenetre[hidden] {
+  display: none;
+}
+
+/* Au centre de l'écran, le fond est franchement sombre */
+.carotte-fenetre[data-ligne="milieu"][data-colonne="centre"] {
+  background: rgba(0, 0, 0, 0.55);
+}
+
+.carotte-fenetre[data-ligne="haut"] {
+  align-items: flex-start;
+}
+
+.carotte-fenetre[data-ligne="milieu"] {
+  align-items: center;
+}
+
+.carotte-fenetre[data-ligne="bas"] {
+  align-items: flex-end;
+}
+
+.carotte-fenetre[data-colonne="gauche"] {
+  justify-content: flex-start;
+}
+
+.carotte-fenetre[data-colonne="centre"] {
+  justify-content: center;
+}
+
+.carotte-fenetre[data-colonne="droite"] {
+  justify-content: flex-end;
+}
+
+.carotte-fenetre__image {
+  display: block;
+  height: auto;
+  max-width: 100%;
+  max-height: calc(100vh - 48px);
+  max-height: calc(100dvh - 48px);
+  border-radius: 12px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.35);
+  animation: carotte-image 0.7s ease both;
+}
+
+/* Tailles de l'image (la carte de visite fait environ 9 cm de large) */
+.carotte-fenetre[data-taille="carte"] .carotte-fenetre__image {
+  width: min(340px, 100%);
+}
+
+.carotte-fenetre[data-taille="petite"] .carotte-fenetre__image {
+  width: min(520px, 100%);
+}
+
+.carotte-fenetre[data-taille="moyenne"] .carotte-fenetre__image {
+  width: min(860px, 100%);
+}
+
+.carotte-fenetre[data-taille="grande"] .carotte-fenetre__image {
+  width: auto;
+  max-width: calc(100vw - 48px);
+}
+
+@keyframes carotte-fond {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes carotte-image {
+  from {
+    opacity: 0;
+    transform: scale(0.97);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .carotte,
+  .carotte-fenetre,
+  .carotte-fenetre__image {
+    animation: none;
+  }
+}

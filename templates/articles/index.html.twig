@@ -27,8 +27,9 @@
             </div>
             {# Pas de <p> autour : l'éditeur de l'admin écrit des <div>, et un <div> dans un <p> fait
                « casser » le paragraphe par le navigateur (le texte sortait du <p> et de sa police). #}
-            <div class="description">
-                {{ article.description|raw }}
+            {# Court (légende) : centré. Long : lignes à gauche dans une colonne centrée. Le choix suit le texte, pas le zoom (voir textes.css) #}
+            <div class="description{{ texte_est_long(article.description) ? ' description--longue' }}">
+                {{ article.description|texte_propre }}
             </div>
 
             {# Lien vers la catégorie, en bas de l'article : aide les visiteurs à remonter, et relie la page au reste du site pour Google #}

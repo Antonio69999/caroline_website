@@ -38,8 +38,9 @@
             </div>
 
             {% if category.description %}
-                <div class="category-page__description">
-                    {{ category.description|raw }}
+                {# Même règle que la description d'un article (voir textes.css) #}
+                <div class="category-page__description{{ texte_est_long(category.description) ? ' category-page__description--longue' }}">
+                    {{ category.description|texte_propre }}
                 </div>
             {% endif %}
         </div>

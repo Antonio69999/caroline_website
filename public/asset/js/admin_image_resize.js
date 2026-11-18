@@ -23,7 +23,9 @@
 
   // Les autres scripts de l'admin (la vitrine d'une catégorie) réutilisent la même
   // préparation des photos : une seule façon de réduire / convertir, partout.
-  //  - prepare(file)       : renvoie la photo réduite (ou convertie), ou le fichier tel quel
+  //  - prepare(file, opts) : renvoie la photo réduite (ou convertie), ou le fichier tel quel.
+  //                          opts (facultatif) : { maxDimension, quality } pour une photo qui
+  //                          s'affiche en grand (l'accueil) et mérite plus que 1920 px
   //  - blockSubmit(bool)   : bloque / débloque l'enregistrement pendant un traitement
   //  - isBusy()            : une photo est-elle en cours de traitement ? (le brouillon automatique
   //                          attend la version réduite plutôt que de garder l'original)
@@ -92,7 +94,10 @@
     }
   }
 
-  async function resizeIfNeeded(file) {
+  async function resizeIfNeeded(file, options = {}) {
+    const maxDimension = options.maxDimension || MAX_DIMENSION;
+    const quality = options.quality || JPEG_QUALITY;
+
     file = await convertHeicIfNeeded(file);
 
     if (!RESIZABLE_TYPES.includes(file.type)) {
@@ -105,12 +110,12 @@
       const bitmap = await createImageBitmap(file);
       const largestSide = Math.max(bitmap.width, bitmap.height);
 
-      if (largestSide <= MAX_DIMENSION) {
+      if (largestSide <= maxDimension) {
         bitmap.close?.();
         return file;
       }
 
-      const scale = MAX_DIMENSION / largestSide;
+      const scale = maxDimension / largestSide;
       const canvas = document.createElement("canvas");
       canvas.width = Math.round(bitmap.width * scale);
       canvas.height = Math.round(bitmap.height * scale);
@@ -120,7 +125,7 @@
       bitmap.close?.();
 
       const blob = await new Promise((resolve) =>
-        canvas.toBlob(resolve, "image/jpeg", JPEG_QUALITY)
+        canvas.toBlob(resolve, "image/jpeg", quality)
       );
       if (!blob) {
         return file;

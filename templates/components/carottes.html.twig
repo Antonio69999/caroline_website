@@ -1,0 +1,46 @@
+{#
+    Carottes cachées : de petites carottes qui dansent, posées sur certaines pages par Caroline
+    (admin « Carottes cachées »). Un clic sur l'une d'elles montre son image.
+
+    - Aucune carotte pour la page : ce gabarit n'écrit rien du tout (pas de CSS, pas de script).
+    - Chaque carotte arrive cachée (hidden) ; carottes.js la montre au bout de son délai, sauf si elle
+      a déjà été trouvée sur ce navigateur (localStorage).
+    - Taille, transparence et place sont des attributs lus par carottes.css (public/asset/css).
+    - Aperçu depuis l'admin : ?carotte=N sur l'adresse de la page (réservé aux administrateurs).
+#}
+{% set carottes = carottes_de_la_page() %}
+{% if carottes is not empty %}
+    <link rel="stylesheet" href="{{ asset('asset/css/carottes.css', 'static_assets') }}">
+
+    <div class="carottes" id="carottes">
+        {% for carotte in carottes %}
+            <button
+                type="button"
+                class="carotte"
+                hidden
+                aria-label="Une surprise ! Cliquez sur la petite carotte"
+                style="--carotte-opacite: {{ carotte.opacite }}"
+                data-carotte="{{ carotte.id }}"
+                data-taille="{{ carotte.taille }}"
+                data-ligne="{{ carotte.ligne }}"
+                data-colonne="{{ carotte.colonne }}"
+                data-delai="{{ carotte.delai }}"
+                data-forcee="{{ carotte.forcee ? '1' : '0' }}"
+                data-image="{{ carotte.src }}"
+                data-description="{{ carotte.description }}"
+                data-image-taille="{{ carotte.imageTaille }}"
+                data-image-ligne="{{ carotte.imageLigne }}"
+                data-image-colonne="{{ carotte.imageColonne }}"
+            >
+                <img src="{{ asset('asset/krot.gif', 'static_assets') }}" alt="" width="96" height="96" decoding="async">
+            </button>
+        {% endfor %}
+    </div>
+
+    {# L'image n'est chargée qu'au clic : elle ne pèse rien pour les visiteurs qui ne trouvent pas la carotte #}
+    <div id="carotteFenetre" class="carotte-fenetre" role="dialog" aria-modal="true" aria-label="Photo" tabindex="-1" hidden>
+        <img class="carotte-fenetre__image" alt="">
+    </div>
+
+    <script src="{{ asset('asset/js/carottes.js', 'static_assets') }}" defer></script>
+{% endif %}

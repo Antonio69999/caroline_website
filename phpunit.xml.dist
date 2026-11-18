@@ -11,6 +11,9 @@
     <php>
         <ini name="display_errors" value="1" />
         <ini name="error_reporting" value="-1" />
+        <!-- La suite complète culmine vers 130 Mo (PHPUnit garde les objets de test et leurs noyaux jusqu'à la fin) :
+             avec les 128 Mo par défaut de PHP elle s'arrêtait net (code 255, sans résumé) au moindre test ajouté. -->
+        <ini name="memory_limit" value="256M" />
         <server name="APP_ENV" value="test" force="true" />
         <server name="SHELL_VERBOSITY" value="-1" />
         <server name="SYMFONY_PHPUNIT_REMOVE" value="" />

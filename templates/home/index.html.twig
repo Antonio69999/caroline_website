@@ -1,24 +1,58 @@
 {% extends 'base.html.twig' %}
 
+{# Photo choisie par Caroline dans l'admin (« Page d'accueil ») ? Sinon, l'accueil d'origine. #}
+{% set perso = accueil is not null and accueil.hasImage %}
+
 {% block head %}
-    {# L'image de fond est l'élément le plus gros de la page : on la fait charger tout de suite #}
-    <link rel="preload" as="image" href="/asset/images/40-2560.jpg" media="(min-width: 768px)">
-    <link rel="preload" as="image" href="/asset/images/40-mobile.jpg" media="(max-width: 767px)">
+    {% if not perso %}
+        {# L'image de fond est l'élément le plus gros de la page : on la fait charger tout de suite #}
+        <link rel="preload" as="image" href="/asset/images/40-2560.jpg" media="(min-width: 768px)">
+        <link rel="preload" as="image" href="/asset/images/40-mobile.jpg" media="(max-width: 767px)">
+    {% endif %}
 {% endblock %}
 
-{% block stylesheets %}{% endblock %}
+{% block stylesheets %}
+    {% if perso %}
+        <link rel="stylesheet" href="{{ asset('asset/css/accueil.css', 'static_assets') }}">
+    {% endif %}
+{% endblock %}
 
 {% block body %}
     <div class="parent-div">
-        <div class="main-content">
-            {# Le visuel de l'accueil est une image : ce texte dit aux moteurs de recherche et aux
-               lecteurs d'écran ce que fait Caroline. Invisible à l'écran. #}
-            <h1 class="visually-hidden">Caroline Marcellier, artiste dans la Loire : peinture, gravure et calligraphie</h1>
-            <p class="visually-hidden">
-                Peinture, gravure et calligraphie, ateliers participatifs, peinture sur vitrine,
-                gravure sur verre et prestations pédagogiques.
-            </p>
-        </div>
+        {% if perso %}
+            {# La photo est une vraie image (pas un fond CSS) : le navigateur la charge en priorité sans
+               attendre la feuille de style, et sa description est lue par les lecteurs d'écran et Google.
+               Le cadrage (entière / plein écran, point à garder, zoom) arrive en variables CSS. #}
+            <div class="accueil-hero" style="{{ accueil.style }}">
+                <picture>
+                    {% if accueil.imageMobileName %}
+                        <source media="(max-width: 767px)" srcset="{{ asset('uploads/accueil/' ~ accueil.imageMobileName) }}">
+                    {% endif %}
+                    <img
+                        class="accueil-hero__image"
+                        src="{{ asset('uploads/accueil/' ~ accueil.imageName) }}"
+                        alt="{{ accueil.description }}"
+                        fetchpriority="high"
+                        decoding="async"
+                    >
+                </picture>
+                <h1 class="visually-hidden">Caroline Marcellier, artiste dans la Loire : peinture, gravure et calligraphie</h1>
+                <p class="visually-hidden">
+                    Peinture, gravure et calligraphie, ateliers participatifs, peinture sur vitrine,
+                    gravure sur verre et prestations pédagogiques.
+                </p>
+            </div>
+        {% else %}
+            <div class="main-content">
+                {# Le visuel de l'accueil est une image : ce texte dit aux moteurs de recherche et aux
+                   lecteurs d'écran ce que fait Caroline. Invisible à l'écran. #}
+                <h1 class="visually-hidden">Caroline Marcellier, artiste dans la Loire : peinture, gravure et calligraphie</h1>
+                <p class="visually-hidden">
+                    Peinture, gravure et calligraphie, ateliers participatifs, peinture sur vitrine,
+                    gravure sur verre et prestations pédagogiques.
+                </p>
+            </div>
+        {% endif %}
     </div>
 
 {% endblock %}

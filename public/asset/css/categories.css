@@ -70,21 +70,8 @@
   outline-offset: 3px;
 }
 
-.category-page__description {
-  width: min(100%, 800px);
-  margin: clamp(2rem, 5vw, 4rem) auto 0;
-  line-height: 1.6;
-  text-align: center;
-  font-family: Verdana, sans-serif;
-}
-
-.category-page__description > :first-child {
-  margin-top: 0;
-}
-
-.category-page__description > :last-child {
-  margin-bottom: 0;
-}
+/* La description sous la grille (.category-page__description) est dans textes.css : elle est
+   mise en page comme celle d'un article, pour que les deux se ressemblent à tous les zooms. */
 
 /*
  * Page de texte (ex. le CV) : le HTML vient de l'éditeur de l'admin (Trix).
@@ -92,9 +79,10 @@
  * uniquement dans .category-text pour ne rien changer ailleurs.
  */
 .category-text {
-  width: min(100%, 760px);
+  /* Même colonne et même interligne que les descriptions d'article et de catégorie (textes.css) */
+  width: min(100%, var(--texte-largeur, 760px));
   margin: 0 auto;
-  line-height: 1.7;
+  line-height: var(--texte-interligne, 1.7);
   text-align: left;
   font-family: Verdana, sans-serif;
   overflow-wrap: anywhere;

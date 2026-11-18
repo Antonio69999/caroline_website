@@ -41,6 +41,8 @@
         {% endblock %}
         <link rel="stylesheet" href="{{ asset('styles/app.css') }}">
         <link rel="stylesheet" href="{{ asset('asset/css/seo.css', 'static_assets') }}">
+        {# Mise en page commune des textes (article, catégorie, page de texte) : avant les feuilles propres à chaque page #}
+        <link rel="stylesheet" href="{{ asset('asset/css/textes.css', 'static_assets') }}">
         {% block stylesheets %}{% endblock %}
         {% block og_meta %}
             {% if seo is defined %}
@@ -69,6 +71,8 @@
         {% block body %}{% endblock %}
         {# Easter egg de la petite carotte (hors page de connexion, qui le désactive) #}
         {% block easter_egg %}{% include 'components/easter_egg.html.twig' %}{% endblock %}
+        {# Carottes cachées posées par Caroline sur certaines pages (admin « Carottes cachées ») ; rien d'écrit s'il n'y en a pas #}
+        {% block carottes %}{% include 'components/carottes.html.twig' %}{% endblock %}
         {% block footer %}
             {# {% include 'components/footer.html.twig' %} #}
         {% endblock %}

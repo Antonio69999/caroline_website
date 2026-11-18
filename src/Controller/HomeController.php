@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Categorie;
+use App\Repository\AccueilRepository;
 use App\Repository\ArticleRepository;
 use App\Repository\CategorieRepository;
 use App\Seo\SeoBuilder;
@@ -22,11 +23,13 @@ class HomeController extends AbstractController
   }
 
   #[Route('/', name: 'app_home')]
-  public function index(CategorieRepository $categorieRepository): Response
+  public function index(CategorieRepository $categorieRepository, AccueilRepository $accueilRepository): Response
   {
     return $this->render('home/index.html.twig', [
       'categories' => $categorieRepository->findAllOrdered(),
       'seo' => $this->seo->home(),
+      // La photo choisie dans l'admin ; null (ou sans photo) = l'accueil d'origine
+      'accueil' => $accueilRepository->findCurrent(),
     ]);
   }
 

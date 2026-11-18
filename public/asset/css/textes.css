@@ -1,0 +1,71 @@
+/*
+ * Mise en page commune des textes libres du site : la description d'un article, la description
+ * d'une catégorie et les pages de texte (CV, vitrine). Chargé par toutes les pages (base.html.twig).
+ *
+ * Le but : un texte a le même aspect partout, et à tous les niveaux de zoom. Zoom du navigateur,
+ * échelle de l'écran Windows, réglage de l'écran du Mac : tout revient à une fenêtre plus étroite
+ * en pixels CSS. Le zoom ne doit donc changer que le retour à la ligne, jamais l'alignement ni
+ * la largeur de la colonne.
+ *
+ * Ce qui variait avant :
+ *   - la description d'un article était un bloc « fit-content » aligné à gauche : une légende
+ *     d'une ligne paraissait centrée à 100 %, puis collée à gauche dès qu'un zoom la faisait passer
+ *     sur deux lignes ; la description d'une catégorie, elle, restait toujours centrée ;
+ *   - la colonne faisait 800 px (article, catégorie) ou 760 px (page de texte), l'interligne 1,6 ou 1,7.
+ *
+ * Maintenant : même colonne, même interligne, et l'alignement dépend de la LONGUEUR du texte
+ * (voir App\Twig\TexteExtension) et non de ce que le navigateur en fait :
+ *   - texte court (une légende, des dimensions) : centré sous les photos ;
+ *   - texte long : lignes alignées à gauche dans une colonne centrée (modificateur « --longue »).
+ */
+
+:root {
+  /* La colonne de texte, partout : environ 90 caractères par ligne en Verdana 16 px */
+  --texte-largeur: 760px;
+  --texte-interligne: 1.7;
+}
+
+.description,
+.category-page__description {
+  box-sizing: border-box;
+  width: min(100%, var(--texte-largeur));
+  margin-inline: auto;
+  font-family: Verdana, sans-serif;
+  line-height: var(--texte-interligne);
+  /* Une très longue adresse web passe à la ligne au lieu de faire déborder la page sur mobile. */
+  overflow-wrap: anywhere;
+  text-align: center;
+  /* Texte court : deux lignes d'égale longueur plutôt qu'une longue et un mot seul. Aide surtout
+     quand un zoom casse une légende en deux. Ignoré par les navigateurs qui ne connaissent pas. */
+  text-wrap: balance;
+}
+
+.description--longue,
+.category-page__description--longue {
+  text-align: left;
+  /* Évite le mot orphelin sur la dernière ligne */
+  text-wrap: pretty;
+}
+
+/* Article : de l'air autour du texte, sous les photos. Pas de marge intérieure à gauche/droite :
+   sur mobile le texte s'aligne sur le titre et les photos. */
+.description {
+  margin-block: 40px;
+  padding: 20px 0;
+}
+
+/* Catégorie : le texte vient après la grille de vignettes */
+.category-page__description {
+  margin-top: clamp(2rem, 5vw, 4rem);
+  margin-bottom: 0;
+}
+
+.description > :first-child,
+.category-page__description > :first-child {
+  margin-top: 0;
+}
+
+.description > :last-child,
+.category-page__description > :last-child {
+  margin-bottom: 0;
+}

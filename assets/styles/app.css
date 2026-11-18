@@ -81,13 +81,16 @@
 */
   .narrow-content {
     width: min(100% - var(--sidebar-width), var(--content-max-width));
-    margin-block: clamp(1.25rem, 3vw, 2.5rem);
+    /* Mêmes marges que .page-content (pages catégorie), à tous les zooms : le titre ne bouge
+       pas de quelques pixels quand on passe d'une catégorie à l'un de ses articles.
+       Le 2.5rem de --content-max-width de .article-page est le maximum de cette variable. */
+    margin-block: var(--page-padding);
     margin-left: max(
       var(--sidebar-width),
       (100% + var(--sidebar-width) - var(--content-max-width)) / 2
     );
     margin-right: auto;
-    padding-inline: clamp(1rem, 4vw, 2.5rem);
+    padding-inline: var(--page-padding);
     box-sizing: border-box;
   }
 
@@ -601,31 +604,9 @@
     font-size: small;
   }
 
-  /* Texte d'un article (HTML de l'éditeur Trix de l'admin : des <div> coupés de <br>).
-
-     Aligné à GAUCHE. Centré, chaque ligne d'un long paragraphe partait d'un endroit
-     différent, et les espaces insécables que l'éditeur laisse en fin de ligne
-     décalaient encore certaines lignes vers la gauche.
-
-     Le BLOC, lui, reste centré sous le titre et les photos : il prend la largeur de
-     sa plus longue ligne (fit-content), sans dépasser 800px. Un texte court reste donc
-     visuellement centré ; un texte long remplit la colonne, avec le même bord gauche
-     droit sur tous les articles.
-
-     Pas de marge intérieure à gauche/droite : sur mobile, le texte s'aligne sur le
-     titre et les photos (avant : 20px plus à l'intérieur, colonne trop étroite). */
-  .description {
-    /* Même police que les autres textes du site (pages de texte, description d'une catégorie) */
-    font-family: Verdana, sans-serif;
-    width: fit-content;
-    max-width: 800px;
-    margin: 40px auto;
-    padding: 20px 0;
-    text-align: left;
-    line-height: 1.6;
-    /* Une très longue adresse web passe à la ligne au lieu de faire déborder la page sur mobile. */
-    overflow-wrap: break-word;
-  }
+  /* Texte d'un article (.description) : sa mise en page est dans public/asset/css/textes.css,
+     commune à la description d'une catégorie et aux pages de texte. C'est un fichier à part (et
+     non-Tailwind) pour que ces règles n'attendent pas un « tailwind:build » pour se mettre à jour. */
 
   .article_pictures {
     height: 200px;

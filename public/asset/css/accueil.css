@@ -1,0 +1,56 @@
+/*
+ * Accueil avec la photo choisie dans l'admin (« Page d'accueil »).
+ * Chargé seulement dans ce cas : sans photo choisie, l'accueil d'origine reste celui d'app.css.
+ *
+ * Les réglages de Caroline arrivent en variables CSS sur .accueil-hero (voir Accueil::style()) :
+ *   --accueil-fond                     couleur autour de la photo
+ *   --bureau-fit / --mobile-fit        « contain » (photo entière) ou « cover » (plein écran)
+ *   --bureau-pos / --mobile-pos        point à garder, ex. « 30% 70% »
+ *   --bureau-zoom / --mobile-zoom      zoom, ex. « 1.5 » (1 = aucun)
+ * Le zoom se fait autour du point à garder : ce point ne bouge pas à l'écran, et la photo, qui
+ * couvre déjà tout l'écran, ne laisse jamais apparaître de vide en grossissant.
+ * Ce fichier n'est pas dans app.css (compilé par Tailwind) : il est lu tel quel par le navigateur.
+ * L'aperçu de l'admin (admin_accueil.css) reprend les mêmes règles : à garder d'accord.
+ */
+.accueil-hero {
+  position: relative;
+  box-sizing: border-box;
+  margin-left: var(--sidebar-width, 250px);
+  width: calc(100% - var(--sidebar-width, 250px));
+  min-width: 0;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+  background: var(--accueil-fond, #fff);
+}
+
+.accueil-hero picture {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.accueil-hero__image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: var(--bureau-fit, contain);
+  object-position: var(--bureau-pos, 50% 50%);
+  transform: scale(var(--bureau-zoom, 1));
+  transform-origin: var(--bureau-pos, 50% 50%);
+}
+
+/* Même seuil que le menu et le reste du site : en dessous, le menu se replie et la photo prend toute la largeur. */
+@media (max-width: 767px) {
+  .accueil-hero {
+    margin-left: 0;
+    width: 100%;
+  }
+
+  .accueil-hero__image {
+    object-fit: var(--mobile-fit, cover);
+    object-position: var(--mobile-pos, 50% 50%);
+    transform: scale(var(--mobile-zoom, 1));
+    transform-origin: var(--mobile-pos, 50% 50%);
+  }
+}
