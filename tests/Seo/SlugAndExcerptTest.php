@@ -88,4 +88,44 @@ class SlugAndExcerptTest extends KernelTestCase
         self::assertStringNotContainsString(',…', $extrait, 'On ne finit pas sur une virgule');
         self::assertMatchesRegularExpression('/(toile|huile|Peinture)…$/u', $extrait, 'On coupe après un mot entier');
     }
+
+    /**
+     * Le vrai cas de l'article « Flux Libre » (500 en production) : « à » écrit en deux morceaux
+     * (« a » + accent combinant, octets 61 CC 80, typique d'un texte collé depuis un Mac), pile à l'endroit
+     * de la coupe. Le résumé devenait de l'UTF-8 invalide et l'encodage JSON de la page échouait.
+     */
+    public function testExcerptNeverBreaksACharacterWhenTheCutFallsOnAnAccent(): void
+    {
+        $seo = self::getContainer()->get(SeoBuilder::class);
+        // « à » en deux morceaux (le cas réel), et « À » en un seul morceau dont le dernier octet est lui aussi 80
+        // (celui-là n'est pas recomposé : il vérifie à lui seul que la coupure ne scie plus un caractère)
+        foreach (["a\u{0300}", 'À'] as $mot) {
+            // On fait tomber le mot à toutes les positions possibles autour de la coupe (155 caractères)
+            for ($decalage = 140; $decalage <= 165; ++$decalage) {
+                $texte = str_repeat('x', $decalage) . ' ' . $mot . ' la perche télescopique. ' . str_repeat('suite du texte ', 20);
+                $extrait = $seo->excerpt($texte);
+                $contexte = sprintf('« %s » avec un décalage de %d', bin2hex($mot), $decalage);
+
+                self::assertTrue(mb_check_encoding($extrait, 'UTF-8'), 'UTF-8 invalide : ' . $contexte);
+                self::assertNotFalse(json_encode($extrait, \JSON_THROW_ON_ERROR), 'Doit pouvoir s\'écrire en JSON : ' . $contexte);
+                self::assertStringNotContainsString("\u{FFFD}", $extrait, $contexte);
+            }
+        }
+    }
+
+    public function testExcerptRecomposesDecomposedAccentsAndDoesNotEndOnDashes(): void
+    {
+        $seo = self::getContainer()->get(SeoBuilder::class);
+
+        // Pas de coupe : un « à » décomposé est simplement recomposé (un seul caractère)
+        self::assertSame("à la perche", $seo->excerpt("a\u{0300} la perche"));
+
+        // Un tiret ou un point à la coupe est retiré, accents et tirets longs compris
+        $texte = str_repeat('mot ', 36) . 'fin – — - . , ;' . str_repeat(' suite', 20);
+        $extrait = $seo->excerpt($texte);
+
+        self::assertStringEndsWith('…', $extrait);
+        self::assertDoesNotMatchRegularExpression('/[ ,;:.\-–—]…$/u', $extrait);
+        self::assertTrue(mb_check_encoding($extrait, 'UTF-8'));
+    }
 }

@@ -281,6 +281,12 @@ class SeoBuilder
   {
     $text = $this->plainText($html);
 
+    // Un texte collé depuis un Mac écrit « à » en deux morceaux (la lettre « a » puis un accent
+    // combinant) : on le recompose en un seul caractère, pour que la coupe ne tombe jamais entre les deux.
+    if (class_exists(\Normalizer::class)) {
+      $text = \Normalizer::normalize($text, \Normalizer::FORM_C) ?: $text;
+    }
+
     if (mb_strlen($text) <= $max) {
       return $text;
     }
@@ -291,7 +297,11 @@ class SeoBuilder
       $cut = mb_substr($cut, 0, $space);
     }
 
-    return rtrim($cut, " ,;:.-–—") . '…';
+    // Surtout PAS rtrim($cut, " ,;:.-–—") : rtrim lit sa liste OCTET par OCTET. Les octets de « – » et
+    // « — » (E2 80 93 / E2 80 94) contiennent « 80 », qui termine aussi l'accent combinant « ̀ » (CC 80) et
+    // « À » (C3 80) : le dernier octet partait, laissant un caractère coupé en deux (UTF-8 invalide),
+    // ce qui faisait échouer l'encodage JSON de la page (erreur 500). L'option /u travaille par caractère.
+    return (preg_replace('/[ ,;:.\-–—]+$/u', '', $cut) ?? $cut) . '…';
   }
 
   /**
