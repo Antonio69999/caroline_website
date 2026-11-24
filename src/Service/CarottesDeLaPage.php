@@ -4,6 +4,7 @@ namespace App\Service;
 
 use App\Entity\Carotte;
 use App\Repository\CarotteRepository;
+use Psr\Log\LoggerInterface;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Vich\UploaderBundle\Templating\Helper\UploaderHelper;
@@ -29,6 +30,7 @@ class CarottesDeLaPage
     private readonly CarotteRepository $carottes,
     private readonly UploaderHelper $uploader,
     private readonly Security $security,
+    private readonly LoggerInterface $logger,
   ) {
   }
 
@@ -36,9 +38,28 @@ class CarottesDeLaPage
    * Chaque carotte sous la forme dont a besoin le gabarit. Les réglages sont tirés au sort ici pour les
    * carottes « au hasard » : chaque affichage de la page en donne de nouveaux.
    *
+   * Une carotte n'est qu'un clin d'œil posé sur la page : si quelque chose cloche avec elles (une ligne
+   * de la base, un réglage inattendu), la page s'affiche quand même, simplement sans carotte, et le
+   * problème est écrit dans le journal des erreurs. Sans ça, une carotte mal réglée suffirait à
+   * rendre une page entière introuvable (erreur 500) pour tous les visiteurs.
+   *
    * @return list<array{id: int, src: string, description: string, forcee: bool, delai: int, taille: string, opacite: string, ligne: string, colonne: string, imageTaille: string, imageLigne: string, imageColonne: string}>
    */
   public function lister(): array
+  {
+    try {
+      return $this->construire();
+    } catch (\Throwable $erreur) {
+      $this->logger->error('Les carottes cachées n\'ont pas pu être préparées : la page s\'affiche sans elles.', ['exception' => $erreur]);
+
+      return [];
+    }
+  }
+
+  /**
+   * @return list<array{id: int, src: string, description: string, forcee: bool, delai: int, taille: string, opacite: string, ligne: string, colonne: string, imageTaille: string, imageLigne: string, imageColonne: string}>
+   */
+  private function construire(): array
   {
     $request = $this->requests->getMainRequest();
     if (null === $request) {

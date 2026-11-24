@@ -7,6 +7,7 @@ use App\Entity\Categorie;
 use App\Seo\SeoBuilder;
 use App\Seo\SeoPage;
 use App\Seo\SiteUrls;
+use Psr\Log\LoggerInterface;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFunction;
 
@@ -22,6 +23,7 @@ class SeoExtension extends AbstractExtension
   public function __construct(
     private readonly SiteUrls $urls,
     private readonly SeoBuilder $seo,
+    private readonly LoggerInterface $logger,
   ) {
   }
 
@@ -50,11 +52,21 @@ class SeoExtension extends AbstractExtension
       return '';
     }
 
-    // HEX_TAG : un « </script> » écrit dans un titre ne peut pas fermer la balise avant l'heure
-    $json = json_encode(
-      ['@context' => 'https://schema.org', '@graph' => $page->graph],
-      \JSON_UNESCAPED_UNICODE | \JSON_UNESCAPED_SLASHES | \JSON_HEX_TAG | \JSON_HEX_AMP | \JSON_THROW_ON_ERROR,
-    );
+    // HEX_TAG : un « </script> » écrit dans un titre ne peut pas fermer la balise avant l'heure.
+    // INVALID_UTF8_SUBSTITUTE : un caractère mal encodé dans un titre ou une légende (texte collé
+    // d'un ancien logiciel…) devient « � » au lieu de faire échouer tout l'encodage.
+    try {
+      $json = json_encode(
+        ['@context' => 'https://schema.org', '@graph' => $page->graph],
+        \JSON_UNESCAPED_UNICODE | \JSON_UNESCAPED_SLASHES | \JSON_HEX_TAG | \JSON_HEX_AMP | \JSON_INVALID_UTF8_SUBSTITUTE | \JSON_THROW_ON_ERROR,
+      );
+    } catch (\JsonException $erreur) {
+      // Ces données ne servent qu'à Google : sans elles la page reste complète pour les visiteurs.
+      // On ne laisse donc pas une erreur d'encodage la rendre introuvable (erreur 500).
+      $this->logger->error('Les données structurées de la page n\'ont pas pu être écrites : la page s\'affiche sans elles.', ['exception' => $erreur, 'url' => $page->canonical]);
+
+      return '';
+    }
 
     return '<script type="application/ld+json">' . $json . '</script>';
   }

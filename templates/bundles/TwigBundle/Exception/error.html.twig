@@ -1,0 +1,140 @@
+{#
+    La page que voient les visiteurs quand quelque chose ne va pas (introuvable, panne…), à la place
+    de la page grise de Symfony. Symfony choisit ce gabarit pour TOUTES les erreurs en production ;
+    en local, l'aperçu est à /_error/404 et /_error/500 (la vraie page d'erreur détaillée reste
+    affichée pour les vraies erreurs, c'est voulu).
+
+    Ce gabarit est volontairement AUTONOME : il n'étend pas base.html.twig et n'interroge pas la base
+    de données. Une page d'erreur qui dépend du site peut tomber en panne avec lui, et on retomberait
+    alors sur la page grise. Donc pas de menu, pas de carottes cachées : une feuille de style
+    intégrée, des adresses écrites en dur, et la carotte qui danse.
+
+    On n'affiche JAMAIS le message de l'exception : il peut contenir des détails techniques.
+#}
+{% set code = status_code|default(500) %}
+{% if code == 404 %}
+    {% set titre = 'Oups, cette page n’existe pas' %}
+    {% set texte = 'Elle a peut-être changé d’adresse, ou elle a été retirée. La petite carotte vous ramène à l’accueil.' %}
+{% elseif code == 403 or code == 401 %}
+    {% set titre = 'Oups, cette porte est fermée' %}
+    {% set texte = 'Vous n’avez pas accès à cette page. La petite carotte vous ramène à l’accueil.' %}
+{% elseif code >= 500 %}
+    {% set titre = 'Oups, ça ne marche pas' %}
+    {% set texte = 'Le site a un petit souci, et ce n’est pas de votre faute. Réessayez dans quelques instants.' %}
+{% else %}
+    {% set titre = 'Oups, quelque chose s’est mal passé' %}
+    {% set texte = 'Cette adresse ne fonctionne pas. La petite carotte vous ramène à l’accueil.' %}
+{% endif %}
+<!DOCTYPE html>
+<html lang="fr" translate="no" class="notranslate">
+<head>
+    <meta charset="utf-8">
+    <meta name="google" content="notranslate">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    {# Une page d'erreur n'a rien à faire dans Google #}
+    <meta name="robots" content="noindex, nofollow, noarchive">
+    <title>{{ titre }} | Caroline Marcellier</title>
+    <link rel="icon" type="image/x-icon" href="/asset/krot.gif">
+    <style>
+        @font-face {
+            font-family: "Alice";
+            src: url("/asset/fonts/Alice-Regular.ttf?v=1") format("truetype");
+            font-display: swap;
+        }
+
+        * { box-sizing: border-box; }
+
+        html, body { margin: 0; min-height: 100%; }
+
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 2rem 1.25rem;
+            background: #fff;
+            color: #222;
+            font-family: Verdana, sans-serif;
+            line-height: 1.7;
+            text-align: center;
+        }
+
+        .oups { width: min(100%, 34rem); }
+
+        .oups__carotte {
+            display: inline-block;
+            border-radius: 50%;
+        }
+
+        .oups__carotte img {
+            display: block;
+            width: min(60vw, 220px);
+            height: auto;
+        }
+
+        .oups__code {
+            margin: 1rem 0 0;
+            color: #888;
+            font-size: .8rem;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+        }
+
+        .oups h1 {
+            margin: .25rem 0 1rem;
+            font-family: "Alice", Georgia, serif;
+            font-size: clamp(1.7rem, 6vw, 2.4rem);
+            font-weight: normal;
+            line-height: 1.25;
+            /* Évite un mot tout seul sur la dernière ligne (« … n’existe / pas ») */
+            text-wrap: balance;
+        }
+
+        .oups__texte { margin: 0 0 1.75rem; }
+
+        .oups__bouton {
+            display: inline-block;
+            padding: .65rem 1.5rem;
+            border: 1px solid #222;
+            border-radius: 999px;
+            color: #222;
+            text-decoration: none;
+            transition: background-color .2s, color .2s;
+        }
+
+        .oups__bouton:hover,
+        .oups__bouton:focus-visible {
+            background: #222;
+            color: #fff;
+        }
+
+        .oups__aide {
+            margin: 1.5rem 0 0;
+            color: #666;
+            font-size: .85rem;
+        }
+
+        .oups__aide a { color: inherit; }
+
+        .oups__bouton:focus-visible,
+        .oups__carotte:focus-visible {
+            outline: 2px solid #222;
+            outline-offset: 3px;
+        }
+    </style>
+</head>
+<body>
+    <main class="oups">
+        <a class="oups__carotte" href="/" aria-label="Retour à l’accueil">
+            <img src="/asset/krot.gif" width="480" height="480" alt="Une petite carotte qui danse">
+        </a>
+        <p class="oups__code">Erreur {{ code }}</p>
+        <h1>{{ titre }}</h1>
+        <p class="oups__texte">{{ texte }}</p>
+        <a class="oups__bouton" href="/">Retour à l’accueil</a>
+        {% if code >= 500 %}
+            <p class="oups__aide">Ça dure ? <a href="/contact">Écrivez-moi</a>, je m’en occupe.</p>
+        {% endif %}
+    </main>
+</body>
+</html>

@@ -43,14 +43,27 @@ when@prod:
             main:
                 type: fingers_crossed
                 action_level: error
-                handler: nested
+                handler: sinks
                 excluded_http_codes: [404, 405]
                 buffer_size: 50 # How many messages should be saved? Prevent memory leaks
+            # Une erreur est écrite à deux endroits : stderr (comme avant) ET dans var/log/prod.log.
+            # Sur l'hébergement mutualisé, stderr n'est lisible nulle part : sans fichier, un 500 ne
+            # laisse aucune trace et on ne peut pas savoir ce qui a planté. Le fichier ne reçoit que
+            # les requêtes en erreur (fingers_crossed), avec tout ce qui a précédé. « whatfailuregroup » :
+            # si le fichier est impossible à écrire, on l'ignore au lieu de faire planter la page d'erreur.
+            sinks:
+                type: whatfailuregroup
+                members: [nested, file]
             nested:
                 type: stream
                 path: php://stderr
                 level: debug
                 formatter: monolog.formatter.json
+            file:
+                type: rotating_file
+                path: "%kernel.logs_dir%/%kernel.environment%.log"
+                level: debug
+                max_files: 14 # un fichier par jour, les plus anciens sont effacés tout seuls
             console:
                 type: console
                 process_psr_3_messages: false
